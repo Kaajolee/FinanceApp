@@ -9,43 +9,89 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="227dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <Spinner
             android:id="@+id/spinner"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
+            android:layout_width="250dp"
+            android:layout_height="56dp"
             android:layout_marginTop="60sp"
+            android:orientation="horizontal"
             android:textAlignment="textStart" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5sp"
-            android:text="999"
-            android:textAlignment="center"
-            android:textSize="60sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="59dp"
+            android:layout_height="175dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                android:text="999"
+                android:textAlignment="center"
+                android:textSize="60sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Income" />
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Expenses" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/spinner2"
+                android:layout_width="176dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Income" />
+                android:layout_weight="1" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Expenses" />
+                android:text="+" />
+
         </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
