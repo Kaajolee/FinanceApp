@@ -7,6 +7,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +34,8 @@ public class RecyclerViewAdapter extends
     public void onBindViewHolder(RecyclerViewAdapter.ViewHolder holder, int position) {
 
         Entry entry = this.Data.get(position);
+        holder.layout.setBackgroundResource(R.drawable.rounded_all_corners_small);
 
-        //holder.textView.setText(this.Data.get(position));
         holder.textViewName.setText((String) entry.getName());
         holder.textViewCategory.setText((int) entry.getDate());
         holder.textViewNumber.setText((int)entry.getAmount());
@@ -63,12 +64,15 @@ public class RecyclerViewAdapter extends
         private TextView textViewName;
         private TextView textViewCategory;
         private TextView textViewNumber;
+        private LinearLayout layout;
         public ViewHolder(View view){
             super(view);
             view.setOnClickListener(this);
+
             this.textViewName = view.findViewById(R.id.textview);
             this.textViewCategory = view.findViewById(R.id.textview1);
             this.textViewNumber = view.findViewById(R.id.textview2);
+            this.layout = view.findViewById(R.id.linearlayoutlist);
         }
         @Override
         public void onClick(View v) {
