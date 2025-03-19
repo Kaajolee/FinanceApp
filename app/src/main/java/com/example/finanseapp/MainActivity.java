@@ -1,7 +1,11 @@
 package com.example.finanseapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;
+    ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
         generateData(db);
         printData(db);
 
+
+        //-----TOP ACTION BAR
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(ContextCompat.getColor(this, R.drawable.topbar_box);
+        }
 
         // --------INCOME BUTTON
         buttonIncome = findViewById(R.id.incomeButton);
