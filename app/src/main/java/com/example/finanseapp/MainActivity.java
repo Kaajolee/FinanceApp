@@ -3,6 +3,9 @@ package com.example.finanseapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,9 +13,11 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.finanseapp.helpers.RecyclerViewAdapter;
+
 public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
-
+    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         // --------ADD CATEGORY BUTTON
         buttonAddCategory = findViewById(R.id.addCategoryButton);
         SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
+
+        //--------RECYCLER VIEW
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //recyclerView.setAdapter(new RecyclerViewAdapter(cia data));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
 

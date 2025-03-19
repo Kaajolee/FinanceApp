@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
+        android:background="@color/green_001"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -36,6 +37,7 @@
                 android:layout_marginTop="5sp"
                 android:text="999"
                 android:textAlignment="center"
+                android:textColor="@color/white_text"
                 android:textSize="60sp" />
 
             <LinearLayout
@@ -48,14 +50,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Income" />
+                    android:text="Income"
+                    android:textColor="@color/white_text" />
 
                 <Button
                     android:id="@+id/expensesButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Expenses" />
+                    android:background="@color/green_008"
+                    android:text="Expenses"
+                    android:textColor="@color/white_text" />
 
             </LinearLayout>
 
@@ -81,16 +86,12 @@
 
         </LinearLayout>
 
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
+            android:id="@+id/recyclerview"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/green_002" />
 
     </LinearLayout>
 
