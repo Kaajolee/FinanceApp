@@ -80,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        printData(db);
+    }
 
     private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
 
@@ -120,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            Random random = new Random();
-            db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
+           // Random random = new Random();
+           // db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
 
 
         });
@@ -147,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             List<Entry> entries = db.entryDao().getAllEntries();
             System.out.println("\nEntries:");
             for (Entry entry : entries) {
-                System.out.println("  ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
+                System.out.println("  Name: " + entry.getName() + "ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
             }
         });
     }
