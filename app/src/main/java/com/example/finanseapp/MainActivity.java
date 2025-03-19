@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
            //  db.accountDao().deleteAll();
             //db.userDao().deleteAll();
 
-            db.clearAllTables();
+            //db.clearAllTables();
 
 
             if (db.userDao().getUserByUsername("admin") == null)
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             Random random = new Random();
-            db.entryDao().insert(new Entry(db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
+            db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
 
 
         });
