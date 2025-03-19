@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -15,8 +16,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class IncomeActivity extends AppCompatActivity {
+    AppDatabase db;
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
+    EditText nameEditText,amountEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +31,11 @@ public class IncomeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        db = AppDatabase.getInstance(getApplicationContext());
+
+        nameEditText = (EditText) findViewById(R.id.editTextName);
+        amountEditText = (EditText) findViewById(R.id.editTextAmount);
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
@@ -44,6 +53,11 @@ public class IncomeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     //Add button logic
+                    if (!nameEditText.toString().isEmpty() ||
+                        !amountEditText.toString().isEmpty())
+                    {
+
+                    }
                     finish();
                 }
             });

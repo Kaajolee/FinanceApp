@@ -17,6 +17,9 @@ public class Entry {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
+    @ColumnInfo(name = "name")
+    private String name;
+
     @ColumnInfo(name = "accountId")
     private int accountId;
 
@@ -29,11 +32,20 @@ public class Entry {
     @ColumnInfo(name = "date")
     private long date;
 
-    public Entry(int accountId, int type, float amount, long date) {
+    public Entry(String name, int accountId, int type, float amount, long date) {
+        this.name = name;
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
         this.date = date;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setAccountId(int accountId) {
