@@ -12,9 +12,17 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.finanseapp.helpers.RecyclerViewAdapter;
+import com.example.finanseapp.Entities.Account;
+import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
+
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
+    AppDatabase db;
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
     RecyclerView recyclerView;
     @Override
@@ -27,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });*/
+
+        db = AppDatabase.getInstance(getApplicationContext());
+
+        generateData(db);
+        printData(db);
 
 
         // --------INCOME BUTTON
@@ -70,5 +83,57 @@ public class MainActivity extends AppCompatActivity {
         else{
             Log.e("BUTTON", "Button reference is null");
         }
+    }
+
+    void generateData(AppDatabase db) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            //db.entryDao().deleteAll();
+           //  db.accountDao().deleteAll();
+            //db.userDao().deleteAll();
+
+            db.clearAllTables();
+
+
+            if (db.userDao().getUserByUsername("admin") == null)
+            {
+                db.userDao().insert(new User("admin","root"));
+            }
+
+            if (db.accountDao().getAccountByName("saskaita1") == null)
+            {
+                db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
+            }
+
+
+            Random random = new Random();
+            db.entryDao().insert(new Entry(db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
+
+
+        });
+    }
+
+    void printData(AppDatabase db) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // Print users
+            List<User> users = db.userDao().getAllUsers();
+            System.out.println("Users:");
+            for (User user : users) {
+                System.out.println("  ID: " + user.getId() + ", Username: " + user.getUsername());
+            }
+
+            // Print accounts
+            List<Account> accounts = db.accountDao().getAllAccounts();
+            System.out.println("\nAccounts:");
+            for (Account account : accounts) {
+                System.out.println("  ID: " + account.getId() + ", Name: " + account.getName() + ", User ID: " + account.getUserId() + ", Balance: " + account.getBalance());
+            }
+
+            // Print entries
+            List<Entry> entries = db.entryDao().getAllEntries();
+            System.out.println("\nEntries:");
+            for (Entry entry : entries) {
+                System.out.println("  ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
+            }
+        });
     }
 }
