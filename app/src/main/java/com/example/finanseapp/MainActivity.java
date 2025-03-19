@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
     Button buttonIncome;
     Intent intentIncome;
+    Button buttonExpenses;
+    Intent intentExpenses;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,19 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     startActivity(intentIncome);
+                }
+            });
+        }
+
+        // --------EXPENSES BUTTON
+        intentExpenses = new Intent(getApplicationContext(), ExpensesActivity.class);
+        buttonExpenses = findViewById(R.id.button2);
+        if(buttonExpenses != null){
+
+            buttonExpenses.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(intentExpenses);
                 }
             });
         }
