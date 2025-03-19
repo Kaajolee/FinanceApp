@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
+    TextView textViewBalance;
     RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +58,20 @@ public class MainActivity extends AppCompatActivity {
 
         // --------ADD ACCOUNT BUTTON
         //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
-        SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
+        //SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
 
         // --------ADD CATEGORY BUTTON
         buttonAddCategory = findViewById(R.id.addCategoryButton);
         SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
 
+        //---------ACCOUNT BALANCE TEXT
+        textViewBalance = findViewById(R.id.textViewBalance);
+        //textViewBalance.setText((char) db.entryDao().getTotalAmountByAccount("0"));
+
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //recyclerView.setAdapter(new RecyclerViewAdapter(cia data));
+        //recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("0")));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
