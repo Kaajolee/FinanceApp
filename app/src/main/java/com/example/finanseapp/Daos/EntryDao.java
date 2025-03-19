@@ -36,7 +36,13 @@ public interface EntryDao {
 
     @Query("SELECT * FROM entries WHERE accountId = :accountId")
     List<Entry> getEntriesByAccountId(String accountId);
-
+    @Query("SELECT SUM(CASE " +
+            "WHEN type = 0 THEN amount " +
+            "WHEN type = 1 THEN -amount " +
+            "ELSE 0 " +
+            "END) AS totalBalance " +
+            "FROM entries WHERE accountId = :accountId")
+    float getAccountBalance(String accountId);
     @Query("SELECT * FROM entries WHERE date BETWEEN :startDate AND :endDate")
     List<Entry> getEntriesByDateRange(long startDate, long endDate);
 

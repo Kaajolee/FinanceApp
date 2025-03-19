@@ -8,9 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Entry;
@@ -21,9 +25,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
+
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
+    TextView textViewBalance;
     RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,19 +58,28 @@ public class MainActivity extends AppCompatActivity {
 
         // --------ADD ACCOUNT BUTTON
         //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
-        SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
+        //SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
 
         // --------ADD CATEGORY BUTTON
         buttonAddCategory = findViewById(R.id.addCategoryButton);
         SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
 
+        //---------ACCOUNT BALANCE TEXT
+        textViewBalance = findViewById(R.id.textViewBalance);
+        //textViewBalance.setText((char) db.entryDao().getTotalAmountByAccount("0"));
+
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //recyclerView.setAdapter(new RecyclerViewAdapter(cia data));
+        //recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("0")));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        printData(db);
+    }
 
     private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
 
@@ -91,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
            //  db.accountDao().deleteAll();
             //db.userDao().deleteAll();
 
-            db.clearAllTables();
+            //db.clearAllTables();
 
 
             if (db.userDao().getUserByUsername("admin") == null)
@@ -105,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            Random random = new Random();
-            db.entryDao().insert(new Entry(db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
+           // Random random = new Random();
+           // db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
 
 
         });
@@ -132,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             List<Entry> entries = db.entryDao().getAllEntries();
             System.out.println("\nEntries:");
             for (Entry entry : entries) {
-                System.out.println("  ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
+                System.out.println("  Name: " + entry.getName() + "ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
             }
         });
     }

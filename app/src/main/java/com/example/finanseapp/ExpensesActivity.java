@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -21,12 +22,17 @@ import com.example.finanseapp.Entities.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.example.finanseapp.Entities.Entry;
+
+import java.util.concurrent.Executors;
 
 public class ExpensesActivity extends AppCompatActivity {
+    AppDatabase db;
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
     Spinner spinner;
 
+    EditText nameEditText,amountEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +44,12 @@ public class ExpensesActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        db = AppDatabase.getInstance(getApplicationContext());
+
+        nameEditText = (EditText) findViewById(R.id.editTextName);
+        amountEditText = (EditText) findViewById(R.id.editTextAmount);
+
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
@@ -54,6 +66,35 @@ public class ExpensesActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Add button logic
                     finish();
+                    //Add button logic
+                    if (!nameEditText.getText().toString().isEmpty() ||
+                            !amountEditText.getText().toString().isEmpty())
+                    {
+                        Entry newEntry = new Entry(
+                                nameEditText.getText().toString(),
+                                db.currentAccount,
+                                1,
+                                Float.parseFloat(amountEditText.getText().toString()),
+                                2025);
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            try {
+                                db.entryDao().insert(newEntry);
+
+                                runOnUiThread(() -> {
+                                    Toast.makeText(ExpensesActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                });
+                            } catch (Exception e) {
+                                runOnUiThread(() ->
+                                        Toast.makeText(ExpensesActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                                );
+                            }
+
+                        });
+                    }
+                    else {
+                        Toast.makeText(ExpensesActivity.this, "Invalid inputs", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 

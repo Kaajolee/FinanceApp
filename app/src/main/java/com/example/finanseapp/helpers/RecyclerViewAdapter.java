@@ -1,6 +1,9 @@
 package com.example.finanseapp.Helpers;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,13 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+
+import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.R;
 
 public class RecyclerViewAdapter extends
         RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private List<String> Data;
-    public RecyclerViewAdapter(List<String> data){
+    private List<Entry> Data;
+    public RecyclerViewAdapter(List<Entry> data){
         this.Data = data;
     }
 
@@ -26,7 +31,27 @@ public class RecyclerViewAdapter extends
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapter.ViewHolder holder, int position) {
-        holder.textView.setText(this.Data.get(position));
+
+        Entry entry = this.Data.get(position);
+
+        //holder.textView.setText(this.Data.get(position));
+        holder.textViewName.setText((String) entry.getName());
+        holder.textViewCategory.setText((int) entry.getDate());
+        holder.textViewNumber.setText((int)entry.getAmount());
+//income 0 expense 1 both 2
+        if(entry.getType() == 0){
+            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
+                                                                      R.color.green_005));
+        }
+        else if(entry.getType() == 1){
+            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
+                                                                      R.color.red));
+        }
+        else {
+            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
+                    R.color.purple_200));
+        }
+
     }
 
     @Override
@@ -35,12 +60,15 @@ public class RecyclerViewAdapter extends
     }
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView textView;
-
+        private TextView textViewName;
+        private TextView textViewCategory;
+        private TextView textViewNumber;
         public ViewHolder(View view){
             super(view);
             view.setOnClickListener(this);
-            this.textView = view.findViewById(R.id.textview);
+            this.textViewName = view.findViewById(R.id.textview);
+            this.textViewCategory = view.findViewById(R.id.textview1);
+            this.textViewNumber = view.findViewById(R.id.textview2);
         }
         @Override
         public void onClick(View v) {
