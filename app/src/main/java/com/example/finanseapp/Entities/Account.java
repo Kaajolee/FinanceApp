@@ -21,10 +21,16 @@ public class Account {
     private String name;
 
     @ColumnInfo(name = "userId")
-    private String userId;
+    private int userId;
 
     @ColumnInfo(name = "balance")
     private float balance;
+
+    public Account(String name, int userId, float balance) {
+        this.name = name;
+        this.userId = userId;
+        this.balance = balance;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -38,7 +44,7 @@ public class Account {
         return name;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
@@ -54,7 +60,7 @@ public class Account {
         return balance;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 }
