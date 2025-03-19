@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.finanseapp.Entities.Account;
+import com.example.finanseapp.Entities.User;
 
 import java.util.List;
 
@@ -33,4 +34,7 @@ public interface AccountDao {
 
     @Query("SELECT * FROM accounts WHERE id = :id LIMIT 1")
     Account getAccountById(String id);
+
+    @Query("SELECT * FROM accounts WHERE name = :name LIMIT 1")
+    User getAccountByName(String name);
 }
