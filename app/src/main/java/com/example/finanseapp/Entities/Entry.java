@@ -15,10 +15,10 @@ import androidx.room.PrimaryKey;
 )
 public class Entry {
     @PrimaryKey(autoGenerate = true)
-    private String id;
+    private int id;
 
     @ColumnInfo(name = "accountId")
-    private String accountId;
+    private int accountId;
 
     @ColumnInfo(name = "type")
     private int type;
@@ -29,7 +29,7 @@ public class Entry {
     @ColumnInfo(name = "date")
     private long date;
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
 
@@ -45,11 +45,15 @@ public class Entry {
         this.date = date;
     }
 
-    public String getId() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public String getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
 

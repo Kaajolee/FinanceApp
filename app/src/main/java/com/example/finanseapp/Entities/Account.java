@@ -26,6 +26,10 @@ public class Account {
     @ColumnInfo(name = "balance")
     private float balance;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
