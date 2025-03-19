@@ -31,7 +31,6 @@ public class ExpensesActivity extends AppCompatActivity {
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
-
         if(actionBar != null){
             actionBar.setTitle("Add an expense");
             actionBar.setDisplayHomeAsUpEnabled(true);
