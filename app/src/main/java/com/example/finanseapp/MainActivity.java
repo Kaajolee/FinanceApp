@@ -49,12 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(getApplicationContext(), destination);
 
-            Intent finalIntent = intent;
-
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(finalIntent);
+                    startActivity(intent);
                 }
             });
 
