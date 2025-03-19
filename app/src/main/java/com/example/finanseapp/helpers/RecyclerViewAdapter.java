@@ -37,8 +37,8 @@ public class RecyclerViewAdapter extends
         holder.layout.setBackgroundResource(R.drawable.rounded_all_corners_small);
 
         holder.textViewName.setText((String) entry.getName());
-        holder.textViewCategory.setText((int) entry.getDate());
-        holder.textViewNumber.setText((int)entry.getAmount());
+        holder.textViewCategory.setText(Long.toString((int) entry.getDate()));
+        holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
 //income 0 expense 1 both 2
         if(entry.getType() == 0){
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),

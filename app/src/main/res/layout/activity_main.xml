@@ -51,16 +51,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Income"
-                    android:textColor="@color/white_text" />
+                    android:textColor="@color/white_text"
+                    style="@android:style/Widget.Material.Button.Borderless"/>
 
                 <Button
                     android:id="@+id/expensesButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@color/green_008"
                     android:text="Expenses"
-                    android:textColor="@color/white_text" />
+                    android:textColor="@color/white_text"
+                    style="@android:style/Widget.Material.Button.Borderless"/>
 
             </LinearLayout>
 
