@@ -12,6 +12,9 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
+
 import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
@@ -20,6 +23,7 @@ import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
+
 
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
