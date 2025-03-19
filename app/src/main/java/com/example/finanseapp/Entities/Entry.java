@@ -29,6 +29,13 @@ public class Entry {
     @ColumnInfo(name = "date")
     private long date;
 
+    public Entry(int accountId, int type, float amount, long date) {
+        this.accountId = accountId;
+        this.type = type;
+        this.amount = amount;
+        this.date = date;
+    }
+
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }

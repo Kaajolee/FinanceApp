@@ -2,6 +2,7 @@ package com.example.finanseapp.Entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -15,6 +16,13 @@ public class User {
     @ColumnInfo(name = "password")
     private String password;
 
+    public User(int id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    @Ignore
     public User(String username, String password) {
         this.username = username;
         this.password = password;
