@@ -66,7 +66,11 @@ public class MainActivity extends AppCompatActivity {
 
         //---------ACCOUNT BALANCE TEXT
         textViewBalance = findViewById(R.id.textViewBalance);
-        //textViewBalance.setText((char) db.entryDao().getTotalAmountByAccount("0"));
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+        });
+
 
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
@@ -74,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("0")));
+            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
+            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
         });
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -84,6 +89,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         printData(db);
+
+        //---------ACCOUNT BALANCE TEXT
+        textViewBalance = findViewById(R.id.textViewBalance);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+        });
+
+
+        //--------RECYCLER VIEW
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
+            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
+        });
     }
 
     private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
