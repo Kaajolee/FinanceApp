@@ -16,8 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class AddCategoryActivity extends AppCompatActivity {
 
     ActionBar actionBar;
-    Button buttonAdd;
-    Button buttonCancel;
+    Button buttonAdd, buttonCancel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,26 +36,29 @@ public class AddCategoryActivity extends AppCompatActivity {
         }
 
 
+
         //-----ADD BUTTON
         buttonAdd = findViewById(R.id.addButton);
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Add button logic
-                finish();
-            }
-        });
+        if(buttonAdd != null)
+            buttonAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Add button logic
+                    finish();
+                }
+            });
 
 
         //-----CANCEL BUTTON
         buttonCancel = findViewById(R.id.cancelButton);
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Cancel logic
-                finish();
-            }
-        });
+        if(buttonCancel != null)
+            buttonCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Cancel logic
+                    finish();
+                }
+            });
     }
 
 

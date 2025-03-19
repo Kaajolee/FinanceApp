@@ -1,5 +1,6 @@
 package com.example.finanseapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
-    //Intent intentIncome, intentExpenses, intentAddAccount, intentAddCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void SetButtonOnClickToActivity(Button button, Class destination){
+    private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
 
         if(button != null){
 
