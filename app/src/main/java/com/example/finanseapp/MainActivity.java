@@ -70,8 +70,13 @@ public class MainActivity extends AppCompatActivity {
 
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("0")));
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("0")));
+        });
+
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
