@@ -1,6 +1,9 @@
 package com.example.finanseapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-
+    Button buttonIncome;
+    Intent intentIncome;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,5 +24,19 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });*/
+
+
+        // --------INCOME BUTTON
+        intentIncome = new Intent(getApplicationContext(), IncomeActivity.class);
+        buttonIncome = findViewById(R.id.button);
+        if(buttonIncome != null){
+
+            buttonIncome.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(intentIncome);
+                }
+            });
+        }
     }
 }
