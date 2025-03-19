@@ -13,4 +13,7 @@
     <string name="add_account">Add account</string>
     <string name="add_expense">Add expense</string>
     <string name="add_source">Add source</string>
+    <string name="add_category">Add category</string>
+    <string name="type">Type</string>
+    <string name="enter_category_name">Enter category name</string>
 </resources>

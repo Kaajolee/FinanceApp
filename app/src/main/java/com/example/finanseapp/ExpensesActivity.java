@@ -40,7 +40,7 @@ public class ExpensesActivity extends AppCompatActivity {
 
 
         //-----ADD BUTTON
-        buttonAdd = findViewById(R.id.button6);
+        buttonAdd = findViewById(R.id.addButton);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,7 +51,7 @@ public class ExpensesActivity extends AppCompatActivity {
 
 
         //-----CANCEL BUTTON
-        buttonCancel = findViewById(R.id.button4);
+        buttonCancel = findViewById(R.id.cancelButton);
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

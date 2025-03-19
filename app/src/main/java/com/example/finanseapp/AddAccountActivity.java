@@ -30,7 +30,6 @@ public class AddAccountActivity extends AppCompatActivity {
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
-
         if(actionBar != null){
             actionBar.setTitle("Add an account");
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -38,7 +37,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
 
         //-----ADD BUTTON
-        buttonAdd = findViewById(R.id.button6);
+        buttonAdd = findViewById(R.id.addButton);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +48,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
 
         //-----CANCEL BUTTON
-        buttonCancel = findViewById(R.id.button4);
+        buttonCancel = findViewById(R.id.cancelButton);
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

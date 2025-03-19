@@ -2,20 +2,18 @@ package com.example.finanseapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-    Button buttonIncome;
-    Intent intentIncome;
-    Button buttonExpenses;
-    Intent intentExpenses;
+    Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
+    Intent intentIncome, intentExpenses, intentAddAccount, intentAddCategory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,29 +27,41 @@ public class MainActivity extends AppCompatActivity {
 
 
         // --------INCOME BUTTON
-        intentIncome = new Intent(getApplicationContext(), IncomeActivity.class);
-        buttonIncome = findViewById(R.id.button);
-        if(buttonIncome != null){
-
-            buttonIncome.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(intentIncome);
-                }
-            });
-        }
+        buttonIncome = findViewById(R.id.incomeButton);
+        SetButtonOnClickToActivity(buttonIncome, intentIncome, IncomeActivity.class);
 
         // --------EXPENSES BUTTON
-        intentExpenses = new Intent(getApplicationContext(), ExpensesActivity.class);
-        buttonExpenses = findViewById(R.id.button2);
-        if(buttonExpenses != null){
+        buttonExpenses = findViewById(R.id.expensesButton);
+        SetButtonOnClickToActivity(buttonExpenses, intentExpenses, ExpensesActivity.class);
 
-            buttonExpenses.setOnClickListener(new View.OnClickListener() {
+        // --------ADD ACCOUNT BUTTON
+        //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
+        SetButtonOnClickToActivity(buttonAddAccount, intentAddAccount, AddAccountActivity.class);
+
+        // --------ADD CATEGORY BUTTON
+        //buttonAddCategory = findViewById(R.id.addCategoryButton);
+        SetButtonOnClickToActivity(buttonAddCategory, intentAddCategory, AddCategoryActivity.class);
+    }
+
+
+    public void SetButtonOnClickToActivity(Button button, Intent intent, Class destination){
+
+        if(button != null){
+
+            intent = new Intent(getApplicationContext(), destination);
+
+            Intent finalIntent = intent;
+
+            button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(intentExpenses);
+                    startActivity(finalIntent);
                 }
             });
+
+        }
+        else{
+            Log.e("BUTTON", "Button reference is null");
         }
     }
 }
