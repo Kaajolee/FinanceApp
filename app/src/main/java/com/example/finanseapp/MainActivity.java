@@ -2,7 +2,6 @@ package com.example.finanseapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
-    Intent intentIncome, intentExpenses, intentAddAccount, intentAddCategory;
+    //Intent intentIncome, intentExpenses, intentAddAccount, intentAddCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,27 +27,27 @@ public class MainActivity extends AppCompatActivity {
 
         // --------INCOME BUTTON
         buttonIncome = findViewById(R.id.incomeButton);
-        SetButtonOnClickToActivity(buttonIncome, intentIncome, IncomeActivity.class);
+        SetButtonOnClickToActivity(buttonIncome, IncomeActivity.class);
 
         // --------EXPENSES BUTTON
         buttonExpenses = findViewById(R.id.expensesButton);
-        SetButtonOnClickToActivity(buttonExpenses, intentExpenses, ExpensesActivity.class);
+        SetButtonOnClickToActivity(buttonExpenses, ExpensesActivity.class);
 
         // --------ADD ACCOUNT BUTTON
         //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
-        SetButtonOnClickToActivity(buttonAddAccount, intentAddAccount, AddAccountActivity.class);
+        SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
 
         // --------ADD CATEGORY BUTTON
-        //buttonAddCategory = findViewById(R.id.addCategoryButton);
-        SetButtonOnClickToActivity(buttonAddCategory, intentAddCategory, AddCategoryActivity.class);
+        buttonAddCategory = findViewById(R.id.addCategoryButton);
+        SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
     }
 
 
-    public void SetButtonOnClickToActivity(Button button, Intent intent, Class destination){
+    public void SetButtonOnClickToActivity(Button button, Class destination){
 
         if(button != null){
 
-            intent = new Intent(getApplicationContext(), destination);
+            Intent intent = new Intent(getApplicationContext(), destination);
 
             Intent finalIntent = intent;
 
