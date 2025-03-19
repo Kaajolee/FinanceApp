@@ -12,7 +12,7 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.finanseapp.helpers.RecyclerViewAdapter;
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
