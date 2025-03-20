@@ -3,6 +3,7 @@ package com.example.finanseapp.helpers;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public class RecyclerViewAdapter extends
         }
         else if(entry.getType() == 1){
 
-            holder.textViewNumber.setText("-" + Float.toString((int)entry.getAmount()));
+            holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                                                                       R.color.red));
         }
@@ -57,6 +58,7 @@ public class RecyclerViewAdapter extends
                     R.color.purple_200));
         }
 
+        Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
     }
 
     @Override
