@@ -40,14 +40,12 @@ public class IncomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_income);
 
-        // Ensure system bar inset is handled correctly
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Action Bar setup
         db = AppDatabase.getInstance(getApplicationContext());
 
         spinner = findViewById(R.id.spinner3);
@@ -69,7 +67,7 @@ public class IncomeActivity extends AppCompatActivity {
 
         // Add button logic
         buttonAdd.setOnClickListener(v -> {
-            finish();  // Logic to add income source can be implemented here
+            finish();
         });
 
         // Cancel button logic

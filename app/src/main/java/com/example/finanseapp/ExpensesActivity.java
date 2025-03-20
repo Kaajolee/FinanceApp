@@ -78,7 +78,7 @@ public class ExpensesActivity extends AppCompatActivity {
                                 nameEditText.getText().toString(),
                                 db.currentAccount,
                                 typeId,
-                                Float.parseFloat(amountEditText.getText().toString()),
+                                -1 * Float.parseFloat(amountEditText.getText().toString()),
                                 2025);
                         Executors.newSingleThreadExecutor().execute(() -> {
                             try {
@@ -113,21 +113,18 @@ public class ExpensesActivity extends AppCompatActivity {
                 }
             });
 
-        spinner = findViewById(R.id.spinner3); // Ensure this is the correct Spinner ID
+        spinner = findViewById(R.id.spinner3);
         loadExpenseCategories();
     }
 
     // Method to load Expense categories from the database
     private void loadExpenseCategories() {
         new Thread(() -> {
-            // Get the database instance and DAO
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             CategoryDao categoryDao = db.categoryDao();
 
-            // Fetch income categories (type 0 represents income)
             List<Category> categories = categoryDao.getExpensesCategories();
 
-            // Update Spinner on main thread
             runOnUiThread(() -> {
                 if (spinner != null) {
                     ArrayAdapter<Category> adapter = new ArrayAdapter<>(ExpensesActivity.this,

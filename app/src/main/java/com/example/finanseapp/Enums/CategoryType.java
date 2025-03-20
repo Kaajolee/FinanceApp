@@ -2,9 +2,7 @@ package com.example.finanseapp.Enums;
 
 public enum CategoryType {
         OPTION_ONE("Income", 0),
-        OPTION_TWO("Expenses", 1),
-        OPTION_THREE("Both", 2);
-
+        OPTION_TWO("Expenses", 1);
         private final String displayName;
         private final int typeId;
 

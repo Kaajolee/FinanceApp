@@ -17,6 +17,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.helpers.RecyclerViewAdapter;
 
 import com.example.finanseapp.Entities.Account;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(getApplicationContext());
 
         generateData(db);
-        printData(db);
+        //printData(db);
 
 
         //-----TOP ACTION BAR
@@ -157,6 +158,12 @@ public class MainActivity extends AppCompatActivity {
             if (db.accountDao().getAccountByName("saskaita1") == null)
             {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
+            }
+
+            if (db.categoryDao().getCategoryByName("Other") == null &&
+                    db.categoryDao().getCategoryByName("Other ") == null) {
+                db.categoryDao().insert(new Category("Other ", 0));
+                db.categoryDao().insert(new Category("Other", 1));
             }
 
 
