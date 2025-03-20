@@ -11,8 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -21,12 +19,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
-
-import java.util.ArrayList;
-import java.util.List;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Enums.CategoryType;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class IncomeActivity extends AppCompatActivity {
@@ -34,7 +30,7 @@ public class IncomeActivity extends AppCompatActivity {
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
     Spinner spinner;
-    EditText nameEditText,amountEditText;
+    EditText nameEditText, amountEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,86 +48,69 @@ public class IncomeActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner3);
         loadIncomeCategories();
 
-        nameEditText = (EditText) findViewById(R.id.editTextName);
-        amountEditText = (EditText) findViewById(R.id.editTextAmount);
+        nameEditText = findViewById(R.id.editTextName);
+        amountEditText = findViewById(R.id.editTextAmount);
 
-        //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("Add an Income Source");
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
 
-        // Initialize buttons
         buttonAdd = findViewById(R.id.addButton);
         buttonCancel = findViewById(R.id.cancelButton);
 
-        // Add button logic
-        buttonAdd.setOnClickListener(v -> {
-            finish();
-        });
-
-        // Cancel button logic
+        buttonAdd.setOnClickListener(v -> addIncome());
         buttonCancel.setOnClickListener(v -> finish());
-        //-----ADD BUTTON
-        buttonAdd = findViewById(R.id.addButton);
-        if(buttonAdd != null)
-            buttonAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Add button logic
+    }
 
-                    Category selectedCategory = (Category) spinner.getSelectedItem();
-                    int typeId = selectedCategory.getType();
+    private void addIncome() {
+        Category selectedCategory = (Category) spinner.getSelectedItem();
+        int typeId = selectedCategory.getType();
 
-                    if (!nameEditText.getText().toString().isEmpty() ||
-                            !amountEditText.getText().toString().isEmpty())
-                    {
-                        Entry newEntry = new Entry(
-                                nameEditText.getText().toString(),
-                                db.currentAccount,
-                                typeId,
-                                Float.parseFloat(amountEditText.getText().toString()),
-                                2025);
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            try {
-                                db.entryDao().insert(newEntry);
-
-                                runOnUiThread(() -> {
-                                    Toast.makeText(IncomeActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                });
-                            } catch (Exception e) {
-                                runOnUiThread(() ->
-                                        Toast.makeText(IncomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                                );
-                            }
-
+        if (!nameEditText.getText().toString().isEmpty()) {
+            if (isNumber(amountEditText.getText().toString())) {
+                Entry newEntry = new Entry(
+                        nameEditText.getText().toString(),
+                        db.currentAccount,
+                        typeId,
+                        Float.parseFloat(amountEditText.getText().toString()),
+                        2025
+                );
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    try {
+                        db.entryDao().insert(newEntry);
+                        runOnUiThread(() -> {
+                            Toast.makeText(IncomeActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                            finish();
                         });
+                    } catch (Exception e) {
+                        runOnUiThread(() ->
+                                Toast.makeText(IncomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                        );
                     }
-                    else {
-                        Toast.makeText(IncomeActivity.this, "Invalid inputs", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                });
+            } else {
+                Toast.makeText(IncomeActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(IncomeActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadIncomeCategories() {
         new Thread(() -> {
-            // Get the database instance and DAO
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             CategoryDao categoryDao = db.categoryDao();
-
-            // Fetch income categories (type 0 represents income)
             List<Category> categories = categoryDao.getIncomeCategories();
 
-            // Update Spinner on main thread
             runOnUiThread(() -> {
                 if (spinner != null) {
                     ArrayAdapter<Category> adapter = new ArrayAdapter<>(IncomeActivity.this,
-                            android.R.layout.simple_spinner_item, categories);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            R.layout.spinner_dropdown_main, categories);
+                    adapter.setDropDownViewResource(R.layout.spinner_dropdown);
                     spinner.setAdapter(adapter);
                 } else {
                     Toast.makeText(IncomeActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
@@ -140,12 +119,25 @@ public class IncomeActivity extends AppCompatActivity {
         }).start();
     }
 
-    // Handle top action bar (back button)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isNumber(String string) {
+
+        if(string.isEmpty())
+            return false;
+
+        for (int i = 0; i < string.length(); i++) {
+            if (!Character.isDigit(string.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

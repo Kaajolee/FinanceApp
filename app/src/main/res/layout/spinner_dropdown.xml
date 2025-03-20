@@ -1,0 +1,9 @@
+<TextView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dp"
+    android:layout_marginStart="1dp"
+    android:background="@color/green_002"
+    android:padding="10dp"
+    android:textAlignment="textStart"
+    android:textColor="@color/white_text"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
