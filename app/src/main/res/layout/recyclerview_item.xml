@@ -21,7 +21,8 @@
             android:layout_marginBottom="10dp"
             android:paddingLeft="30dp"
             android:text="TextView"
-            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:textSize="30dp"
             android:textStyle="bold" />
 
         <TextView
@@ -30,6 +31,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="30dp"
             android:text="TextView"
+            android:textColor="@color/white_text"
             android:textSize="16dp" />
 
     </LinearLayout>

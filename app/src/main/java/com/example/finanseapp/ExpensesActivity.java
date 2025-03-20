@@ -73,33 +73,36 @@ public class ExpensesActivity extends AppCompatActivity {
                     int typeId = selectedCategory.getType();
 
                     //Add button logic
-                    if (!nameEditText.getText().toString().isEmpty() ||
-                            !amountEditText.getText().toString().isEmpty())
-                    {
-                        Entry newEntry = new Entry(
-                                nameEditText.getText().toString(),
-                                db.currentAccount,
-                                typeId,
-                                -1 * Float.parseFloat(amountEditText.getText().toString()),
-                                2025);
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            try {
-                                db.entryDao().insert(newEntry);
+                    if (!nameEditText.getText().toString().isEmpty()) {
+                        if (isNumber(amountEditText.getText().toString())) {
 
-                                runOnUiThread(() -> {
-                                    Toast.makeText(ExpensesActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                });
-                            } catch (Exception e) {
-                                runOnUiThread(() ->
-                                        Toast.makeText(ExpensesActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                                );
-                            }
 
-                        });
-                    }
-                    else {
-                        Toast.makeText(ExpensesActivity.this, "Invalid inputs", Toast.LENGTH_SHORT).show();
+                            Entry newEntry = new Entry(
+                                    nameEditText.getText().toString(),
+                                    db.currentAccount,
+                                    typeId,
+                                    -1 * Float.parseFloat(amountEditText.getText().toString()),
+                                    2025);
+                            Executors.newSingleThreadExecutor().execute(() -> {
+                                try {
+                                    db.entryDao().insert(newEntry);
+
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(ExpensesActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    });
+                                } catch (Exception e) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(ExpensesActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                                    );
+                                }
+
+                            });
+                        } else {
+                            Toast.makeText(ExpensesActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(ExpensesActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -130,8 +133,8 @@ public class ExpensesActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (spinner != null) {
                     ArrayAdapter<Category> adapter = new ArrayAdapter<>(ExpensesActivity.this,
-                            android.R.layout.simple_spinner_item, categories);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            R.layout.spinner_dropdown_main, categories);
+                    adapter.setDropDownViewResource(R.layout.spinner_dropdown);
                     spinner.setAdapter(adapter);
                 } else {
                     Toast.makeText(ExpensesActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
@@ -150,4 +153,21 @@ public class ExpensesActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    private boolean isNumber(String string) {
+
+        if(string.isEmpty())
+            return false;
+        if(string.charAt(0) == '-')
+            return false;
+
+        for (int i = 0; i < string.length(); i++) {
+            if (!Character.isDigit(string.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
 }

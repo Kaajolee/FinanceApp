@@ -46,7 +46,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         // Set up spinner
         categoryTypeSpinner = findViewById(R.id.spinner4);
         ArrayAdapter<CategoryType> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, CategoryType.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown);
         categoryTypeSpinner.setAdapter(adapter);
 
         // Action Bar setup
