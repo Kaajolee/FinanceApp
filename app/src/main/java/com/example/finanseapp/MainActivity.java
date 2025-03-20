@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getColor(this, R.drawable.topbar_box);
+            //actionBar.setBackgroundDrawable(ContextCompat.getColor(this, R.drawable.topbar_box);
         }
 
         // --------INCOME BUTTON

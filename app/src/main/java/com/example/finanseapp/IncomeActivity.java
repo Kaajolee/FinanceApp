@@ -82,8 +82,8 @@ public class IncomeActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     //Add button logic
 
-                    CategoryType selectedType = (CategoryType) spinner.getSelectedItem();
-                    int typeId = selectedType.ordinal();
+                    Category selectedCategory = (Category) spinner.getSelectedItem();
+                    int typeId = selectedCategory.getType();
 
                     if (!nameEditText.getText().toString().isEmpty() ||
                             !amountEditText.getText().toString().isEmpty())
@@ -126,16 +126,11 @@ public class IncomeActivity extends AppCompatActivity {
             // Fetch income categories (type 0 represents income)
             List<Category> categories = categoryDao.getIncomeCategories();
 
-            List<String> categoryNames = new ArrayList<>();
-            for (Category category : categories) {
-                categoryNames.add(category.getName());
-            }
-
             // Update Spinner on main thread
             runOnUiThread(() -> {
                 if (spinner != null) {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(IncomeActivity.this,
-                            android.R.layout.simple_spinner_item, categoryNames);
+                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(IncomeActivity.this,
+                            android.R.layout.simple_spinner_item, categories);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinner.setAdapter(adapter);
                 } else {
