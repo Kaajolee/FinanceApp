@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 
 import java.util.List;
@@ -32,7 +33,10 @@ public interface EntryDao {
     List<Entry> getAllEntries();
 
     @Query("SELECT * FROM entries WHERE id = :id LIMIT 1")
-    Entry getEntryById(String id);
+    Entry getEntryById(int id);
+
+    @Query("SELECT * FROM entries WHERE name = :name LIMIT 1")
+    Entry getEntryByName(String name);
 
     @Query("SELECT * FROM entries WHERE accountId = :accountId")
     List<Entry> getEntriesByAccountId(String accountId);
