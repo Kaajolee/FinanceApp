@@ -48,7 +48,7 @@ public class RecyclerViewAdapter extends
         }
         else if(entry.getType() == 1){
 
-            holder.textViewNumber.setText("-" + Float.toString((int)entry.getAmount()));
+            holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                                                                       R.color.red));
         }
