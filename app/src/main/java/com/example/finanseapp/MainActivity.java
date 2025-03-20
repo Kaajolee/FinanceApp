@@ -3,9 +3,11 @@ package com.example.finanseapp;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
@@ -96,6 +98,38 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        ItemTouchHelper helper = new ItemTouchHelper(
+                new ItemTouchHelper.Callback() {
+                    @Override
+                    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                        //return 0;
+                        return makeMovementFlags(
+                                0,
+                                ItemTouchHelper.END
+                        );
+                    }
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        //refreshRecyclerView();
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        switch (direction) {
+                            case ItemTouchHelper.END:
+                                    RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
+                                    newHolder.delete();
+                                    //refreshRecyclerView();
+                                break;
+                        }
+                    }
+                }
+        );
+
+        helper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -197,5 +231,28 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("  Name: " + entry.getName() + "ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
             }
         });
+    }
+
+    public void refreshRecyclerView(){
+
+        //---------ACCOUNT BALANCE TEXT
+        textViewBalance = findViewById(R.id.textViewBalance);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+        });
+
+
+        //--------RECYCLER VIEW
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
+            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
+        });
+
+
     }
 }
