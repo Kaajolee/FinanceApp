@@ -1,6 +1,5 @@
 package com.example.finanseapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -18,15 +17,13 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import com.example.finanseapp.Helpers.RecyclerViewAdapter;
+import com.example.finanseapp.helpers.RecyclerViewAdapter;
 
 import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
-import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 
 
@@ -58,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getColor(this, R.drawable.topbar_box);
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
         }
 
         // --------INCOME BUTTON

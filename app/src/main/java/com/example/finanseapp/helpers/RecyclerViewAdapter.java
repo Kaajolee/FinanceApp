@@ -1,9 +1,8 @@
-package com.example.finanseapp.Helpers;
+package com.example.finanseapp.helpers;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +37,17 @@ public class RecyclerViewAdapter extends
 
         holder.textViewName.setText((String) entry.getName());
         holder.textViewCategory.setText(Long.toString((int) entry.getDate()));
-        holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
+
 //income 0 expense 1 both 2
         if(entry.getType() == 0){
+
+            holder.textViewNumber.setText("+" + Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                                                                       R.color.green_005));
         }
         else if(entry.getType() == 1){
+
+            holder.textViewNumber.setText("-" + Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                                                                       R.color.red));
         }
