@@ -13,6 +13,7 @@
         android:layout_height="729dp"
         android:layout_marginStart="1dp"
         android:layout_marginBottom="1dp"
+        android:background="@color/green_001"
         android:dividerPadding="16dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/name"
-                android:textColor="@color/black"
+                android:textColor="@color/white_text"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -39,6 +40,8 @@
                 android:ems="10"
                 android:hint="@string/enter_account_name"
                 android:inputType="text"
+                android:textColor="@color/white_text"
+                android:textColorHint="@color/white_text"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -52,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/amount"
-                android:textColor="@color/black"
+                android:textColor="@color/white_text"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -63,6 +66,8 @@
                 android:ems="10"
                 android:hint="@string/enter_starting_amount"
                 android:inputType="text"
+                android:textColor="@color/white_text"
+                android:textColorHint="@color/white_text"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -74,17 +79,21 @@
 
             <Button
                 android:id="@+id/cancelButton"
+                style="@android:style/Widget.Material.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                android:textColor="@color/red" />
 
             <Button
                 android:id="@+id/addButton"
+                style="@android:style/Widget.Material.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/add_account" />
+                android:text="@string/add_account"
+                android:textColor="@color/green_006" />
         </LinearLayout>
 
     </LinearLayout>
