@@ -160,8 +160,10 @@ public class MainActivity extends AppCompatActivity {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
-            if (db.categoryDao().getCategoryByName("Other") == null) {
-                db.categoryDao().insert(new Category("Other", 2));
+            if (db.categoryDao().getCategoryByName("Other") == null &&
+                    db.categoryDao().getCategoryByName("Other ") == null) {
+                db.categoryDao().insert(new Category("Other ", 0));
+                db.categoryDao().insert(new Category("Other", 1));
             }
 
 
