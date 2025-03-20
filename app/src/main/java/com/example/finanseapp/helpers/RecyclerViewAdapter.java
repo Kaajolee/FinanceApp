@@ -3,6 +3,7 @@ package com.example.finanseapp.helpers;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class RecyclerViewAdapter extends
                     R.color.purple_200));
         }
 
+        Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
     }
 
     @Override
