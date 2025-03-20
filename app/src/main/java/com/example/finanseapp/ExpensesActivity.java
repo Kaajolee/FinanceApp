@@ -23,6 +23,7 @@ import com.example.finanseapp.Entities.Category;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.Enums.CategoryType;
 
 import java.util.concurrent.Executors;
 
@@ -66,6 +67,9 @@ public class ExpensesActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Add button logic
                     finish();
+                    Category selectedCategory = (Category) spinner.getSelectedItem();
+                    int typeId = selectedCategory.getType();
+
                     //Add button logic
                     if (!nameEditText.getText().toString().isEmpty() ||
                             !amountEditText.getText().toString().isEmpty())
@@ -73,7 +77,7 @@ public class ExpensesActivity extends AppCompatActivity {
                         Entry newEntry = new Entry(
                                 nameEditText.getText().toString(),
                                 db.currentAccount,
-                                1,
+                                typeId,
                                 Float.parseFloat(amountEditText.getText().toString()),
                                 2025);
                         Executors.newSingleThreadExecutor().execute(() -> {
@@ -116,29 +120,21 @@ public class ExpensesActivity extends AppCompatActivity {
     // Method to load Expense categories from the database
     private void loadExpenseCategories() {
         new Thread(() -> {
-            // Get the database instance
+            // Get the database instance and DAO
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             CategoryDao categoryDao = db.categoryDao();
 
-            // Fetch expense categories from the database (where type = 1)
+            // Fetch income categories (type 0 represents income)
             List<Category> categories = categoryDao.getExpensesCategories();
 
-            List<String> categoryNames = new ArrayList<>();
-            for (Category category : categories) {
-                categoryNames.add(category.getName());  // Add category names to the list
-            }
-
-            // Update the Spinner on the main thread
+            // Update Spinner on main thread
             runOnUiThread(() -> {
-                // Ensure the spinner is initialized
                 if (spinner != null) {
-                    // Create an ArrayAdapter to bind category names to the Spinner
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ExpensesActivity.this,
-                            android.R.layout.simple_spinner_item, categoryNames);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Set dropdown view
-                    spinner.setAdapter(adapter);  // Set the adapter to the Spinner
+                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(ExpensesActivity.this,
+                            android.R.layout.simple_spinner_item, categories);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
                 } else {
-                    // Handle failure case if spinner is not initialized
                     Toast.makeText(ExpensesActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
                 }
             });
