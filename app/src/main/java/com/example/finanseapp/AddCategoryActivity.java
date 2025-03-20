@@ -67,19 +67,15 @@ public class AddCategoryActivity extends AppCompatActivity {
                 return;
             }
 
-            // Get selected category type
             CategoryType selectedType = (CategoryType) categoryTypeSpinner.getSelectedItem();
-            int typeId = selectedType.ordinal();  // Get ordinal for category type
+            int typeId = selectedType.ordinal();
 
-            // Create new category
             Category newCategory = new Category(categoryName, typeId);
 
-            // Insert the category in background thread
             new Thread(() -> {
                 AppDatabase db = AppDatabase.getInstance(getApplicationContext());
                 db.categoryDao().insert(newCategory);
 
-                // Verify insertion
                 Category insertedCategory = db.categoryDao().getCategoryByName(categoryName);
                 runOnUiThread(() -> {
                     if (insertedCategory != null) {
