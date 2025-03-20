@@ -24,6 +24,7 @@ import com.example.finanseapp.Entities.Category;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.Enums.CategoryType;
 
 import java.util.concurrent.Executors;
 
@@ -48,6 +49,9 @@ public class IncomeActivity extends AppCompatActivity {
 
         // Action Bar setup
         db = AppDatabase.getInstance(getApplicationContext());
+
+        spinner = findViewById(R.id.spinner3);
+        loadIncomeCategories();
 
         nameEditText = (EditText) findViewById(R.id.editTextName);
         amountEditText = (EditText) findViewById(R.id.editTextAmount);
@@ -77,13 +81,17 @@ public class IncomeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     //Add button logic
+
+                    CategoryType selectedType = (CategoryType) spinner.getSelectedItem();
+                    int typeId = selectedType.ordinal();
+
                     if (!nameEditText.getText().toString().isEmpty() ||
-                        !amountEditText.getText().toString().isEmpty())
+                            !amountEditText.getText().toString().isEmpty())
                     {
                         Entry newEntry = new Entry(
                                 nameEditText.getText().toString(),
                                 db.currentAccount,
-                                0,
+                                typeId,
                                 Float.parseFloat(amountEditText.getText().toString()),
                                 2025);
                         Executors.newSingleThreadExecutor().execute(() -> {
@@ -107,10 +115,6 @@ public class IncomeActivity extends AppCompatActivity {
                     }
                 }
             });
-
-        // Spinner initialization and category loading
-        spinner = findViewById(R.id.spinner3);
-        loadIncomeCategories();
     }
 
     private void loadIncomeCategories() {
