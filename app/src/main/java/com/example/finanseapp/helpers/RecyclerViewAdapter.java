@@ -52,6 +52,7 @@ public class RecyclerViewAdapter extends
                                                                       R.color.red));
         }
         else {
+            holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                     R.color.purple_200));
         }
