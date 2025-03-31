@@ -23,6 +23,8 @@ public class Entry {
     @ColumnInfo(name = "accountId")
     private int accountId;
 
+
+    //0 income 1 expense
     @ColumnInfo(name = "type")
     private int type;
 

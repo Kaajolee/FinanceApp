@@ -5,13 +5,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -31,6 +34,8 @@ public class IncomeActivity extends AppCompatActivity {
     Button buttonAdd, buttonCancel;
     Spinner spinner;
     EditText nameEditText, amountEditText;
+    TextView incomeText, expenseText;
+    SwitchCompat switchCompat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +50,39 @@ public class IncomeActivity extends AppCompatActivity {
 
         db = AppDatabase.getInstance(getApplicationContext());
 
+        //Spinner
         spinner = findViewById(R.id.spinner3);
         loadIncomeCategories();
 
+        //EditText
         nameEditText = findViewById(R.id.editTextName);
         amountEditText = findViewById(R.id.editTextAmount);
 
+        //TextView
+        incomeText = findViewById(R.id.textViewIncome);
+        expenseText = findViewById(R.id.textViewExpense);
+
+        //Switch
+        switchCompat = findViewById(R.id.customSwitch);
+        if(switchCompat != null){
+            boolean state = switchCompat.isChecked();
+
+            //expense
+            if(state){ChangeTextColors(R.color.black, R.color.red);}
+            //income
+            else {ChangeTextColors(R.color.green_005, R.color.black);}
+
+            switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){ChangeTextColors(R.color.black, R.color.red);}
+                    //income
+                    else {ChangeTextColors(R.color.green_005, R.color.black);}
+                }
+            });
+        }
+
+        //Action bar
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("Add an Income Source");
@@ -58,12 +90,15 @@ public class IncomeActivity extends AppCompatActivity {
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
 
+        //Buttons
         buttonAdd = findViewById(R.id.addButton);
         buttonCancel = findViewById(R.id.cancelButton);
 
         buttonAdd.setOnClickListener(v -> addIncome());
         buttonCancel.setOnClickListener(v -> finish());
     }
+
+
 
     private void addIncome() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
@@ -140,4 +175,14 @@ public class IncomeActivity extends AppCompatActivity {
         }
         return true;
     }
+    private void ChangeTextColors(int incomeColorID, int expenseColorID){
+        incomeText.setTextColor(getColor(incomeColorID));
+        expenseText.setTextColor(getColor(expenseColorID));
+    }
+    private int ReturnSwitchStateInt(){
+
+        int stateToInt;
+        return stateToInt = switchCompat.isChecked() ? 1 : 0;
+    }
+
 }
