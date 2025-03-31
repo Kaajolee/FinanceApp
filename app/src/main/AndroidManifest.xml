@@ -22,7 +22,7 @@
             android:name=".ExpensesActivity"
             android:exported="false" />
         <activity
-            android:name=".IncomeActivity"
+            android:name=".AddSourceActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

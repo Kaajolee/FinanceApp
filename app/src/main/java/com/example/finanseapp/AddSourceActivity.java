@@ -2,7 +2,6 @@ package com.example.finanseapp;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -23,12 +22,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
-import com.example.finanseapp.Enums.CategoryType;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
-public class IncomeActivity extends AppCompatActivity {
+public class AddSourceActivity extends AppCompatActivity {
     AppDatabase db;
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
@@ -94,15 +92,17 @@ public class IncomeActivity extends AppCompatActivity {
         buttonAdd = findViewById(R.id.addButton);
         buttonCancel = findViewById(R.id.cancelButton);
 
-        buttonAdd.setOnClickListener(v -> addIncome());
+        buttonAdd.setOnClickListener(v -> addSource());
         buttonCancel.setOnClickListener(v -> finish());
     }
 
 
 
-    private void addIncome() {
+    private void addSource() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
-        int typeId = selectedCategory.getType();
+
+        //int typeId = selectedCategory.getType();
+        int typeId = ReturnSwitchStateInt();
 
         if (!nameEditText.getText().toString().isEmpty()) {
             if (isNumber(amountEditText.getText().toString())) {
@@ -117,21 +117,21 @@ public class IncomeActivity extends AppCompatActivity {
                     try {
                         db.entryDao().insert(newEntry);
                         runOnUiThread(() -> {
-                            Toast.makeText(IncomeActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
                             finish();
                         });
                     } catch (Exception e) {
                         runOnUiThread(() ->
-                                Toast.makeText(IncomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(AddSourceActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                         );
                     }
                 });
             } else {
-                Toast.makeText(IncomeActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddSourceActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
             }
         }
         else{
-            Toast.makeText(IncomeActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddSourceActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -143,12 +143,12 @@ public class IncomeActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 if (spinner != null) {
-                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(IncomeActivity.this,
+                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(AddSourceActivity.this,
                             R.layout.spinner_dropdown_main, categories);
                     adapter.setDropDownViewResource(R.layout.spinner_dropdown);
                     spinner.setAdapter(adapter);
                 } else {
-                    Toast.makeText(IncomeActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddSourceActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
                 }
             });
         }).start();

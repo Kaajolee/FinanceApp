@@ -5,16 +5,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IncomeActivity">
+    android:background="@color/green_001"
+    tools:context=".AddSourceActivity">
 
     <LinearLayout
-        android:layout_width="409dp"
+        android:id="@+id/linearlayouta"
+        android:layout_width="410dp"
         android:layout_height="729dp"
         android:background="@color/green_001"
         android:dividerPadding="16dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"

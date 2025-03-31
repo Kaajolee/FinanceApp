@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
-    Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
+    Button buttonIncome, buttonAddAccount, buttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;
     ActionBar actionBar;
@@ -59,17 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
+            //actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
 
         }
 
         // --------INCOME BUTTON
         buttonIncome = findViewById(R.id.incomeButton);
-        SetButtonOnClickToActivity(buttonIncome, IncomeActivity.class);
-
-        // --------EXPENSES BUTTON
-        buttonExpenses = findViewById(R.id.expensesButton);
-        SetButtonOnClickToActivity(buttonExpenses, ExpensesActivity.class);
+        SetButtonOnClickToActivity(buttonIncome, AddSourceActivity.class);
 
         // --------ADD ACCOUNT BUTTON
         //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
