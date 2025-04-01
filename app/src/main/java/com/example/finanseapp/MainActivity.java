@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -127,16 +128,17 @@ public class MainActivity extends AppCompatActivity {
                                     int pos = viewHolder.getAdapterPosition();
                                     RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
 
-
+                                    newHolder.delete();
 
                                     runOnUiThread(() -> {
 
                                         adapter.removeItem(pos);
-                                        refreshRecyclerView();
+                                        adapter.notifyDataSetChanged();
+                                        //refreshRecyclerView();
 
                                     });
 
-                                    newHolder.delete();
+
                                     //refreshRecyclerView();
                                 break;
                         }
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
+            recyclerView.setAdapter(adapter);
             //Log.i("NUM", "TEST LOG");
         });
 
