@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            //actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
 
         }
 

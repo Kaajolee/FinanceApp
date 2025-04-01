@@ -106,7 +106,8 @@
                 android:layout_weight="1"
                 android:text="Income"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/customSwitch"
@@ -119,7 +120,10 @@
                 android:textOff=""
                 android:textOn=""
                 android:thumb="@drawable/custom_thumb"
-                android:track="@drawable/custom_track" />  <!-- Adjusted comment placement -->
+                android:track="@drawable/custom_track"
+                android:trackTint="@null"
+                android:trackTintMode="src_over"
+                app:trackTint="@color/black" />
 
 
             <TextView
@@ -130,7 +134,8 @@
                 android:layout_weight="1"
                 android:text="Expense"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

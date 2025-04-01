@@ -1,5 +1,6 @@
 package com.example.finanseapp;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -73,9 +74,15 @@ public class AddSourceActivity extends AppCompatActivity {
             switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){ChangeTextColors(R.color.black, R.color.red);}
+                    if(isChecked){
+                        ChangeTextColors(R.color.black, R.color.red);
+                        //switchCompat.setTrackTintList(ColorStateList.valueOf(getColor(R.color.red)));
+                    }
                     //income
-                    else {ChangeTextColors(R.color.green_005, R.color.black);}
+                    else {
+                        ChangeTextColors(R.color.green_005, R.color.black);
+                        //switchCompat.setTrackTintList(ColorStateList.valueOf(getColor(R.color.green_005)));
+                    }
                 }
             });
         }
@@ -83,7 +90,7 @@ public class AddSourceActivity extends AppCompatActivity {
         //Action bar
         actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("Add an Income Source");
+            actionBar.setTitle("Add a Source");
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
