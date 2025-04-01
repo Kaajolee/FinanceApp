@@ -19,9 +19,6 @@
             android:name=".AddAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".ExpensesActivity"
-            android:exported="false" />
-        <activity
             android:name=".AddSourceActivity"
             android:exported="false" />
         <activity

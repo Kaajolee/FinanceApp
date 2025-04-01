@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonIncome, buttonAddAccount, buttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;
+    RecyclerViewAdapter adapter;
     ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
+            List<Entry> entries = db.entryDao().getEntriesByAccountId("1");
+
+            runOnUiThread(() -> {
+                adapter = new RecyclerViewAdapter(entries);
+                recyclerView.setAdapter(adapter);
+            });
+
             Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
         });
 
@@ -116,7 +123,19 @@ public class MainActivity extends AppCompatActivity {
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         switch (direction) {
                             case ItemTouchHelper.END:
+
+                                    int pos = viewHolder.getAdapterPosition();
                                     RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
+
+
+
+                                    runOnUiThread(() -> {
+
+                                        adapter.removeItem(pos);
+                                        refreshRecyclerView();
+
+                                    });
+
                                     newHolder.delete();
                                     //refreshRecyclerView();
                                 break;
@@ -246,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
-            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
+            //Log.i("NUM", "TEST LOG");
         });
 
 

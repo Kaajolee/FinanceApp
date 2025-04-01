@@ -68,7 +68,6 @@ public class RecyclerViewAdapter extends
         */
 //income 0 expense 1 both 2
         if(entry.getType() == 0){
-
             holder.textViewNumber.setText("+" + Float.toString((int)entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                                                                       R.color.green_005));
@@ -87,6 +86,12 @@ public class RecyclerViewAdapter extends
 
         Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
     }
+    public void removeItem(int position)
+    {
+        Data.remove(position);
+        notifyItemRemoved(position);
+    }
+
 
 
 
@@ -130,8 +135,9 @@ public class RecyclerViewAdapter extends
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.entryDao().delete(db.entryDao().getEntryById(id));
             });
-            Intent intent = new Intent(itemView.getContext(), MainActivity.class);
-            itemView.getContext().startActivity(intent);
+
+            //Intent intent = new Intent(itemView.getContext(), MainActivity.class);
+            //itemView.getContext().startActivity(intent);
         }
 
 
