@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
-    Button buttonIncome, buttonAddAccount, buttonAddCategory;
+    Button buttonIncome, buttonAddAccount, buttonAddCategory, buttonCharts;
     TextView textViewBalance;
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         // --------ADD CATEGORY BUTTON
         buttonAddCategory = findViewById(R.id.addCategoryButton);
         SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
+
+        // --------CHARTS BUTTON
+        buttonCharts= findViewById(R.id.button);
+        SetButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
 
         //---------ACCOUNT BALANCE TEXT
         textViewBalance = findViewById(R.id.textViewBalance);
@@ -128,12 +132,12 @@ public class MainActivity extends AppCompatActivity {
                                     int pos = viewHolder.getAdapterPosition();
                                     RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
 
-                                    newHolder.delete();
+                                    //newHolder.delete();
 
                                     runOnUiThread(() -> {
 
-                                        adapter.removeItem(pos);
-                                        adapter.notifyDataSetChanged();
+                                        //adapter.removeItem(pos);
+                                        //adapter.notifyDataSetChanged();
                                         //refreshRecyclerView();
 
                                     });
