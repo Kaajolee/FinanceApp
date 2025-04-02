@@ -1,5 +1,6 @@
 package com.example.finanseapp;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -10,18 +11,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+import java.util.random.RandomGeneratorFactory;
 
 public class GraphsActivity extends AppCompatActivity {
 
     ActionBar actionBar;
 
     PieChart pieChart;
+    LineChart lineChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,17 @@ public class GraphsActivity extends AppCompatActivity {
         }
 
         pieChart = findViewById(R.id.pieChart);
+        lineChart = findViewById(R.id.lineChart);
+
+        if(lineChart != null){
+
+            ArrayList<Entry> lineEntries = GenerateData(25);
+            LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
+            LineData lineData = new LineData(lineDataSet);
+            lineChart.setData(lineData);
+
+        }
+
 
         if(pieChart != null){
 
@@ -62,4 +83,27 @@ public class GraphsActivity extends AppCompatActivity {
             pieChart.setData(pieData);
         }
     }
+    private ArrayList<Entry> GenerateData(int amount){
+        ArrayList<Entry> entries = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < amount; i++) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                Entry entry = new Entry(
+                        (float)i,
+                        random.nextFloat(10000f)
+                );
+            }
+            else
+            {
+
+            }
+            Entry entry = new Entry(i, i * 2);
+
+            entries.add(entry);
+        }
+
+        return entries;
+    }
+
 }
