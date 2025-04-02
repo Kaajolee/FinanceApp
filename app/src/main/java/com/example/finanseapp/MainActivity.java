@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     runOnUiThread(() -> {
 
-                                        //adapter.removeItem(pos);
-                                        //adapter.notifyDataSetChanged();
+                                        adapter.removeItem((int)newHolder.getItemId());
+                                        adapter.notifyDataSetChanged();
                                         //refreshRecyclerView();
 
                                     });

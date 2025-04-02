@@ -88,8 +88,12 @@ public class RecyclerViewAdapter extends
     }
     public void removeItem(int position)
     {
+        Log.i("DBBBBBBB", Integer.toString(Data.size()));
+
         Data.remove(position);
         notifyItemRemoved(position);
+
+        Log.i("DBBBBBBB", Integer.toString(Data.size()));
     }
 
 

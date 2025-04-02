@@ -54,7 +54,7 @@ public class GraphsActivity extends AppCompatActivity {
 
         }
 
-        pieChart = findViewById(R.id.pieChart);
+        //-----LINE CHART
         lineChart = findViewById(R.id.lineChart);
 
         if(lineChart != null){
@@ -66,6 +66,8 @@ public class GraphsActivity extends AppCompatActivity {
 
         }
 
+        //----PIE CHART
+        pieChart = findViewById(R.id.pieChart);
 
         if(pieChart != null){
 
@@ -84,19 +86,17 @@ public class GraphsActivity extends AppCompatActivity {
         }
     }
     private ArrayList<Entry> GenerateData(int amount){
+
         ArrayList<Entry> entries = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < amount; i++) {
+
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 Entry entry = new Entry(
                         (float)i,
                         random.nextFloat(10000f)
                 );
-            }
-            else
-            {
-
             }
             Entry entry = new Entry(i, i * 2);
 
