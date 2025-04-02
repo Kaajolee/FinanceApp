@@ -90,8 +90,15 @@ public class RecyclerViewAdapter extends
     {
         Log.i("DBBBBBBB", Integer.toString(Data.size()));
 
-        Data.remove(position);
-        notifyItemRemoved(position);
+        if(Data.size() > 0){
+
+            Data.remove(position);
+            notifyItemRemoved(position);
+        }
+        else {
+            Log.i("DBBBBBBB", "Trying to delete from an ampty DATA object, size = 0");
+        }
+
 
         Log.i("DBBBBBBB", Integer.toString(Data.size()));
     }
@@ -139,6 +146,8 @@ public class RecyclerViewAdapter extends
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.entryDao().delete(db.entryDao().getEntryById(id));
             });
+
+
 
             //Intent intent = new Intent(itemView.getContext(), MainActivity.class);
             //itemView.getContext().startActivity(intent);

@@ -27,12 +27,14 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
+    List<Entry> entries;
     Button buttonIncome, buttonAddAccount, buttonAddCategory, buttonCharts;
     TextView textViewBalance;
     RecyclerView recyclerView;
@@ -90,20 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //--------RECYCLER VIEW
-        recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            List<Entry> entries = db.entryDao().getEntriesByAccountId("1");
-
-            runOnUiThread(() -> {
-                adapter = new RecyclerViewAdapter(entries);
-                recyclerView.setAdapter(adapter);
-            });
-
-            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
-        });
+        UpdateRecyclerView();
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -132,13 +121,18 @@ public class MainActivity extends AppCompatActivity {
                                     int pos = viewHolder.getAdapterPosition();
                                     RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
 
-                                    //newHolder.delete();
+                                    newHolder.delete();
+
+                                    Executors.newSingleThreadExecutor().execute(() -> {
+                                        textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+                                     });
 
                                     runOnUiThread(() -> {
 
-                                        adapter.removeItem((int)newHolder.getItemId());
-                                        adapter.notifyDataSetChanged();
+                                        adapter.removeItem(newHolder.getLayoutPosition());
+                                        //adapter.notifyDataSetChanged();
                                         //refreshRecyclerView();
+
 
                                     });
 
@@ -167,14 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //--------RECYCLER VIEW
-        recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
-            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
-        });
+        UpdateRecyclerView();
     }
 
     private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
@@ -253,27 +240,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void refreshRecyclerView(){
-
-        //---------ACCOUNT BALANCE TEXT
-        textViewBalance = findViewById(R.id.textViewBalance);
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
-        });
-
-
+    private void UpdateRecyclerView(){
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(adapter);
-            //Log.i("NUM", "TEST LOG");
+
+            entries = new ArrayList<>();
+            entries = db.entryDao().getEntriesByAccountId("1");
+
+            runOnUiThread(() -> {
+                adapter = new RecyclerViewAdapter(entries);
+                recyclerView.setAdapter(adapter);
+            });
+
+            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
         });
-
-
     }
 }
