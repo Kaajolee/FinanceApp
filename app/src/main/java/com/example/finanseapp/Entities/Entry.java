@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
         foreignKeys = @ForeignKey(
                 entity = Account.class,
                 parentColumns = "id",
-                childColumns =  "accountId",
+                childColumns = "accountId",
                 onDelete = ForeignKey.CASCADE
         )
 )

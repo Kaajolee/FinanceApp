@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class AddAccountActivity extends AppCompatActivity {
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,17 +31,16 @@ public class AddAccountActivity extends AppCompatActivity {
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setTitle("Add an account");
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
-
 
 
         //-----ADD BUTTON
         buttonAdd = findViewById(R.id.addButton);
-        if(buttonAdd != null)
+        if (buttonAdd != null)
             buttonAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -52,7 +52,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         //-----CANCEL BUTTON
         buttonCancel = findViewById(R.id.cancelButton);
-        if(buttonCancel != null)
+        if (buttonCancel != null)
             buttonCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -67,7 +67,7 @@ public class AddAccountActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //---HOME YRA DEFAULT ID KAD SUGRIZT I DEFAULT ACTIVITY
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
 
             finish();
         }

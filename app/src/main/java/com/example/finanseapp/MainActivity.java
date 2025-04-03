@@ -2,30 +2,26 @@ package com.example.finanseapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.Button;
-import android.widget.TextView;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-
-
-import com.example.finanseapp.Entities.Category;
-import com.example.finanseapp.helpers.RecyclerViewAdapter;
 
 import com.example.finanseapp.Entities.Account;
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.helpers.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
 
         }
 
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
 
         // --------CHARTS BUTTON
-        buttonCharts= findViewById(R.id.button);
+        buttonCharts = findViewById(R.id.button);
         SetButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
 
         //---------ACCOUNT BALANCE TEXT
@@ -118,26 +115,26 @@ public class MainActivity extends AppCompatActivity {
                         switch (direction) {
                             case ItemTouchHelper.END:
 
-                                    int pos = viewHolder.getAdapterPosition();
-                                    RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder)viewHolder;
+                                int pos = viewHolder.getAdapterPosition();
+                                RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder) viewHolder;
 
-                                    newHolder.delete();
+                                newHolder.delete();
 
-                                    Executors.newSingleThreadExecutor().execute(() -> {
-                                        textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
-                                     });
+                                Executors.newSingleThreadExecutor().execute(() -> {
+                                    textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+                                });
 
-                                    runOnUiThread(() -> {
+                                runOnUiThread(() -> {
 
-                                        adapter.removeItem(newHolder.getLayoutPosition());
-                                        //adapter.notifyDataSetChanged();
-                                        //refreshRecyclerView();
-
-
-                                    });
-
-
+                                    adapter.removeItem(newHolder.getLayoutPosition());
+                                    //adapter.notifyDataSetChanged();
                                     //refreshRecyclerView();
+
+
+                                });
+
+
+                                //refreshRecyclerView();
                                 break;
                         }
                     }
@@ -164,9 +161,9 @@ public class MainActivity extends AppCompatActivity {
         UpdateRecyclerView();
     }
 
-    private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
+    private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination) {
 
-        if(button != null){
+        if (button != null) {
 
             Intent intent = new Intent(getApplicationContext(), destination);
 
@@ -177,8 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        }
-        else{
+        } else {
             Log.e("BUTTON", "Button reference is null");
         }
     }
@@ -186,19 +182,17 @@ public class MainActivity extends AppCompatActivity {
     void generateData(AppDatabase db) {
         Executors.newSingleThreadExecutor().execute(() -> {
             //db.entryDao().deleteAll();
-           //  db.accountDao().deleteAll();
+            //  db.accountDao().deleteAll();
             //db.userDao().deleteAll();
 
             //db.clearAllTables();
 
 
-            if (db.userDao().getUserByUsername("admin") == null)
-            {
-                db.userDao().insert(new User("admin","root"));
+            if (db.userDao().getUserByUsername("admin") == null) {
+                db.userDao().insert(new User("admin", "root"));
             }
 
-            if (db.accountDao().getAccountByName("saskaita1") == null)
-            {
+            if (db.accountDao().getAccountByName("saskaita1") == null) {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
@@ -209,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-           // Random random = new Random();
-           // db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
+            // Random random = new Random();
+            // db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
 
 
         });
@@ -240,7 +234,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void UpdateRecyclerView(){
+
+    private void UpdateRecyclerView() {
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);

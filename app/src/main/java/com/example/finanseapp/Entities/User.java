@@ -11,10 +11,10 @@ public class User {
     private int id;
 
     @ColumnInfo(name = "username")
-    private String username;
+    private final String username;
 
     @ColumnInfo(name = "password")
-    private String password;
+    private final String password;
 
     public User(int id, String username, String password) {
         this.id = id;

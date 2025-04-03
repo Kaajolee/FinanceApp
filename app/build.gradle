@@ -37,6 +37,7 @@ dependencies {
 
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
+
     // If this project only uses Java source, use the Java annotationProcessor
     // No additional plugins are necessary
     annotationProcessor "androidx.room:room-compiler:$room_version"

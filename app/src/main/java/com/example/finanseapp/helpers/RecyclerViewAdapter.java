@@ -1,32 +1,28 @@
 package com.example.finanseapp.helpers;
 
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.finanseapp.AppDatabase;
+import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.R;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import com.example.finanseapp.AppDatabase;
-import com.example.finanseapp.Entities.Entry;
-import com.example.finanseapp.MainActivity;
-import com.example.finanseapp.R;
-
 public class RecyclerViewAdapter extends
         RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private List<Entry> Data;
-    public RecyclerViewAdapter(List<Entry> data){
+    private final List<Entry> Data;
+
+    public RecyclerViewAdapter(List<Entry> data) {
         this.Data = data;
     }
 
@@ -44,7 +40,7 @@ public class RecyclerViewAdapter extends
 
         holder.id = entry.getId();
 
-        holder.textViewName.setText((String) entry.getName());
+        holder.textViewName.setText(entry.getName());
         holder.textViewCategory.setText(Long.toString((int) entry.getDate()));
         /*
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
@@ -67,35 +63,32 @@ public class RecyclerViewAdapter extends
         };
         */
 //income 0 expense 1 both 2
-        if(entry.getType() == 0){
-            holder.textViewNumber.setText("+" + Float.toString((int)entry.getAmount()));
+        if (entry.getType() == 0) {
+            holder.textViewNumber.setText("+" + Float.toString((int) entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
-                                                                      R.color.green_005));
-        }
-        else if(entry.getType() == 1){
+                    R.color.green_005));
+        } else if (entry.getType() == 1) {
 
-            holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
+            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
-                                                                      R.color.red));
-        }
-        else {
-            holder.textViewNumber.setText(Float.toString((int)entry.getAmount()));
+                    R.color.red));
+        } else {
+            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                     R.color.purple_200));
         }
 
         Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
     }
-    public void removeItem(int position)
-    {
+
+    public void removeItem(int position) {
         Log.i("DBBBBBBB", Integer.toString(Data.size()));
 
-        if(Data.size() > 0){
+        if (Data.size() > 0) {
 
             Data.remove(position);
             notifyItemRemoved(position);
-        }
-        else {
+        } else {
             Log.i("DBBBBBBB", "Trying to delete from an ampty DATA object, size = 0");
         }
 
@@ -104,21 +97,21 @@ public class RecyclerViewAdapter extends
     }
 
 
-
-
     @Override
     public int getItemCount() {
         return this.Data.size();
     }
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         AppDatabase db;
         private int id;
-        private TextView textViewName;
-        private TextView textViewCategory;
-        private TextView textViewNumber;
-        private LinearLayout layout;
-        public ViewHolder(View view){
+        private final TextView textViewName;
+        private final TextView textViewCategory;
+        private final TextView textViewNumber;
+        private final LinearLayout layout;
+
+        public ViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
 
@@ -146,7 +139,6 @@ public class RecyclerViewAdapter extends
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.entryDao().delete(db.entryDao().getEntryById(id));
             });
-
 
 
             //Intent intent = new Intent(itemView.getContext(), MainActivity.class);

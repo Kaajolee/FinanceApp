@@ -5,8 +5,8 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,18 +62,22 @@ public class AddSourceActivity extends AppCompatActivity {
 
         //Switch
         switchCompat = findViewById(R.id.customSwitch);
-        if(switchCompat != null){
+        if (switchCompat != null) {
             boolean state = switchCompat.isChecked();
 
             //expense
-            if(state){ChangeTextColors(R.color.black, R.color.red);}
+            if (state) {
+                ChangeTextColors(R.color.black, R.color.red);
+            }
             //income
-            else {ChangeTextColors(R.color.green_005, R.color.black);}
+            else {
+                ChangeTextColors(R.color.green_005, R.color.black);
+            }
 
             switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
+                    if (isChecked) {
                         ChangeTextColors(R.color.black, R.color.red);
                         //switchCompat.setTrackTintList(ColorStateList.valueOf(getColor(R.color.red)));
                     }
@@ -101,7 +105,6 @@ public class AddSourceActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(v -> addSource());
         buttonCancel.setOnClickListener(v -> finish());
     }
-
 
 
     private void addSource() {
@@ -135,8 +138,7 @@ public class AddSourceActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(AddSourceActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
+        } else {
             Toast.makeText(AddSourceActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
         }
     }
@@ -171,7 +173,7 @@ public class AddSourceActivity extends AppCompatActivity {
 
     private boolean isNumber(String string) {
 
-        if(string.isEmpty())
+        if (string.isEmpty())
             return false;
 
         for (int i = 0; i < string.length(); i++) {
@@ -181,11 +183,13 @@ public class AddSourceActivity extends AppCompatActivity {
         }
         return true;
     }
-    private void ChangeTextColors(int incomeColorID, int expenseColorID){
+
+    private void ChangeTextColors(int incomeColorID, int expenseColorID) {
         incomeText.setTextColor(getColor(incomeColorID));
         expenseText.setTextColor(getColor(expenseColorID));
     }
-    private int ReturnSwitchStateInt(){
+
+    private int ReturnSwitchStateInt() {
 
         int stateToInt;
         return stateToInt = switchCompat.isChecked() ? 1 : 0;
