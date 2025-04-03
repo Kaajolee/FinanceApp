@@ -7,14 +7,43 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.finanseapp.Helpers.DataGenerator;
 import com.example.finanseapp.R;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
 
 public class TabGraphToday extends Fragment {
+
+    LineChart lineChart;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab_graph_today, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_tab_graph_today, container, false);
+
+        lineChart = view.findViewById(R.id.lineChart);
+
+        if (lineChart != null) {
+
+            int color = getContext().getColor(R.color.white_text);
+
+            ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(3);
+            LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
+
+            lineDataSet.setValueTextColor(color);
+
+            LineData lineData = new LineData(lineDataSet);
+            lineChart.setData(lineData);
+            lineChart.invalidate();
+
+        }
+
+        return view;
     }
 }

@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".Tabs.Graphs.TabGraphToday">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="today graph fragment" />
+        android:layout_height="245dp" />
 
 </FrameLayout>

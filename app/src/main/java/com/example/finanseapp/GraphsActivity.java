@@ -30,10 +30,6 @@ import java.util.Random;
 public class GraphsActivity extends AppCompatActivity {
 
     ActionBar actionBar;
-
-    PieChart pieChart;
-    LineChart lineChart;
-
     TabLayout tabLayout;
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
@@ -59,38 +55,6 @@ public class GraphsActivity extends AppCompatActivity {
 
         }
 
-        //-----LINE CHART
-        lineChart = findViewById(R.id.lineChart);
-
-        if (lineChart != null) {
-
-            ArrayList<Entry> lineEntries = GenerateData(25);
-            LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
-            LineData lineData = new LineData(lineDataSet);
-            lineChart.setData(lineData);
-
-        }
-
-        //----PIE CHART
-        pieChart = findViewById(R.id.pieChart);
-
-        if (pieChart != null) {
-
-            ArrayList<PieEntry> pieEntries = new ArrayList<>();
-            pieEntries.add(new PieEntry(100f, "Part1"));
-            pieEntries.add(new PieEntry(5f, "Part2"));
-            pieEntries.add(new PieEntry(250f, "Part3"));
-            pieEntries.add(new PieEntry(400f, "Part4"));
-            pieEntries.add(new PieEntry(100f, "Part5"));
-
-            PieDataSet pieDataSet = new PieDataSet(pieEntries, "Siaip text");
-
-            PieData pieData = new PieData(pieDataSet);
-
-            pieChart.setData(pieData);
-        }
-
-
         //----TAB LAYOUT
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPager);
@@ -99,7 +63,7 @@ public class GraphsActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager2.setCurrentItem(tab.getPosition());
+                viewPager2.setCurrentItem(tab.getPosition(), true);
             }
 
             @Override

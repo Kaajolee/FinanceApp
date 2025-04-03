@@ -1,4 +1,4 @@
-package com.example.finanseapp.helpers;
+package com.example.finanseapp.Helpers;
 
 import android.util.Log;
 import android.view.LayoutInflater;

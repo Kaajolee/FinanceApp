@@ -14,9 +14,13 @@
         android:orientation="vertical">
 
         <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tabLayout">
+            android:background="@color/green_003"
+            app:tabIndicatorColor="@color/green_005"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="@color/white_text">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -39,20 +43,10 @@
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="403dp"
+            android:padding="25dp"
+            android:paddingTop="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tabLayout" />
-
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
-            android:layout_width="match_parent"
-            android:layout_height="245dp" >
-
-        </com.github.mikephil.charting.charts.PieChart>
-
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
-            android:layout_width="match_parent"
-            android:layout_height="245dp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

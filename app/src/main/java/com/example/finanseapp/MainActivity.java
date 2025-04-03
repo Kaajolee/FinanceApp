@@ -21,7 +21,7 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
-import com.example.finanseapp.helpers.RecyclerViewAdapter;
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

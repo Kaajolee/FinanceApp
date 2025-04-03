@@ -6,9 +6,9 @@
     tools:context=".Tabs.Graphs.TabGraphMonth">
 
 
-    <TextView
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Monthly graph fragment" />
+        android:layout_height="245dp" />
 
 </FrameLayout>
