@@ -53,6 +53,10 @@ public class GraphsActivity extends AppCompatActivity {
         bothButton = findViewById(R.id.bothButton);
         expensesButton = findViewById(R.id.expensesButton);
 
+        SetGraphSwitch(incomeButton, SourceType.Income);
+        SetGraphSwitch(bothButton, SourceType.Both);
+        SetGraphSwitch(expensesButton, SourceType.Expense);
+        
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -72,7 +76,7 @@ public class GraphsActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager2.setCurrentItem(tab.getPosition(), true);
-                
+
             }
 
             @Override
@@ -104,7 +108,7 @@ public class GraphsActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        //pakeisti data chartuose i income
                     }
                 });
                 break;
@@ -113,7 +117,7 @@ public class GraphsActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        //pakeisti data chartuose i expense
                     }
                 });
                 break;
@@ -122,7 +126,7 @@ public class GraphsActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        //pakeisti data chartuose i abu(cj dvi linijas rodyt)
                     }
                 });
                 break;
