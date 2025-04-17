@@ -56,7 +56,7 @@ public class GraphsActivity extends AppCompatActivity {
         SetGraphSwitch(incomeButton, SourceType.Income);
         SetGraphSwitch(bothButton, SourceType.Both);
         SetGraphSwitch(expensesButton, SourceType.Expense);
-        
+
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
         if (actionBar != null) {
