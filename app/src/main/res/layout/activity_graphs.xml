@@ -62,21 +62,30 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/incomeButton2"
+                    android:id="@+id/incomeButton"
                     style="@android:style/Widget.Material.Button.Borderless"
                     android:layout_width="291dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Add"
+                    android:text="Income"
                     android:textColor="@color/white_text" />
 
                 <Button
-                    android:id="@+id/incomeButton3"
+                    android:id="@+id/bothButton"
                     style="@android:style/Widget.Material.Button.Borderless"
                     android:layout_width="291dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Add"
+                    android:text="Both"
+                    android:textColor="@color/white_text" />
+
+                <Button
+                    android:id="@+id/expensesButton"
+                    style="@android:style/Widget.Material.Button.Borderless"
+                    android:layout_width="291dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Expenses"
                     android:textColor="@color/white_text" />
 
             </LinearLayout>

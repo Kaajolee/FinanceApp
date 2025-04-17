@@ -33,13 +33,7 @@ public class TabGraphToday extends Fragment {
 
             int color = getContext().getColor(R.color.white_text);
 
-            ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(3);
-            LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
-
-            lineDataSet.setValueTextColor(color);
-
-            LineData lineData = new LineData(lineDataSet);
-            lineChart.setData(lineData);
+            lineChart.setData(DataGenerator.GenerateLineData(false));
             lineChart.invalidate();
 
         }

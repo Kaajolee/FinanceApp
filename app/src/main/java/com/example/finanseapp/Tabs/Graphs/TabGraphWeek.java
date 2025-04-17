@@ -32,17 +32,7 @@ public class TabGraphWeek extends Fragment {
 
             int color = getContext().getColor(R.color.white_text);
 
-            ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(7);
-
-            LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
-            lineDataSet.setValueTextColor(color);
-            LineData lineData = new LineData(lineDataSet);
-
-            //lineChart.setBorderColor(color);
-            //lineChart.setGridBackgroundColor(color);
-
-
-            lineChart.setData(lineData);
+            lineChart.setData(DataGenerator.GenerateLineData(true));
             lineChart.invalidate();
 
         }

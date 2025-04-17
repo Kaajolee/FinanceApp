@@ -2,6 +2,8 @@ package com.example.finanseapp;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBar;
@@ -12,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.finanseapp.Enums.SourceType;
 import com.example.finanseapp.Helpers.ViewPagerAdapter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -33,6 +36,7 @@ public class GraphsActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
+    Button incomeButton, bothButton, expensesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,10 @@ public class GraphsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        incomeButton = findViewById(R.id.incomeButton);
+        bothButton = findViewById(R.id.bothButton);
+        expensesButton = findViewById(R.id.expensesButton);
 
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
@@ -64,6 +72,7 @@ public class GraphsActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager2.setCurrentItem(tab.getPosition(), true);
+                
             }
 
             @Override
@@ -82,30 +91,41 @@ public class GraphsActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 tabLayout.getTabAt(position).select();
+                tabLayout.getTabAt(position).select();
+
             }
         });
 
     }
 
-    private ArrayList<Entry> GenerateData(int amount) {
+    private void SetGraphSwitch(Button button, SourceType sourceType){
+        switch (sourceType){
+            case Income:
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-        ArrayList<Entry> entries = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 0; i < amount; i++) {
+                    }
+                });
+                break;
 
+            case Expense:
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                Entry entry = new Entry(
-                        (float) i,
-                        random.nextFloat(10000f)
-                );
-            }
-            Entry entry = new Entry(i, i * 2);
+                    }
+                });
+                break;
 
-            entries.add(entry);
+            case Both:
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                break;
         }
-
-        return entries;
     }
-
 }
