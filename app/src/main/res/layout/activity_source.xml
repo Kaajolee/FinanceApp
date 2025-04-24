@@ -30,7 +30,8 @@
                 android:text="@string/name"
                 android:textColor="@color/white_text"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/ticketing"/>
 
             <EditText
                 android:id="@+id/editTextName"
@@ -41,7 +42,8 @@
                 android:inputType="text"
                 android:textColor="@color/white_text"
                 android:textColorHint="@color/white_text"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:fontFamily="@font/ticketing"/>
         </LinearLayout>
 
         <LinearLayout
@@ -56,7 +58,8 @@
                 android:text="@string/amount"
                 android:textColor="@color/white_text"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/ticketing"/>
 
             <EditText
                 android:id="@+id/editTextAmount"
@@ -67,7 +70,8 @@
                 android:inputType="text"
                 android:textColor="@color/white_text"
                 android:textColorHint="@color/white_text"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:fontFamily="@font/ticketing"/>
         </LinearLayout>
 
         <LinearLayout
@@ -82,13 +86,15 @@
                 android:text="@string/category"
                 android:textColor="@color/white_text"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/ticketing"/>
 
             <Spinner
                 android:id="@+id/spinner3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:fontFamily="@font/ticketing"/>
 
         </LinearLayout>
 
@@ -107,7 +113,8 @@
                 android:text="Income"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/ticketing"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/customSwitch"
@@ -123,7 +130,8 @@
                 android:track="@drawable/custom_track"
                 android:trackTint="@null"
                 android:trackTintMode="src_over"
-                app:trackTint="@color/black" />
+                app:trackTint="@color/black"
+                android:fontFamily="@font/ticketing"/>
 
 
             <TextView
@@ -135,7 +143,8 @@
                 android:text="Expense"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/ticketing"/>
 
         </LinearLayout>
 
@@ -152,7 +161,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/cancel"
-                android:textColor="@color/red" />
+                android:textColor="@color/red"
+                android:fontFamily="@font/ticketing"/>
 
             <Button
                 android:id="@+id/addButton"
@@ -161,7 +171,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/add_source"
-                android:textColor="@color/green_006" />
+                android:textColor="@color/green_006"
+                android:fontFamily="@font/ticketing"/>
 
         </LinearLayout>
 

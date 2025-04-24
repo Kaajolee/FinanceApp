@@ -21,6 +21,7 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     ActionBar actionBar;
-
+    DollarSignAnimation dollarAnimator;
+    int dollarGreenID, dollarRedID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +144,35 @@ public class MainActivity extends AppCompatActivity {
         );
 
         helper.attachToRecyclerView(recyclerView);
+
+        //------DOLLAR ANIMATOR
+        dollarGreenID = R.drawable.dollarsigngreen;
+        dollarRedID = R.drawable.dollarsignred;
+
+        dollarAnimator = findViewById(R.id.dollaranimator);
+
+        boolean isPositive = true;
+        int spriteAmount = 5;
+
+        if (isPositive)
+            dollarAnimator.setDollarImageId(dollarGreenID, spriteAmount);
+        else
+            dollarAnimator.setDollarImageId(dollarRedID, spriteAmount);
+
+
+
+       /* Executors.newSingleThreadExecutor().execute(() -> {
+
+            int currentMoneyAmount;
+
+            currentMoneyAmount = (int) db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)));
+
+
+
+        });*/
+
+
+
     }
 
     @Override

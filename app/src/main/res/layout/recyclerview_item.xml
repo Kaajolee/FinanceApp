@@ -26,7 +26,8 @@
             android:text="TextView"
             android:textColor="@color/white_text"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/ticketing"/>
 
         <TextView
             android:id="@+id/textview1"
@@ -35,7 +36,8 @@
             android:paddingLeft="30dp"
             android:text="TextView"
             android:textColor="@color/white_text"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:fontFamily="@font/ticketing"/>
 
     </LinearLayout>
 
@@ -51,7 +53,8 @@
         android:autoSizeTextType="uniform"
         android:autoSizeMinTextSize="2sp"
         android:autoSizeMaxTextSize="35sp"
-        android:autoSizeStepGranularity="1sp"/>
+        android:autoSizeStepGranularity="1sp"
+        android:fontFamily="@font/ticketing"/>
 
 
 </LinearLayout>
