@@ -36,7 +36,7 @@ public class RecyclerViewAdapter extends
     public void onBindViewHolder(RecyclerViewAdapter.ViewHolder holder, int position) {
 
         Entry entry = this.Data.get(position);
-        holder.layout.setBackgroundResource(R.drawable.rounded_all_corners_small);
+        //holder.layout.setBackgroundResource(R.drawable.rounded_all_corners_small);
 
         holder.id = entry.getId();
 

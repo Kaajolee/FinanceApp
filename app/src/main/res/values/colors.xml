@@ -9,6 +9,8 @@
     <color name="green_006">#70e000</color>
     <color name="green_007">#9ef01a</color>
     <color name="green_008">#ccff33</color>
+    <color name="border_color50opacity">#80003529</color>
+    <color name="border_color100opacity">#003529</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
     <color name="purple_200">#BB86FC</color>

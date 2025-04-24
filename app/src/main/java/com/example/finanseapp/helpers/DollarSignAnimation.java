@@ -37,7 +37,7 @@ public class DollarSignAnimation extends View {
 
         dollarSigns.clear();
         for (int i = 0; i < spriteAmount; i++) {
-            dollarSigns.add(new DollarSign(dollarBitmap, getWidth(), getHeight() / 2));
+            dollarSigns.add(new DollarSign(dollarBitmap, getWidth(), getHeight()));
         }
 
         invalidate();
@@ -57,8 +57,8 @@ public class DollarSignAnimation extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         dollarSigns.clear();
-        for (int i=0; i<5; i++){
-            dollarSigns.add(new DollarSign(dollarBitmap, w, h/2));
+        for (int i=0; i<10; i++){
+            dollarSigns.add(new DollarSign(dollarBitmap, w, h));
         }
     }
 

@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         //--------RECYCLER VIEW
         UpdateRecyclerView();
 
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.Callback() {
@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
 
         dollarAnimator = findViewById(R.id.dollaranimator);
 
-        boolean isPositive = true;
-        int spriteAmount = 5;
+        boolean isPositive = false;
+        int spriteAmount = 10;
 
         if (isPositive)
             dollarAnimator.setDollarImageId(dollarGreenID, spriteAmount);
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
     private void UpdateRecyclerView() {
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
+        //recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Executors.newSingleThreadExecutor().execute(() -> {
