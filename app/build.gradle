@@ -30,6 +30,7 @@ android {
 
 dependencies {
     implementation libs.room.common
+    implementation libs.legacy.support.v4
     def room_version = "2.6.1"
 
     implementation "androidx.room:room-runtime:$room_version"

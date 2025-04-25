@@ -1,7 +1,10 @@
 package com.example.finanseapp.Helpers;
+
 import android.graphics.Color;
 import android.os.Build;
 
+import com.example.finanseapp.R;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -30,18 +33,32 @@ public class DataGenerator {
             }
 
             lastY += delta;
-            entries.add(new Entry(i, lastY));
+            Entry entry = new Entry(i, lastY);
+            entries.add(entry);
         }
 
         return entries;
     }
 
-    public static LineData GenerateLineData(boolean isPositiveTrend){
+    public static LineData GenerateLineData(boolean isPositiveTrend) {
 
         ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(10, isPositiveTrend);
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
 
-        lineDataSet.setValueTextColor(Color.WHITE);
+        int greenColor = Color.GREEN;
+        int redColor = Color.RED;
+
+        if(isPositiveTrend){
+            lineDataSet.setValueTextColor(greenColor); // keicia tasku verciu spalvas
+            lineDataSet.setHighLightColor(greenColor);
+            lineDataSet.setCircleColor(greenColor);
+        }
+        else{
+            lineDataSet.setValueTextColor(redColor); // keicia tasku verciu spalvas
+            lineDataSet.setHighLightColor(redColor);
+            lineDataSet.setCircleColor(redColor);
+        }
+
 
         return new LineData(lineDataSet);
 

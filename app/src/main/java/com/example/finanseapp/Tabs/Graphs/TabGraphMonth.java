@@ -1,5 +1,6 @@
 package com.example.finanseapp.Tabs.Graphs;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,9 @@ public class TabGraphMonth extends Fragment {
         if(lineChart != null){
 
             lineChart.setData(DataGenerator.GenerateLineData(isPositive));
+            lineChart.setBorderColor(Color.BLUE);
+            lineChart.setGridBackgroundColor(Color.BLUE);
+            //lineChart.
             int color = getContext().getColor(R.color.white_text);
             lineChart.invalidate();
 
