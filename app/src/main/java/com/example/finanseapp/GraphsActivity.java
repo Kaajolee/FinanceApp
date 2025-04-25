@@ -16,6 +16,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.finanseapp.Enums.SourceType;
 import com.example.finanseapp.Helpers.ViewPagerAdapter;
+import com.example.finanseapp.Tabs.Graphs.TabGraphMonth;
+import com.example.finanseapp.Tabs.Graphs.TabGraphToday;
+import com.example.finanseapp.Tabs.Graphs.TabGraphWeek;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -108,7 +111,7 @@ public class GraphsActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //pakeisti data chartuose i income
+                        setFilter(true);
                     }
                 });
                 break;
@@ -117,7 +120,7 @@ public class GraphsActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //pakeisti data chartuose i expense
+                        setFilter(false);
                     }
                 });
                 break;
@@ -127,9 +130,15 @@ public class GraphsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         //pakeisti data chartuose i abu(cj dvi linijas rodyt)
+                        setFilter(true);
                     }
                 });
                 break;
         }
+    }
+    void setFilter(boolean isPositiveTrend){
+        ((TabGraphToday)viewPagerAdapter.todayFragment).setFilter(isPositiveTrend);
+        ((TabGraphWeek)viewPagerAdapter.weekFragment).setFilter(isPositiveTrend);
+        ((TabGraphMonth)viewPagerAdapter.monthFragment).setFilter(isPositiveTrend);
     }
 }

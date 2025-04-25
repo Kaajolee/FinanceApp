@@ -13,48 +13,32 @@ import java.util.Random;
 
 public class DataGenerator {
 
-    public static ArrayList<Entry> GenerateChartEntries(int amount, boolean isPositiveTrend){
-
+    public static ArrayList<Entry> GenerateChartEntries(int amount, boolean isPositiveTrend) {
         ArrayList<Entry> entries = new ArrayList<>();
-        Random random = new Random();
+        Random random = new Random(System.nanoTime());
 
-        if(isPositiveTrend){
-            for (int i = 0; i < amount; i++) {
+        float lastY = random.nextFloat() * 100;
 
+        for (int i = 0; i < amount; i++) {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    Entry entry = new Entry(
-                            (float) i,
-                            random.nextFloat(10000f)
-                    );
-                }
-                Entry entry = new Entry(i, i * 2);
+            float delta = (random.nextFloat() - 0.5f) * 20f;
 
-                entries.add(entry);
+            if (isPositiveTrend) {
+                delta = Math.abs(delta) + random.nextFloat() * 5f;
+            } else {
+                delta = -Math.abs(delta) - random.nextFloat() * 5f;
             }
+
+            lastY += delta;
+            entries.add(new Entry(i, lastY));
         }
-        else {
-            for (int i = 0; i < amount; i++) {
-
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    Entry entry = new Entry(
-                            (float) i,
-                            random.nextFloat(10000f) * -1
-                    );
-                }
-                Entry entry = new Entry(i, i * -2);
-
-                entries.add(entry);
-            }
-        }
-
 
         return entries;
     }
+
     public static LineData GenerateLineData(boolean isPositiveTrend){
 
-        ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(3, isPositiveTrend);
+        ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(10, isPositiveTrend);
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
 
         lineDataSet.setValueTextColor(Color.WHITE);

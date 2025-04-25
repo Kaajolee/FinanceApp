@@ -10,7 +10,10 @@ import com.example.finanseapp.Tabs.Graphs.TabGraphWeek;
 
 public class ViewPagerAdapter extends androidx.viewpager2.adapter.FragmentStateAdapter {
 
-public Fragment fragment;
+    public Fragment todayFragment = new TabGraphToday();
+    public Fragment weekFragment = new TabGraphWeek();
+    public Fragment monthFragment = new TabGraphMonth();
+
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
@@ -19,15 +22,9 @@ public Fragment fragment;
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case 1:
-                fragment = new TabGraphWeek();
-                return fragment;
-            case 2:
-                fragment = new TabGraphMonth();
-                return fragment;
-            default:
-                fragment = new TabGraphToday();
-                return fragment;
+            case 1: return weekFragment;
+            case 2: return monthFragment;
+            default: return todayFragment;
         }
     }
 
