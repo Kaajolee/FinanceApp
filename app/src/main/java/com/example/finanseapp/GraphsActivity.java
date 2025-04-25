@@ -62,7 +62,7 @@ public class GraphsActivity extends AppCompatActivity {
         if (actionBar != null) {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
-
+            actionBar.setTitle("Data Visualization");
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
 
         }

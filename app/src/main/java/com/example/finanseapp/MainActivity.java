@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
 
             actionBar.setDisplayHomeAsUpEnabled(true);
-
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
 
         }

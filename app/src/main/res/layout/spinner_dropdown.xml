@@ -5,5 +5,6 @@
     android:background="@color/green_002"
     android:padding="10dp"
     android:textAlignment="textStart"
+    android:fontFamily="@font/ticketing"
     android:textColor="@color/white_text"
     xmlns:android="http://schemas.android.com/apk/res/android" />
