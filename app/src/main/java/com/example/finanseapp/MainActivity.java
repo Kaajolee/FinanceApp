@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -32,7 +33,8 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
     List<Entry> entries;
-    Button buttonIncome, buttonAddAccount, buttonAddCategory, buttonCharts;
+    Button buttonAddAccount, buttonCharts;
+    ImageButton imgButtonIncome, imgbuttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
@@ -66,16 +68,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // --------INCOME BUTTON
-        buttonIncome = findViewById(R.id.incomeButton);
-        SetButtonOnClickToActivity(buttonIncome, AddSourceActivity.class);
+        imgButtonIncome = findViewById(R.id.imageButton);
+        SetButtonOnClickToActivity(imgButtonIncome, AddSourceActivity.class);
 
         // --------ADD ACCOUNT BUTTON
         //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
         //SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
 
         // --------ADD CATEGORY BUTTON
-        buttonAddCategory = findViewById(R.id.addCategoryButton);
-        SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
+        imgbuttonAddCategory = findViewById(R.id.imageButton3);
+        SetButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
 
         // --------CHARTS BUTTON
         buttonCharts = findViewById(R.id.button);
@@ -191,13 +193,13 @@ public class MainActivity extends AppCompatActivity {
         UpdateRecyclerView();
     }
 
-    private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination) {
+    private void SetButtonOnClickToActivity(View view, Class<? extends AppCompatActivity> destination) {
 
-        if (button != null) {
+        if (view != null) {
 
             Intent intent = new Intent(getApplicationContext(), destination);
 
-            button.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(intent);
@@ -205,9 +207,10 @@ public class MainActivity extends AppCompatActivity {
             });
 
         } else {
-            Log.e("BUTTON", "Button reference is null");
+            Log.e("BUTTON", "View reference is null");
         }
     }
+
 
     void generateData(AppDatabase db) {
         Executors.newSingleThreadExecutor().execute(() -> {

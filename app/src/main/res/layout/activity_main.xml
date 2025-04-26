@@ -33,9 +33,9 @@
                 android:layout_width="250dp"
                 android:layout_height="56dp"
                 android:layout_marginTop="60sp"
+                android:fontFamily="@font/ticketing"
                 android:orientation="horizontal"
-                android:textAlignment="textStart"
-                android:fontFamily="@font/ticketing"/>
+                android:textAlignment="textStart" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,26 +48,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5sp"
+                    android:fontFamily="@font/ticketing"
                     android:text="999"
                     android:textAlignment="center"
                     android:textColor="@color/white_text"
-                    android:textSize="60sp"
-                    android:fontFamily="@font/ticketing"/>
+                    android:textSize="60sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="209dp"
                     android:layout_height="59dp"
                     android:orientation="horizontal">
 
-                    <Button
-                        android:id="@+id/incomeButton"
-                        style="@android:style/Widget.Material.Button.Borderless"
-                        android:layout_width="291dp"
-                        android:layout_height="wrap_content"
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Add"
-                        android:textColor="@color/white_text"
-                        android:fontFamily="@font/ticketing"/>
+                        android:background="@android:color/transparent"
+                        app:srcCompat="@drawable/add_source_icon" />
 
                 </LinearLayout>
 
@@ -83,16 +81,15 @@
                     android:layout_width="176dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/ticketing"/>
+                    android:fontFamily="@font/ticketing" />
 
-                <Button
-                    android:id="@+id/addCategoryButton"
+                <ImageButton
+                    android:id="@+id/imageButton3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    style="@android:style/Widget.Material.Button.Borderless"
-                    android:text="+"
-                    android:fontFamily="@font/ticketing"/>
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/category_icon64x55" />
 
             </LinearLayout>
 

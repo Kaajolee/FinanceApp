@@ -112,10 +112,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ticketing"
+                    android:paddingTop="5dp"
                     android:text="Stats"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="25sp" />
+                    android:textSize="30sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,7 +135,7 @@
                         android:text="Today"
                         android:textAlignment="center"
                         android:textColor="@color/white_text"
-                        android:textSize="18sp" />
+                        android:textSize="20sp" />
 
                     <View
                         android:layout_width="1dp"
@@ -145,12 +146,22 @@
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
                         android:fontFamily="@font/ticketing"
                         android:gravity="center_vertical"
                         android:text="TextView"
+                        android:textAlignment="viewEnd"
+                        android:textColor="@color/white_text"
+                        android:textSize="25sp" />
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_weight="2.8"
+                        android:baselineAlignBottom="true"
                         android:textAlignment="center"
-                        android:textColor="@color/white_text" />
+                        app:srcCompat="@drawable/positive_trend_icon" />
 
                 </LinearLayout>
 
@@ -171,7 +182,7 @@
                         android:text="Week"
                         android:textAlignment="center"
                         android:textColor="@color/white_text"
-                        android:textSize="18sp" />
+                        android:textSize="20sp" />
 
                     <View
                         android:layout_width="1dp"
@@ -182,12 +193,22 @@
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
                         android:fontFamily="@font/ticketing"
                         android:gravity="center_vertical"
                         android:text="TextView"
+                        android:textAlignment="viewEnd"
+                        android:textColor="@color/white_text"
+                        android:textSize="25sp" />
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_weight="2.8"
+                        android:baselineAlignBottom="true"
                         android:textAlignment="center"
-                        android:textColor="@color/white_text" />
+                        app:srcCompat="@drawable/positive_trend_icon" />
 
                 </LinearLayout>
 
@@ -208,7 +229,7 @@
                         android:text="Month"
                         android:textAlignment="center"
                         android:textColor="@color/white_text"
-                        android:textSize="18sp" />
+                        android:textSize="20sp" />
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -218,12 +239,22 @@
                         android:id="@+id/textView7"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
                         android:fontFamily="@font/ticketing"
                         android:gravity="center_vertical"
                         android:text="TextView"
+                        android:textAlignment="viewEnd"
+                        android:textColor="@color/white_text"
+                        android:textSize="25sp" />
+
+                    <ImageView
+                        android:id="@+id/imageView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_weight="2.8"
+                        android:baselineAlignBottom="true"
                         android:textAlignment="center"
-                        android:textColor="@color/white_text" />
+                        app:srcCompat="@drawable/positive_trend_icon" />
 
                 </LinearLayout>
 

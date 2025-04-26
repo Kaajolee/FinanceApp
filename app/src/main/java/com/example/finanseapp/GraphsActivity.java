@@ -4,6 +4,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBar;
@@ -40,6 +42,8 @@ public class GraphsActivity extends AppCompatActivity {
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
     Button incomeButton, bothButton, expensesButton;
+    ImageView todayTrendImage, weekTrendImage, monthTrendImage;
+    TextView todayAmount, weekAmount, monthAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,20 @@ public class GraphsActivity extends AppCompatActivity {
         SetGraphSwitch(bothButton, SourceType.Both);
         SetGraphSwitch(expensesButton, SourceType.Expense);
 
+
+        //-----LABELS
+        todayAmount = findViewById(R.id.textView3);
+        weekAmount = findViewById(R.id.textView5);
+        monthAmount = findViewById(R.id.textView7);
+
+        //-----TREND MINI ICONS
+        todayTrendImage = findViewById(R.id.imageView5);
+        weekTrendImage = findViewById(R.id.imageView6);
+        monthTrendImage = findViewById(R.id.imageView7);
+
+        setLabelData(-214, todayAmount, todayTrendImage);
+        setLabelData(5348, weekAmount, weekTrendImage);
+        setLabelData(21548741, monthAmount, monthTrendImage);
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -140,5 +158,18 @@ public class GraphsActivity extends AppCompatActivity {
         ((TabGraphToday)viewPagerAdapter.todayFragment).setFilter(isPositiveTrend);
         ((TabGraphWeek)viewPagerAdapter.weekFragment).setFilter(isPositiveTrend);
         ((TabGraphMonth)viewPagerAdapter.monthFragment).setFilter(isPositiveTrend);
+    }
+    void setLabelData(int moneyAmount, TextView label, ImageView imageView){
+        if(moneyAmount >= 0){
+            label.setText("+" + Integer.toString(moneyAmount));
+            label.setTextColor(getColor(R.color.green_005));
+            imageView.setImageDrawable(getDrawable(R.drawable.positive_trend_icon));
+        }
+        else {
+            label.setText(Integer.toString(moneyAmount));
+            label.setTextColor(getColor(R.color.red));
+            imageView.setImageDrawable(getDrawable(R.drawable.negative_trend_icon));
+        }
+
     }
 }
