@@ -41,7 +41,7 @@ public class GraphsActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
-    Button incomeButton, bothButton, expensesButton;
+    Button incomeButton, expensesButton;
     ImageView todayTrendImage, weekTrendImage, monthTrendImage;
     TextView todayAmount, weekAmount, monthAmount;
 
@@ -57,11 +57,9 @@ public class GraphsActivity extends AppCompatActivity {
         });
 
         incomeButton = findViewById(R.id.incomeButton);
-        bothButton = findViewById(R.id.bothButton);
         expensesButton = findViewById(R.id.expensesButton);
 
         SetGraphSwitch(incomeButton, SourceType.Income);
-        SetGraphSwitch(bothButton, SourceType.Both);
         SetGraphSwitch(expensesButton, SourceType.Expense);
 
 
@@ -139,16 +137,6 @@ public class GraphsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         setFilter(false);
-                    }
-                });
-                break;
-
-            case Both:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //pakeisti data chartuose i abu(cj dvi linijas rodyt)
-                        setFilter(true);
                     }
                 });
                 break;

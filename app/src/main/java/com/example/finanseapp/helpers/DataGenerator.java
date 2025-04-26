@@ -43,8 +43,7 @@ public class DataGenerator {
     public static LineData GenerateLineData(boolean isPositiveTrend) {
 
         ArrayList<Entry> lineEntries = DataGenerator.GenerateChartEntries(10, isPositiveTrend);
-        LineDataSet lineDataSet = new LineDataSet(lineEntries, "TestLabel");
-
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, "");
         int greenColor = Color.GREEN;
         int redColor = Color.RED;
 
