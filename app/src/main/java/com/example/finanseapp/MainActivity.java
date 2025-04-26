@@ -27,11 +27,13 @@ import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
     AppDatabase db;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     List<Entry> entries;
     Button buttonAddAccount, buttonCharts;
     ImageButton imgButtonIncome, imgbuttonAddCategory;
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         //---------ACCOUNT BALANCE TEXT
         textViewBalance = findViewById(R.id.textViewBalance);
 
-        Executors.newSingleThreadExecutor().execute(() -> {
+        executor.execute(() -> {
             textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
         });
 
@@ -123,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 newHolder.delete();
 
-                                Executors.newSingleThreadExecutor().execute(() -> {
-                                    textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+                                executor.execute(() -> {
+                                    textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))) +"€");
                                 });
 
                                 runOnUiThread(() -> {
@@ -184,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
         //---------ACCOUNT BALANCE TEXT
         textViewBalance = findViewById(R.id.textViewBalance);
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+        executor.execute(() -> {
+            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount))))+"€");
         });
 
 
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     void generateData(AppDatabase db) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        executor.execute(() -> {
             //db.entryDao().deleteAll();
             //  db.accountDao().deleteAll();
             //db.userDao().deleteAll();
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void printData(AppDatabase db) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        executor.execute(() -> {
             // Print users
             List<User> users = db.userDao().getAllUsers();
             System.out.println("Users:");
@@ -274,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
         //recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Executors.newSingleThreadExecutor().execute(() -> {
+        executor.execute(() -> {
 
             entries = new ArrayList<>();
             entries = db.entryDao().getEntriesByAccountId("1");

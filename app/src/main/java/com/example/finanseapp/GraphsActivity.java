@@ -149,12 +149,12 @@ public class GraphsActivity extends AppCompatActivity {
     }
     void setLabelData(int moneyAmount, TextView label, ImageView imageView){
         if(moneyAmount >= 0){
-            label.setText("+" + Integer.toString(moneyAmount));
+            label.setText("+" + Integer.toString(moneyAmount) + "€");
             label.setTextColor(getColor(R.color.green_005));
             imageView.setImageDrawable(getDrawable(R.drawable.positive_trend_icon));
         }
         else {
-            label.setText(Integer.toString(moneyAmount));
+            label.setText(Integer.toString(moneyAmount) + "€");
             label.setTextColor(getColor(R.color.red));
             imageView.setImageDrawable(getDrawable(R.drawable.negative_trend_icon));
         }
