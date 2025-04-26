@@ -76,6 +76,7 @@ public class GraphsActivity extends AppCompatActivity {
         setLabelData(-214, todayAmount, todayTrendImage);
         setLabelData(5348, weekAmount, weekTrendImage);
         setLabelData(21548741, monthAmount, monthTrendImage);
+
         //-----TOP ACTION BAR
         actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -114,7 +115,6 @@ public class GraphsActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 tabLayout.getTabAt(position).select();
-                tabLayout.getTabAt(position).select();
 
             }
         });
@@ -142,6 +142,7 @@ public class GraphsActivity extends AppCompatActivity {
                 break;
         }
     }
+
     void setFilter(boolean isPositiveTrend){
         ((TabGraphToday)viewPagerAdapter.todayFragment).setFilter(isPositiveTrend);
         ((TabGraphWeek)viewPagerAdapter.weekFragment).setFilter(isPositiveTrend);

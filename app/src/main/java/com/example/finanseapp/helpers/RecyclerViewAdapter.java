@@ -41,7 +41,7 @@ public class RecyclerViewAdapter extends
         holder.id = entry.getId();
 
         holder.textViewName.setText(entry.getName());
-        holder.textViewCategory.setText(Long.toString((int) entry.getDate()));
+        holder.textViewCategory.setText(Float.toString(entry.getDate()));
         /*
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
 

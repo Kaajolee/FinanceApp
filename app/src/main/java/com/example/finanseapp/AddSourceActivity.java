@@ -23,11 +23,15 @@ import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AddSourceActivity extends AppCompatActivity {
     AppDatabase db;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     ActionBar actionBar;
     Button buttonAdd, buttonCancel;
     Spinner spinner;
@@ -107,6 +111,14 @@ public class AddSourceActivity extends AppCompatActivity {
     }
 
 
+    /*@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdown();
+        }
+    }*/
+
     private void addSource() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
 
@@ -122,7 +134,7 @@ public class AddSourceActivity extends AppCompatActivity {
                         Float.parseFloat(amountEditText.getText().toString()),
                         2025
                 );
-                Executors.newSingleThreadExecutor().execute(() -> {
+                executor.execute(() -> {
                     try {
                         db.entryDao().insert(newEntry);
                         runOnUiThread(() -> {
@@ -144,7 +156,7 @@ public class AddSourceActivity extends AppCompatActivity {
     }
 
     private void loadIncomeCategories() {
-        new Thread(() -> {
+        executor.execute(() -> {
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             CategoryDao categoryDao = db.categoryDao();
             List<Category> categories = categoryDao.getIncomeCategories();
@@ -159,7 +171,7 @@ public class AddSourceActivity extends AppCompatActivity {
                     Toast.makeText(AddSourceActivity.this, "Failed to load categories.", Toast.LENGTH_SHORT).show();
                 }
             });
-        }).start();
+        });
     }
 
     @Override

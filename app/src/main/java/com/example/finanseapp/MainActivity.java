@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 executor.execute(() -> {
                                     textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))) +"€");
+
                                 });
 
                                 runOnUiThread(() -> {
@@ -154,13 +155,18 @@ public class MainActivity extends AppCompatActivity {
 
         dollarAnimator = findViewById(R.id.dollaranimator);
 
-        boolean isPositive = false;
         int spriteAmount = 10;
 
-        if (isPositive)
-            dollarAnimator.setDollarImageId(dollarGreenID, spriteAmount);
-        else
-            dollarAnimator.setDollarImageId(dollarRedID, spriteAmount);
+        executor.execute(() -> {
+            float moneyAmount = db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)));
+
+            if (moneyAmount >= 0)
+                dollarAnimator.setDollarImageId(dollarGreenID, spriteAmount);
+            else
+                dollarAnimator.setDollarImageId(dollarRedID, spriteAmount);
+        });
+
+
 
 
 
