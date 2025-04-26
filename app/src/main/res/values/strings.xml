@@ -17,4 +17,5 @@
     <string name="type">Type</string>
     <string name="enter_category_name">Enter category name</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="currency_symbol">€</string>
 </resources>

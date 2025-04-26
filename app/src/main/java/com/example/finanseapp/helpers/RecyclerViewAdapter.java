@@ -64,16 +64,19 @@ public class RecyclerViewAdapter extends
         */
 //income 0 expense 1 both 2
         if (entry.getType() == 0) {
-            holder.textViewNumber.setText("+" + Float.toString((int) entry.getAmount()));
+            holder.textViewNumber.setText("+" + Float.toString((int) entry.getAmount()) +
+                                            holder.itemView.getContext().getString(R.string.currency_symbol));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                     R.color.green_005));
         } else if (entry.getType() == 1) {
 
-            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()));
+            holder.textViewNumber.setText("-"+Float.toString((int) entry.getAmount()) +
+                                            holder.itemView.getContext().getString(R.string.currency_symbol));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                     R.color.red));
         } else {
-            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()));
+            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()) +
+                                            holder.itemView.getContext().getString(R.string.currency_symbol));
             holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
                     R.color.purple_200));
         }
