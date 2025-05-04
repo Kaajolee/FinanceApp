@@ -23,6 +23,7 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     List<Entry> entries;
     Button buttonAddAccount, buttonCharts;
-    Dialog editSourceDialog;
+    DialogHelper editSourceDialogHelper;
     ImageButton imgButtonIncome, imgbuttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //--------RECYCLER VIEW
-        UpdateRecyclerView();
+        SetUpRecyclerView();
 
         //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -278,6 +279,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void SetUpRecyclerView() {
+        //--------RECYCLER VIEW
+        recyclerView = findViewById(R.id.recyclerview);
+        //recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        executor.execute(() -> {
+
+            entries = new ArrayList<>();
+            entries = db.entryDao().getEntriesByAccountId("1");
+
+
+
+            runOnUiThread(() -> {
+                editSourceDialogHelper = new DialogHelper(this);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper);
+                recyclerView.setAdapter(adapter);
+            });
+
+            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
+        });
+    }
     private void UpdateRecyclerView() {
         //--------RECYCLER VIEW
         recyclerView = findViewById(R.id.recyclerview);
@@ -289,8 +312,11 @@ public class MainActivity extends AppCompatActivity {
             entries = new ArrayList<>();
             entries = db.entryDao().getEntriesByAccountId("1");
 
+
+
             runOnUiThread(() -> {
-                adapter = new RecyclerViewAdapter(entries);
+                editSourceDialogHelper = new DialogHelper(this);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper);
                 recyclerView.setAdapter(adapter);
             });
 

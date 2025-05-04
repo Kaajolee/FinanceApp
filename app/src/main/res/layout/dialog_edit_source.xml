@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/editSourceDialogLayout"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
@@ -64,17 +65,27 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/ticketing"
+            android:paddingRight="10dp"
             android:text="Income"
             android:textColor="@color/white_text"
             android:textSize="16sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/customSwitchDialog"
-            android:layout_width="wrap_content"
+            android:layout_width="61dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:minWidth="100dp"
             android:showText="false"
+            android:textAlignment="center"
+            android:textOff=""
+            android:textOn=""
             android:thumb="@drawable/custom_thumb"
-            android:track="@drawable/custom_track" />
+            android:track="@drawable/custom_track"
+            android:trackTint="@null"
+            android:trackTintMode="src_over"
+            app:trackTint="@color/black"
+            android:fontFamily="@font/ticketing"/>
 
         <TextView
             android:id="@+id/textViewExpenseDialog"
@@ -82,6 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:fontFamily="@font/ticketing"
+            android:paddingLeft="10dp"
             android:text="Expense"
             android:textColor="@color/white_text"
             android:textSize="16sp" />
@@ -101,7 +113,8 @@
             android:backgroundTint="@android:color/transparent"
             android:fontFamily="@font/ticketing"
             android:text="@string/cancel"
-            android:textColor="@color/red" />
+            android:textColor="@color/red"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/buttonUpdateDialog"
@@ -112,7 +125,8 @@
             android:backgroundTint="@android:color/transparent"
             android:fontFamily="@font/ticketing"
             android:text="save"
-            android:textColor="@color/green_006" />
+            android:textColor="@color/green_006"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </LinearLayout>

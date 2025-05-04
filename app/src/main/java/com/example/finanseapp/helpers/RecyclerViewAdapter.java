@@ -22,17 +22,17 @@ public class RecyclerViewAdapter extends
         RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private final List<Entry> Data;
-    private final Dialog EditDialog;
+    private final DialogHelper EditDialogHelper;
 
-    public RecyclerViewAdapter(List<Entry> data, Dialog editDialog) {
+    public RecyclerViewAdapter(List<Entry> data, DialogHelper editDialogHelper) {
         this.Data = data;
-        this.EditDialog = editDialog;
+        this.EditDialogHelper = editDialogHelper;
     }
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
-        return new ViewHolder(rowItem, EditDialog);
+        return new ViewHolder(rowItem, EditDialogHelper);
     }
 
     @Override
@@ -86,6 +86,14 @@ public class RecyclerViewAdapter extends
 
         Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
     }
+    void setUpdateListener(){
+        EditDialogHelper.saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
 
     public void removeItem(int position) {
         Log.i("DBBBBBBB", Integer.toString(Data.size()));
@@ -112,17 +120,17 @@ public class RecyclerViewAdapter extends
 
         AppDatabase db;
         private int id;
-        private final Dialog editDialog;
+        private final DialogHelper editDialogHelper;
         private final TextView textViewName;
         private final TextView textViewCategory;
         private final TextView textViewNumber;
         private final LinearLayout layout;
 
-        public ViewHolder(View view, Dialog editDialog) {
+        public ViewHolder(View view, DialogHelper editDialogHelper) {
             super(view);
             view.setOnClickListener(this);
 
-            this.editDialog = editDialog;
+            this.editDialogHelper = editDialogHelper;
             db = AppDatabase.getInstance(view.getContext());
 
             this.textViewName = view.findViewById(R.id.textview);
@@ -135,7 +143,8 @@ public class RecyclerViewAdapter extends
         public void onClick(View v) {
             Log.i("RECYCLER VIEW ITEM", "Recycler view item clicked");
 
-            editDialog.show();
+            editDialogHelper.setValues(db, id);
+            editDialogHelper.toggleDialog(true);
         }
 
         public void delete() {
