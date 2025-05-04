@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private final List<Entry> data;
+    private List<Entry> data;
     private final DialogHelper editDialogHelper;
 
     public RecyclerViewAdapter(List<Entry> data, DialogHelper editDialogHelper) {
@@ -94,6 +94,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         } else {
             Log.w("RecyclerViewAdapter", "Attempt to remove item from empty or invalid position.");
         }
+    }
+
+    public void updateData(List<Entry> newData) {
+        this.data = newData;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

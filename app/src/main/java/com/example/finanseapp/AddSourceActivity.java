@@ -10,7 +10,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -23,141 +22,119 @@ import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AddSourceActivity extends AppCompatActivity {
-    AppDatabase db;
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    ActionBar actionBar;
-    Button buttonAdd, buttonCancel;
-    Spinner spinner;
-    EditText nameEditText, amountEditText;
-    TextView incomeText, expenseText;
-    SwitchCompat switchCompat;
+
+    private AppDatabase db;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private Button buttonAdd, buttonCancel;
+    private Spinner spinner;
+    private EditText nameEditText, amountEditText;
+    private TextView incomeText, expenseText;
+    private SwitchCompat switchCompat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
+        
+        setupWindowInsets();
 
+        db = AppDatabase.getInstance(getApplicationContext());
+
+        initializeUI();
+
+        loadIncomeCategories();
+    }
+
+    private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        db = AppDatabase.getInstance(getApplicationContext());
-
-        //Spinner
+    private void initializeUI() {
         spinner = findViewById(R.id.spinner3);
-        loadIncomeCategories();
 
-        //EditText
         nameEditText = findViewById(R.id.editTextName);
         amountEditText = findViewById(R.id.editTextAmount);
 
-        //TextView
         incomeText = findViewById(R.id.textViewIncome);
         expenseText = findViewById(R.id.textViewExpense);
 
-        //Switch
         switchCompat = findViewById(R.id.customSwitch);
+        setupSwitchListener();
+
+        setupActionBar();
+
+        buttonAdd = findViewById(R.id.addButton);
+        buttonCancel = findViewById(R.id.cancelButton);
+        buttonAdd.setOnClickListener(v -> addSource());
+        buttonCancel.setOnClickListener(v -> finish());
+    }
+
+    private void setupSwitchListener() {
         if (switchCompat != null) {
             boolean state = switchCompat.isChecked();
+            updateTextColors(state);
 
-            //expense
-            if (state) {
-                ChangeTextColors(R.color.black, R.color.red);
-            }
-            //income
-            else {
-                ChangeTextColors(R.color.green_005, R.color.black);
-            }
-
-            switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        ChangeTextColors(R.color.black, R.color.red);
-                        //switchCompat.setTrackTintList(ColorStateList.valueOf(getColor(R.color.red)));
-                    }
-                    //income
-                    else {
-                        ChangeTextColors(R.color.green_005, R.color.black);
-                        //switchCompat.setTrackTintList(ColorStateList.valueOf(getColor(R.color.green_005)));
-                    }
-                }
-            });
+            switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> updateTextColors(isChecked));
         }
+    }
 
-        //Action bar
-        actionBar = getSupportActionBar();
+    private void updateTextColors(boolean isExpense) {
+        int incomeColor = isExpense ? R.color.black : R.color.green_005;
+        int expenseColor = isExpense ? R.color.red : R.color.black;
+        incomeText.setTextColor(getColor(incomeColor));
+        expenseText.setTextColor(getColor(expenseColor));
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("Add a Source");
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
-
-        //Buttons
-        buttonAdd = findViewById(R.id.addButton);
-        buttonCancel = findViewById(R.id.cancelButton);
-
-        buttonAdd.setOnClickListener(v -> addSource());
-        buttonCancel.setOnClickListener(v -> finish());
     }
-
-
-    /*@Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (executor != null && !executor.isShutdown()) {
-            executor.shutdown();
-        }
-    }*/
 
     private void addSource() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
+        int typeId = switchCompat.isChecked() ? 1 : 0;
 
-        //int typeId = selectedCategory.getType();
-        int typeId = ReturnSwitchStateInt();
+        if (!nameEditText.getText().toString().isEmpty() && isNumber(amountEditText.getText().toString())) {
+            Entry newEntry = new Entry(
+                    nameEditText.getText().toString(),
+                    db.currentAccount,
+                    typeId,
+                    Float.parseFloat(amountEditText.getText().toString()),
+                    2025
+            );
 
-        if (!nameEditText.getText().toString().isEmpty()) {
-            if (isNumber(amountEditText.getText().toString())) {
-                Entry newEntry = new Entry(
-                        nameEditText.getText().toString(),
-                        db.currentAccount,
-                        typeId,
-                        Float.parseFloat(amountEditText.getText().toString()),
-                        2025
-                );
-                executor.execute(() -> {
-                    try {
-                        db.entryDao().insert(newEntry);
-                        runOnUiThread(() -> {
-                            Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        });
-                    } catch (Exception e) {
-                        runOnUiThread(() ->
-                                Toast.makeText(AddSourceActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                        );
-                    }
-                });
-            } else {
-                Toast.makeText(AddSourceActivity.this, "Amount must be a positive number", Toast.LENGTH_SHORT).show();
-            }
+            executor.execute(() -> {
+                try {
+                    db.entryDao().insert(newEntry);
+                    runOnUiThread(() -> {
+                        Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } catch (Exception e) {
+                    runOnUiThread(() -> Toast.makeText(AddSourceActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            });
         } else {
-            Toast.makeText(AddSourceActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddSourceActivity.this, "Name and Amount cannot be empty or invalid", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void loadIncomeCategories() {
         executor.execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             CategoryDao categoryDao = db.categoryDao();
             List<Category> categories = categoryDao.getIncomeCategories();
 
@@ -181,27 +158,11 @@ public class AddSourceActivity extends AppCompatActivity {
     }
 
     private boolean isNumber(String string) {
-
-        if (string.isEmpty())
+        try {
+            Float.parseFloat(string);
+            return true;
+        } catch (NumberFormatException e) {
             return false;
-
-        for (int i = 0; i < string.length(); i++) {
-            if (!Character.isDigit(string.charAt(i))) {
-                return false;
-            }
         }
-        return true;
     }
-
-    private void ChangeTextColors(int incomeColorID, int expenseColorID) {
-        incomeText.setTextColor(getColor(incomeColorID));
-        expenseText.setTextColor(getColor(expenseColorID));
-    }
-
-    private int ReturnSwitchStateInt() {
-
-        int stateToInt;
-        return stateToInt = switchCompat.isChecked() ? 1 : 0;
-    }
-
 }
