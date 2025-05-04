@@ -1,5 +1,6 @@
 package com.example.finanseapp;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     List<Entry> entries;
     Button buttonAddAccount, buttonCharts;
+    Dialog editSourceDialog;
     ImageButton imgButtonIncome, imgbuttonAddCategory;
     TextView textViewBalance;
     RecyclerView recyclerView;

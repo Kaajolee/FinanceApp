@@ -1,5 +1,6 @@
 package com.example.finanseapp.Helpers;
 
+import android.app.Dialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,15 +22,17 @@ public class RecyclerViewAdapter extends
         RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private final List<Entry> Data;
+    private final Dialog EditDialog;
 
-    public RecyclerViewAdapter(List<Entry> data) {
+    public RecyclerViewAdapter(List<Entry> data, Dialog editDialog) {
         this.Data = data;
+        this.EditDialog = editDialog;
     }
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
-        return new ViewHolder(rowItem);
+        return new ViewHolder(rowItem, EditDialog);
     }
 
     @Override
@@ -109,15 +112,17 @@ public class RecyclerViewAdapter extends
 
         AppDatabase db;
         private int id;
+        private final Dialog editDialog;
         private final TextView textViewName;
         private final TextView textViewCategory;
         private final TextView textViewNumber;
         private final LinearLayout layout;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, Dialog editDialog) {
             super(view);
             view.setOnClickListener(this);
 
+            this.editDialog = editDialog;
             db = AppDatabase.getInstance(view.getContext());
 
             this.textViewName = view.findViewById(R.id.textview);
@@ -128,14 +133,9 @@ public class RecyclerViewAdapter extends
 
         @Override
         public void onClick(View v) {
-            /*
-            Executors.newSingleThreadExecutor().execute(() -> {
-                    db.entryDao().delete(db.entryDao().getEntryById(id));
-            });
+            Log.i("RECYCLER VIEW ITEM", "Recycler view item clicked");
 
-            Intent intent = new Intent(v.getContext(), MainActivity.class);
-            v.getContext().startActivity(intent);
-            */
+            editDialog.show();
         }
 
         public void delete() {
