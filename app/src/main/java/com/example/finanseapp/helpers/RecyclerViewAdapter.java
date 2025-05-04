@@ -1,6 +1,5 @@
 package com.example.finanseapp.Helpers;
 
-import android.app.Dialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,145 +17,120 @@ import com.example.finanseapp.R;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-public class RecyclerViewAdapter extends
-        RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private final List<Entry> Data;
-    private final DialogHelper EditDialogHelper;
+    private final List<Entry> data;
+    private final DialogHelper editDialogHelper;
 
     public RecyclerViewAdapter(List<Entry> data, DialogHelper editDialogHelper) {
-        this.Data = data;
-        this.EditDialogHelper = editDialogHelper;
+        this.data = data;
+        this.editDialogHelper = editDialogHelper;
+
+        editDialogHelper.saveButton.setOnClickListener(v -> {
+            String name = editDialogHelper.sourceName.getText().toString();
+            float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
+            int type = editDialogHelper.ReturnSwitchStateInt();
+            // TODO: prideti kategorija
+            Entry newEntry = new Entry(name, 1, type, amount, 2025);
+
+            updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
+            editDialogHelper.toggleDialog(false);
+        });
     }
 
     @Override
-    public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
-        return new ViewHolder(rowItem, EditDialogHelper);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View rowItem = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.recyclerview_item, parent, false);
+        return new ViewHolder(rowItem, editDialogHelper);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapter.ViewHolder holder, int position) {
-
-        Entry entry = this.Data.get(position);
-        //holder.layout.setBackgroundResource(R.drawable.rounded_all_corners_small);
-
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Entry entry = data.get(position);
         holder.id = entry.getId();
 
         holder.textViewName.setText(entry.getName());
         holder.textViewCategory.setText(Float.toString(entry.getDate()));
-        /*
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
 
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                Toast.makeText(holder.itemView.getContext(), "on Move", Toast.LENGTH_SHORT).show();
-                return false;
-            }
+        String currency = holder.itemView.getContext().getString(R.string.currency_symbol);
+        String displayAmount = Float.toString((int) entry.getAmount());
+        int colorRes;
 
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                Toast.makeText(holder.itemView.getContext(), "on Swiped ", Toast.LENGTH_SHORT).show();
-                //Remove swiped item from list and notify the RecyclerView
-                int position = viewHolder.getAdapterPosition();
-                //arrayList.remove(position);
-                //adapter.notifyDataSetChanged();
-
-            }
-        };
-        */
-//income 0 expense 1 both 2
-        if (entry.getType() == 0) {
-            holder.textViewNumber.setText("+" + Float.toString((int) entry.getAmount()) +
-                                            holder.itemView.getContext().getString(R.string.currency_symbol));
-            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
-                    R.color.green_005));
-        } else if (entry.getType() == 1) {
-
-            holder.textViewNumber.setText("-"+Float.toString((int) entry.getAmount()) +
-                                            holder.itemView.getContext().getString(R.string.currency_symbol));
-            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
-                    R.color.red));
-        } else {
-            holder.textViewNumber.setText(Float.toString((int) entry.getAmount()) +
-                                            holder.itemView.getContext().getString(R.string.currency_symbol));
-            holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),
-                    R.color.purple_200));
+        switch (entry.getType()) {
+            case 0: // Income
+                displayAmount = "+" + displayAmount;
+                colorRes = R.color.green_005;
+                break;
+            case 1: // Expense
+                displayAmount = "-" + displayAmount;
+                colorRes = R.color.red;
+                break;
+            default:
+                colorRes = R.color.purple_200;
+                break;
         }
 
-        Log.i("FRONTEND", "Object added to recycler, " + holder.textViewName + " " + holder.textViewNumber);
+        holder.textViewNumber.setText(displayAmount + currency);
+        holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), colorRes));
+
+        Log.i("FRONTEND", "Object added to recycler: " + entry.getName() + ", " + displayAmount);
     }
-    void setUpdateListener(){
-        EditDialogHelper.saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-    }
-
-    public void removeItem(int position) {
-        Log.i("DBBBBBBB", Integer.toString(Data.size()));
-
-        if (Data.size() > 0) {
-
-            Data.remove(position);
-            notifyItemRemoved(position);
-        } else {
-            Log.i("DBBBBBBB", "Trying to delete from an ampty DATA object, size = 0");
-        }
-
-
-        Log.i("DBBBBBBB", Integer.toString(Data.size()));
-    }
-
 
     @Override
     public int getItemCount() {
-        return this.Data.size();
+        return data.size();
+    }
+
+    public void updateDataEntry(Entry newEntry, int positionId) {
+        data.set(positionId, newEntry);
+        notifyItemChanged(positionId);
+    }
+
+    public void removeItem(int position) {
+        if (!data.isEmpty() && position >= 0 && position < data.size()) {
+            data.remove(position);
+            notifyItemRemoved(position);
+        } else {
+            Log.w("RecyclerViewAdapter", "Attempt to remove item from empty or invalid position.");
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        AppDatabase db;
-        private int id;
+        private final AppDatabase db;
         private final DialogHelper editDialogHelper;
-        private final TextView textViewName;
-        private final TextView textViewCategory;
-        private final TextView textViewNumber;
+        private final TextView textViewName, textViewCategory, textViewNumber;
         private final LinearLayout layout;
+        int id;
 
         public ViewHolder(View view, DialogHelper editDialogHelper) {
             super(view);
-            view.setOnClickListener(this);
-
             this.editDialogHelper = editDialogHelper;
-            db = AppDatabase.getInstance(view.getContext());
+            this.db = AppDatabase.getInstance(view.getContext());
 
-            this.textViewName = view.findViewById(R.id.textview);
-            this.textViewCategory = view.findViewById(R.id.textview1);
-            this.textViewNumber = view.findViewById(R.id.textview2);
-            this.layout = view.findViewById(R.id.linearlayoutlist);
+            textViewName = view.findViewById(R.id.textview);
+            textViewCategory = view.findViewById(R.id.textview1);
+            textViewNumber = view.findViewById(R.id.textview2);
+            layout = view.findViewById(R.id.linearlayoutlist);
+
+            view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            Log.i("RECYCLER VIEW ITEM", "Recycler view item clicked");
-
-            editDialogHelper.setValues(db, id);
-            editDialogHelper.toggleDialog(true);
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                Log.i("RECYCLER VIEW ITEM", "Item clicked at position: " + position);
+                editDialogHelper.setValues(db, id, position);
+                editDialogHelper.toggleDialog(true);
+            }
         }
 
         public void delete() {
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.entryDao().delete(db.entryDao().getEntryById(id));
             });
-
-
-            //Intent intent = new Intent(itemView.getContext(), MainActivity.class);
-            //itemView.getContext().startActivity(intent);
         }
-
-
     }
 }
