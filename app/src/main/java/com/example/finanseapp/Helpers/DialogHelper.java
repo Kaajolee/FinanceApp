@@ -51,7 +51,7 @@ public class DialogHelper {
 
     public void setValues(AppDatabase db, int id, int adapterId) {
         adapterPositionId = adapterId;
-
+        
         Executors.newSingleThreadExecutor().execute(() -> {
             Entry entry = db.entryDao().getEntryById(id);
             if(entry != null) {
