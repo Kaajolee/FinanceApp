@@ -36,7 +36,7 @@ public class DialogHelper {
         editSourceDialog = new Dialog(context);
         editSourceDialog.setContentView(R.layout.dialog_edit_source);
         editSourceDialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
-
+ 
         sourceName = editSourceDialog.findViewById(R.id.editTextNameDialog);
         sourceAmount = editSourceDialog.findViewById(R.id.editTextAmountDialog);
         categorySpinner = editSourceDialog.findViewById(R.id.spinnerCategoryDialog);
