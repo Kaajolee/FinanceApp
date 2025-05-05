@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -53,13 +54,16 @@ public class DialogHelper {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             Entry entry = db.entryDao().getEntryById(id);
-
-            new Handler(Looper.getMainLooper()).post(() -> {
-                sourceName.setText(entry.getName());
-                sourceAmount.setText(Float.toString(entry.getAmount()));
-                switchCompat.setChecked(entry.getType() != 0);
-                configureSwitch();
-            });
+            if(entry != null) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    sourceName.setText(entry.getName());
+                    sourceAmount.setText(Float.toString(entry.getAmount()));
+                    switchCompat.setChecked(entry.getType() != 0);
+                    configureSwitch();
+                });
+            }
+            else
+                Log.i("DIALOG HELPER", "entry is null in setValue");
         });
     }
 
