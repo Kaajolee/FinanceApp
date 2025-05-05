@@ -1,11 +1,15 @@
 package com.example.finanseapp;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +36,8 @@ public class AddSourceActivity extends AppCompatActivity {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private Button buttonAdd, buttonCancel;
+    private ImageView coinImage;
+    private boolean canSpin = true;
     private Spinner spinner;
     private EditText nameEditText, amountEditText;
     private TextView incomeText, expenseText;
@@ -61,6 +67,9 @@ public class AddSourceActivity extends AppCompatActivity {
 
     private void initializeUI() {
         spinner = findViewById(R.id.spinner3);
+
+        coinImage = findViewById(R.id.imageView8);
+        setupCoinFlip();
 
         nameEditText = findViewById(R.id.editTextName);
         amountEditText = findViewById(R.id.editTextAmount);
@@ -102,6 +111,20 @@ public class AddSourceActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
+    }
+    private void setupCoinFlip(){
+
+        coinImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ObjectAnimator spin = ObjectAnimator.ofFloat(coinImage, "rotationY",
+                        0f, 1440f);
+                spin.setInterpolator(new AccelerateDecelerateInterpolator());
+                spin.setDuration(1500);
+                spin.start();
+            }
+        });
+
     }
 
     private void addSource() {

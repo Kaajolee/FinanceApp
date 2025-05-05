@@ -1,115 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/mainactivitybackground"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true">
+        android:fitsSystemWindows="true"
+        tools:context=".MainActivity">
 
-
-        <com.example.finanseapp.Helpers.DollarSignAnimation
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/dollaranimator"/>
+            android:background="@drawable/mainactivitybackground"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true">
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <Spinner
-                android:id="@+id/spinnerAccount"
-                android:layout_width="250dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="60sp"
-                android:fontFamily="@font/ticketing"
-                android:orientation="horizontal"
-                android:textAlignment="textStart" />
+            <com.example.finanseapp.Helpers.DollarSignAnimation
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/dollaranimator"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textViewBalance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
+                <Spinner
+                    android:id="@+id/spinnerAccount"
+                    android:layout_width="250dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="60sp"
                     android:fontFamily="@font/ticketing"
-                    android:text="999"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="60sp" />
+                    android:orientation="horizontal"
+                    android:textAlignment="textStart" />
 
                 <LinearLayout
-                    android:layout_width="209dp"
-                    android:layout_height="59dp"
-                    android:orientation="horizontal">
+                    android:layout_width="match_parent"
+                    android:layout_height="175dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                    <ImageButton
-                        android:id="@+id/imageButton"
+                    <TextView
+                        android:id="@+id/textViewBalance"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/add_source_icon" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5sp"
+                        android:fontFamily="@font/ticketing"
+                        android:text="999"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="60sp" />
 
+                    <LinearLayout
+                        android:layout_width="209dp"
+                        android:layout_height="59dp"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/imageButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            app:srcCompat="@drawable/add_source_icon" />
+                    </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/spinnerCategory"
+                        android:layout_width="176dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/ticketing" />
 
-                <Spinner
-                    android:id="@+id/spinnerCategory"
-                    android:layout_width="176dp"
-                    android:layout_height="wrap_content"
+                    <ImageButton
+                        android:id="@+id/imageButton3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        app:srcCompat="@drawable/category_icon64x55" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:fontFamily="@font/ticketing"
+                    android:background="@android:color/transparent" />
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Charts"
                     android:fontFamily="@font/ticketing" />
-
-                <ImageButton
-                    android:id="@+id/imageButton3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/category_icon64x55" />
-
             </LinearLayout>
+        </FrameLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/ticketing"
-                android:background="@android:color/transparent"/>
+    <RelativeLayout
+        android:id="@+id/splashOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/green_001"
+        android:gravity="center">
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Charts"
-                android:fontFamily="@font/ticketing"/>
+        <ImageView
+            android:id="@+id/splashLogo"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/app_logo_coin"
+            android:contentDescription="@string/app_name"/>
+    </RelativeLayout>
 
-        </LinearLayout>
-
-    </FrameLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

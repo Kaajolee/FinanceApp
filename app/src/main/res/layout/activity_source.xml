@@ -199,6 +199,20 @@
 
         </LinearLayout>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="313dp"
+            android:layout_weight="1"
+            android:textAlignment="center">
+
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="263dp"
+                android:layout_height="224dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/app_logo_coin" />
+        </FrameLayout>
+
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"

@@ -3,10 +3,13 @@ package com.example.finanseapp;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar actionBar;
     private DollarSignAnimation dollarAnimator;
+    private RelativeLayout relativeLayout;
 
     private int dollarGreenID, dollarRedID;
 
@@ -77,7 +81,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeUI() {
 
+        relativeLayout = findViewById(R.id.splashOverlay);
         actionBar = getSupportActionBar();
+        actionBar.hide();
+        new Handler().postDelayed(() -> {
+
+            AlphaAnimation alphaAnim = new AlphaAnimation(1, 0);
+            alphaAnim.setDuration(500);
+            alphaAnim.setFillAfter(true);
+            relativeLayout.startAnimation(alphaAnim);
+            relativeLayout.setVisibility(View.GONE);
+            actionBar.show();
+        }, 2000);
+
+
+
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
