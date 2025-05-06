@@ -91,6 +91,16 @@
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
                         app:srcCompat="@drawable/category_icon64x55" />
+
+                    <ImageButton
+                        android:id="@+id/button"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/chart_pixel"/>
+
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -101,29 +111,26 @@
                     android:fontFamily="@font/ticketing"
                     android:background="@android:color/transparent" />
 
-                <Button
-                    android:id="@+id/button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Charts"
-                    android:fontFamily="@font/ticketing" />
+
             </LinearLayout>
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <RelativeLayout
+
         android:id="@+id/splashOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/green_001"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/splashLogo"
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:src="@drawable/app_logo_coin"
-            android:contentDescription="@string/app_name"/>
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/app_logo_coin" />
     </RelativeLayout>
 
 </FrameLayout>

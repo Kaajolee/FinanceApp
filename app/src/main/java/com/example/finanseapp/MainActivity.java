@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private List<Entry> entries;
 
-    private Button buttonCharts;
+    private ImageButton buttonCharts;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
     private TextView textViewBalance;
     private RecyclerView recyclerView;
