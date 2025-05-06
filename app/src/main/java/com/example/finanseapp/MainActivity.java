@@ -2,17 +2,26 @@ package com.example.finanseapp;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
@@ -29,7 +39,6 @@ import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private DollarSignAnimation dollarAnimator;
     private RelativeLayout relativeLayout;
 
+    private ActivityResultLauncher<Intent> resultLauncher;
+
     private int dollarGreenID, dollarRedID;
 
     @Override
@@ -64,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         initializeData();
         setUpRecyclerView();
         setUpDollarSignAnimation();
+        setUpActivityResults();
     }
 
     @Override
@@ -77,6 +89,21 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    private void setUpActivityResults() {
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null && data.getBooleanExtra("entry_added", false)) {
+                            entryAddedDialog(); // Show your animated dialog here
+                            //Toast.makeText(this, "niqqa!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
     }
 
     private void initializeUI() {
@@ -103,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         imgButtonIncome = findViewById(R.id.imageButton);
-        setButtonOnClickToActivity(imgButtonIncome, AddSourceActivity.class);
+        setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
 
         imgbuttonAddCategory = findViewById(R.id.imageButton3);
         setButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
@@ -171,9 +198,16 @@ public class MainActivity extends AppCompatActivity {
         executor.execute(() -> {
             float moneyAmount = db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount));
 
-            int spriteAmount = 10;
+            int spriteAmount = 1;
             int dollarImageID = (moneyAmount >= 0) ? dollarGreenID : dollarRedID;
             dollarAnimator.setDollarImageId(dollarImageID, spriteAmount);
+
+            dollarAnimator.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dollarAnimator.addDollar();
+                }
+            });
         });
     }
 
@@ -181,6 +215,17 @@ public class MainActivity extends AppCompatActivity {
         if (view != null) {
             Intent intent = new Intent(getApplicationContext(), destination);
             view.setOnClickListener(v -> startActivity(intent));
+        } else {
+            Log.e("BUTTON", "View reference is null");
+        }
+    }
+
+    private void setButtonOnClickToActivityResult(View view, Class<? extends AppCompatActivity> destination) {
+        if (view != null) {
+            view.setOnClickListener(v ->  {
+                Intent intent = new Intent(getApplicationContext(), destination);
+                resultLauncher.launch(intent);
+            });
         } else {
             Log.e("BUTTON", "View reference is null");
         }
@@ -218,5 +263,35 @@ public class MainActivity extends AppCompatActivity {
                 adapter.updateData(entries);
             });
         });
+    }
+
+    void entryAddedDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.entry_added);
+        //dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
+        dialog.getWindow().setDimAmount(0);
+
+        ImageView newImageView = (ImageView) dialog.findViewById(R.id.imageView);
+
+        Drawable drawable = newImageView.getDrawable();
+        if (drawable instanceof AnimatedVectorDrawable) {
+            AnimatedVectorDrawable avd = (AnimatedVectorDrawable) drawable;
+            avd.start();
+        } else if (drawable instanceof AnimatedVectorDrawableCompat) {
+            AnimatedVectorDrawableCompat avdc = (AnimatedVectorDrawableCompat) drawable;
+            avdc.start();
+        }
+
+
+        dialog.setCancelable(false);
+
+        dialog.show();
+
+        new Handler().postDelayed(() -> {
+            if (dialog.isShowing()) {
+                dialog.dismiss(); // Dismiss the dialog
+            }
+        }, 2000);
     }
 }

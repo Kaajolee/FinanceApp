@@ -57,9 +57,9 @@ public class DollarSignAnimation extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         dollarSigns.clear();
-        for (int i=0; i<10; i++){
-            dollarSigns.add(new DollarSign(dollarBitmap, w, h));
-        }
+        //for (int i=0; i<10; i++){
+        //    dollarSigns.add(new DollarSign(dollarBitmap, w, h));
+        //}
     }
 
     @Override
@@ -69,5 +69,13 @@ public class DollarSignAnimation extends View {
             sign.Update(getWidth(), getHeight()/2);
             sign.Draw(canvas);
         }
+    }
+
+    public void addDollar() {
+        if (dollarBitmap == null) {
+            dollarBitmap = BitmapFactory.decodeResource(getResources(), dollarImageId);
+        }
+        dollarSigns.add(new DollarSign(dollarBitmap, getWidth(), getHeight()));
+        invalidate();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.finanseapp;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -144,7 +145,10 @@ public class AddSourceActivity extends AppCompatActivity {
                 try {
                     db.entryDao().insert(newEntry);
                     runOnUiThread(() -> {
-                        Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("entry_added", true);
+                        setResult(RESULT_OK, resultIntent);
                         finish();
                     });
                 } catch (Exception e) {
@@ -152,6 +156,7 @@ public class AddSourceActivity extends AppCompatActivity {
                 }
             });
         } else {
+            setResult(RESULT_CANCELED);
             Toast.makeText(AddSourceActivity.this, "Name and Amount cannot be empty or invalid", Toast.LENGTH_SHORT).show();
         }
     }
