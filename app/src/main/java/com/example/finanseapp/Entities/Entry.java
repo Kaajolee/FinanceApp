@@ -42,6 +42,8 @@ public class Entry {
         this.date = date;
     }
 
+    public Entry() {}
+
     public void setName(String name) {
         this.name = name;
     }

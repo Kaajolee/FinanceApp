@@ -210,7 +210,7 @@
                 android:layout_width="263dp"
                 android:layout_height="224dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/app_logo_coin" />
+                app:srcCompat="@drawable/animated_source_coin" />
         </FrameLayout>
 
         <LinearLayout

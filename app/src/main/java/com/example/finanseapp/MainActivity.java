@@ -1,5 +1,6 @@
 package com.example.finanseapp;
 
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedImageDrawable;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         initializeData();
         setUpRecyclerView();
         setUpDollarSignAnimation();
+        setUpBalanceWiggle();
         setUpActivityResults();
     }
 
@@ -98,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null && data.getBooleanExtra("entry_added", false)) {
-                            entryAddedDialog(); // Show your animated dialog here
-                            //Toast.makeText(this, "niqqa!", Toast.LENGTH_SHORT).show();
+                            entryAddedDialog();
+
+                            //Toast.makeText(this, "na!", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 }
@@ -180,9 +185,10 @@ public class MainActivity extends AppCompatActivity {
                     RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder) viewHolder;
 
                     newHolder.delete();
-                    updateBalanceText();
+
 
                     runOnUiThread(() -> adapter.removeItem(newHolder.getLayoutPosition()));
+                    updateBalanceText();
                 }
             }
         });
@@ -208,6 +214,25 @@ public class MainActivity extends AppCompatActivity {
                     dollarAnimator.addDollar();
                 }
             });
+        });
+    }
+
+    private boolean wiggleDirection = true;
+
+    private void setUpBalanceWiggle() {
+        textViewBalance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float start = wiggleDirection ? -5f : 5f;
+                float end = wiggleDirection ? 5f : -5f;
+
+                ObjectAnimator wiggle = ObjectAnimator.ofFloat(textViewBalance, "rotation", start, end, 0f);
+                wiggle.setInterpolator(new AccelerateDecelerateInterpolator());
+                wiggle.setDuration(500);
+                wiggle.start();
+
+                wiggleDirection = !wiggleDirection;
+            }
         });
     }
 
@@ -261,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 adapter.updateData(entries);
+                updateBalanceText();
             });
         });
     }

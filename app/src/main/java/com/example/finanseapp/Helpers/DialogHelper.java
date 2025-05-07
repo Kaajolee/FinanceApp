@@ -29,7 +29,6 @@ public class DialogHelper {
     public final Spinner categorySpinner;
     public final SwitchCompat switchCompat;
     private final TextView incomeLabel, expenseLabel;
-
     public int adapterPositionId;
 
     public DialogHelper(Context context) {
@@ -96,6 +95,5 @@ public class DialogHelper {
 
     private void configureButtons() {
         cancelButton.setOnClickListener(v -> toggleDialog(false));
-
     }
 }

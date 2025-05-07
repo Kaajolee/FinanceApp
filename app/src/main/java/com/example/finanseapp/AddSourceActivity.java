@@ -1,7 +1,11 @@
 package com.example.finanseapp;
 
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
@@ -94,7 +99,14 @@ public class AddSourceActivity extends AppCompatActivity {
             boolean state = switchCompat.isChecked();
             updateTextColors(state);
 
-            switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> updateTextColors(isChecked));
+            //switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> updateTextColors(isChecked), rotateEuroCoin());
+            switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    rotateEuroCoin();
+                    updateTextColors(isChecked);
+                }
+            });
         }
     }
 
@@ -192,5 +204,41 @@ public class AddSourceActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    boolean turn_side = true;
+    final int RED_COLOR = Color.RED;
+    final int GREEN_COLOR = Color.GREEN;
+    void rotateEuroCoin() {
+
+        int start_color = turn_side ? GREEN_COLOR : RED_COLOR;
+        int end_color = turn_side ? RED_COLOR : GREEN_COLOR;
+
+        float start = turn_side ? 0f : 180f;
+        float end = turn_side ? 180f : 0f;
+
+        ObjectAnimator spin = ObjectAnimator.ofFloat(coinImage, "rotationY",
+                start, end);
+        spin.setInterpolator(new AccelerateDecelerateInterpolator());
+        spin.setDuration(1000);
+        spin.start();
+
+        ArgbEvaluator colorEvaluator = new ArgbEvaluator();
+        ObjectAnimator changeColor = ObjectAnimator.ofObject(coinImage, "colorFilter", colorEvaluator, start_color, end_color);
+        changeColor.setInterpolator(new AccelerateDecelerateInterpolator());
+        changeColor.setDuration(1000);
+        changeColor.start();
+
+        //coinImage.getDrawable()
+        Drawable drawable = coinImage.getDrawable();
+        if (drawable instanceof AnimatedVectorDrawable) {
+            AnimatedVectorDrawable avd = (AnimatedVectorDrawable) drawable;
+            avd.start();
+        } else if (drawable instanceof AnimatedVectorDrawableCompat) {
+            AnimatedVectorDrawableCompat avdc = (AnimatedVectorDrawableCompat) drawable;
+            avdc.start();
+        }
+
+        turn_side = !turn_side;
     }
 }
