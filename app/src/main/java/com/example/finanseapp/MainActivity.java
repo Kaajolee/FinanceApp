@@ -3,6 +3,8 @@ package com.example.finanseapp;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
@@ -81,11 +83,12 @@ public class MainActivity extends AppCompatActivity {
         setUpActivityResults();
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
         updateBalanceText();
-        updateRecyclerView();
+        setUpRecyclerView();
     }
 
     @Override
@@ -191,7 +194,46 @@ public class MainActivity extends AppCompatActivity {
                     updateBalanceText();
                 }
             }
-        });
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+
+                View itemView = viewHolder.itemView;
+
+                // Load the icon (e.g., trash can icon)
+                Drawable icon = ContextCompat.getDrawable(recyclerView.getContext(), R.drawable.baseline_restore_from_trash_24);
+                if (icon != null) {
+                    // Calculate the bounds for the icon (centered vertically and at the left side)
+                    int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                    int iconTop = itemView.getTop() + iconMargin;
+                    int iconLeft = itemView.getLeft() + iconMargin;
+                    int iconRight = iconLeft + icon.getIntrinsicWidth();
+                    int iconBottom = iconTop + icon.getIntrinsicHeight();
+
+                    // Set the alpha (opacity) based on the swipe distance (dX)
+                    float alpha = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.0f);
+                    icon.setAlpha((int) (alpha * 255));  // Alpha should be from 0 to 255
+
+                    // Scale the icon based on the swipe distance (dX)
+                    float scale = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1f); // Maximum scale factor
+                    int scaledWidth = (int) (icon.getIntrinsicWidth() * scale);
+                    int scaledHeight = (int) (icon.getIntrinsicHeight() * scale);
+
+                    // Adjust the bounds of the icon based on the scaled size
+                    int scaledIconLeft = iconLeft;
+                    int scaledIconTop = iconTop;
+                    int scaledIconRight = scaledIconLeft + scaledWidth;
+                    int scaledIconBottom = scaledIconTop + scaledHeight;
+
+                    icon.setBounds(scaledIconLeft, scaledIconTop, scaledIconRight, scaledIconBottom);
+                    icon.draw(c);
+                }
+
+                // Continue with the default drawing behavior (drawing item view)
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }});
 
         helper.attachToRecyclerView(recyclerView);
     }

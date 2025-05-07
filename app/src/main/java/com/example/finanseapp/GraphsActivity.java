@@ -1,10 +1,13 @@
 package com.example.finanseapp;
 
-import android.os.Build;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -21,18 +24,7 @@ import com.example.finanseapp.Helpers.ViewPagerAdapter;
 import com.example.finanseapp.Tabs.Graphs.TabGraphMonth;
 import com.example.finanseapp.Tabs.Graphs.TabGraphToday;
 import com.example.finanseapp.Tabs.Graphs.TabGraphWeek;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 
 public class GraphsActivity extends AppCompatActivity {
@@ -42,6 +34,7 @@ public class GraphsActivity extends AppCompatActivity {
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
     Button incomeButton, expensesButton;
+    LinearLayout todayLayout, weekLayout, monthLayout;
     ImageView todayTrendImage, weekTrendImage, monthTrendImage;
     TextView todayAmount, weekAmount, monthAmount;
 
@@ -68,10 +61,28 @@ public class GraphsActivity extends AppCompatActivity {
         weekAmount = findViewById(R.id.textView5);
         monthAmount = findViewById(R.id.textView7);
 
+        animateAlpha(todayAmount, 1000);
+        animateAlpha(weekAmount, 1200);
+        animateAlpha(monthAmount, 1400);
+
+
+        //-----LAYOUTS
+        todayLayout = findViewById(R.id.todayLayout);
+        weekLayout = findViewById(R.id.weekLayout);
+        monthLayout = findViewById(R.id.monthLayout);
+
+        animateStatistics(todayLayout, 400);
+        animateStatistics(weekLayout, 600);
+        animateStatistics(monthLayout, 800);
+
         //-----TREND MINI ICONS
         todayTrendImage = findViewById(R.id.imageView5);
         weekTrendImage = findViewById(R.id.imageView6);
         monthTrendImage = findViewById(R.id.imageView7);
+
+        animateAlpha(todayTrendImage, 1000);
+        animateAlpha(weekTrendImage, 1200);
+        animateAlpha(monthTrendImage, 1400);
 
         setLabelData(-214, todayAmount, todayTrendImage);
         setLabelData(5348, weekAmount, weekTrendImage);
@@ -160,5 +171,38 @@ public class GraphsActivity extends AppCompatActivity {
             imageView.setImageDrawable(getDrawable(R.drawable.negative_trend_icon));
         }
 
+    }
+    void animateStatistics(View view, int delay){
+        DisplayMetrics displayMetrics = view.getContext().getResources().getDisplayMetrics();
+        int screenY = displayMetrics.heightPixels;
+
+        view.setTranslationY(screenY);
+
+        view.postDelayed(()->{
+
+            ObjectAnimator animator;
+            animator = ObjectAnimator.ofFloat(view, "translationY", 0f);
+            animator.setInterpolator(new DecelerateInterpolator());
+            animator.setDuration(1000);
+
+            animator.start();
+
+        }, delay);
+    }
+
+    void animateAlpha(View view, int delay){
+        view.setAlpha(0f);
+
+        view.postDelayed(()->{
+
+
+            ObjectAnimator animator;
+            animator = ObjectAnimator.ofFloat(view, "alpha",  1f);
+            animator.setInterpolator(new DecelerateInterpolator());
+            animator.setDuration(2000);
+
+            animator.start();
+
+        }, delay);
     }
 }

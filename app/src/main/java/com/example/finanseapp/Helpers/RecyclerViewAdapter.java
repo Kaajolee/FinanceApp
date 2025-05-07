@@ -1,9 +1,13 @@
 package com.example.finanseapp.Helpers;
 
+import android.animation.ObjectAnimator;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -74,6 +78,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewNumber.setText(displayAmount + currency);
         holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), colorRes));
 
+        animateViewHolder(holder.rowItemView, 1900, 700);
+
         Log.i("FRONTEND", "Object added to recycler: " + entry.getName() + ", " + displayAmount);
     }
 
@@ -81,7 +87,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return data.size();
     }
+    void animateViewHolder(View view, int delay, int duration){
 
+        DisplayMetrics displayMetrics = view.getContext().getResources().getDisplayMetrics();
+        int screenY = displayMetrics.heightPixels;
+
+        view.setTranslationY(screenY);
+
+        view.postDelayed(()->{
+
+            ObjectAnimator animator;
+            animator = ObjectAnimator.ofFloat(view, "translationY", 0f);
+            animator.setInterpolator(new DecelerateInterpolator());
+            animator.setDuration(duration);
+
+            animator.start();
+
+        }, delay);
+
+    }
     public void updateDataEntry(Entry newEntry, int positionId) {
         data.set(positionId, newEntry);
         notifyItemChanged(positionId);
@@ -107,6 +131,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         private final DialogHelper editDialogHelper;
         private final TextView textViewName, textViewCategory, textViewNumber;
         private final LinearLayout layout;
+        public final View rowItemView;
         int id;
 
         public ViewHolder(View view, DialogHelper editDialogHelper) {
@@ -118,7 +143,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewCategory = view.findViewById(R.id.textview1);
             textViewNumber = view.findViewById(R.id.textview2);
             layout = view.findViewById(R.id.linearlayoutlist);
-
+            rowItemView = view;
             view.setOnClickListener(this);
         }
 

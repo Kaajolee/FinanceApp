@@ -77,6 +77,16 @@
                     android:layout_height="52dp"
                     android:orientation="horizontal">
 
+                    <ImageButton
+                        android:id="@+id/button"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitXY"
+                        android:layout_marginHorizontal="22dp"
+                        app:srcCompat="@drawable/chart_pixel"/>
+
                     <Spinner
                         android:id="@+id/spinnerCategory"
                         android:layout_width="176dp"
@@ -92,14 +102,6 @@
                         android:background="@android:color/transparent"
                         app:srcCompat="@drawable/category_icon64x55" />
 
-                    <ImageButton
-                        android:id="@+id/button"
-                        android:layout_width="25dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/chart_pixel"/>
 
                 </LinearLayout>
 
