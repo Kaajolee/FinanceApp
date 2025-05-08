@@ -203,25 +203,27 @@ public class MainActivity extends AppCompatActivity {
                 View itemView = viewHolder.itemView;
 
                 // Load the icon (e.g., trash can icon)
-                Drawable icon = ContextCompat.getDrawable(recyclerView.getContext(), R.drawable.baseline_restore_from_trash_24);
+                Drawable icon = ContextCompat.getDrawable(recyclerView.getContext(),
+                        R.drawable.baseline_restore_from_trash_24);
                 if (icon != null) {
-                    // Calculate the bounds for the icon (centered vertically and at the left side)
+
+                    // bounds
                     int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
                     int iconTop = itemView.getTop() + iconMargin;
                     int iconLeft = itemView.getLeft() + iconMargin;
                     int iconRight = iconLeft + icon.getIntrinsicWidth();
                     int iconBottom = iconTop + icon.getIntrinsicHeight();
 
-                    // Set the alpha (opacity) based on the swipe distance (dX)
+                    // alpha
                     float alpha = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.0f);
-                    icon.setAlpha((int) (alpha * 255));  // Alpha should be from 0 to 255
+                    icon.setAlpha((int) (alpha * 255));
 
-                    // Scale the icon based on the swipe distance (dX)
-                    float scale = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1f); // Maximum scale factor
+                    // scale
+                    float scale = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.5f) + 0.5f;
                     int scaledWidth = (int) (icon.getIntrinsicWidth() * scale);
                     int scaledHeight = (int) (icon.getIntrinsicHeight() * scale);
 
-                    // Adjust the bounds of the icon based on the scaled size
+                    // bounds
                     int scaledIconLeft = iconLeft;
                     int scaledIconTop = iconTop;
                     int scaledIconRight = scaledIconLeft + scaledWidth;
