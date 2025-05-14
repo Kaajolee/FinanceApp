@@ -1,9 +1,12 @@
 package com.example.finanseapp;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -11,11 +14,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Entry> entries;
 
     private ImageButton buttonCharts;
+    private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
     private TextView textViewBalance;
     private RecyclerView recyclerView;
@@ -81,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
         setUpActivityResults();
+
+
+
     }
 
 
@@ -138,7 +147,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         imgButtonIncome = findViewById(R.id.imageButton);
-        setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
+        imgButtonIncome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animateDollar(v);
+            }
+        });
+        //setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
 
         imgbuttonAddCategory = findViewById(R.id.imageButton3);
         setButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
@@ -202,17 +217,27 @@ public class MainActivity extends AppCompatActivity {
 
                 View itemView = viewHolder.itemView;
 
-                // Load the icon (e.g., trash can icon)
+                // load
                 Drawable icon = ContextCompat.getDrawable(recyclerView.getContext(),
                         R.drawable.baseline_restore_from_trash_24);
+
+
+                Paint paint = new Paint();
+                paint.setColor(Color.RED);
+
+
+                c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(),
+                        itemView.getLeft() + dX, (float) itemView.getBottom(), paint);
+
+
                 if (icon != null) {
+
+                    icon.setTint(Color.WHITE);
 
                     // bounds
                     int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
                     int iconTop = itemView.getTop() + iconMargin;
                     int iconLeft = itemView.getLeft() + iconMargin;
-                    int iconRight = iconLeft + icon.getIntrinsicWidth();
-                    int iconBottom = iconTop + icon.getIntrinsicHeight();
 
                     // alpha
                     float alpha = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.0f);
@@ -233,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
                     icon.draw(c);
                 }
 
-                // Continue with the default drawing behavior (drawing item view)
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }});
 
@@ -363,5 +387,53 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss(); // Dismiss the dialog
             }
         }, 2000);
+    }
+    void animateDollar(View view){
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+
+        ObjectAnimator rotate = new ObjectAnimator();
+        rotate = ObjectAnimator.ofFloat(view, "rotationY", 720f);
+        rotate.setInterpolator(new AccelerateDecelerateInterpolator());
+        rotate.setDuration(400);
+
+
+        ObjectAnimator translateX = new ObjectAnimator();
+        translateX = ObjectAnimator.ofFloat(view, "translationX", screenWidth + 500);
+        translateX.setInterpolator(new AccelerateDecelerateInterpolator());
+        translateX.setDuration(500);
+
+
+        AnimatorSet set = new AnimatorSet();
+
+        set.playSequentially(rotate, translateX);
+
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(@NonNull Animator animation) {
+
+                Intent intent = new Intent(getApplicationContext(), AddSourceActivity.class);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(@NonNull Animator animation) {
+
+            }
+        });
+
+        set.start();
     }
 }

@@ -103,7 +103,7 @@ public class AddSourceActivity extends AppCompatActivity {
             switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    rotateEuroCoin();
+                    rotateEuroCoin(isChecked);
                     updateTextColors(isChecked);
                 }
             });
@@ -209,13 +209,13 @@ public class AddSourceActivity extends AppCompatActivity {
     boolean turn_side = true;
     final int RED_COLOR = Color.RED;
     final int GREEN_COLOR = Color.GREEN;
-    void rotateEuroCoin() {
+    void rotateEuroCoin(boolean isChecked) {
 
-        int start_color = turn_side ? GREEN_COLOR : RED_COLOR;
-        int end_color = turn_side ? RED_COLOR : GREEN_COLOR;
+        int start_color = isChecked ? GREEN_COLOR : RED_COLOR;
+        int end_color = isChecked ? RED_COLOR : GREEN_COLOR;
 
-        float start = turn_side ? 0f : 180f;
-        float end = turn_side ? 180f : 0f;
+        float start = isChecked ? 0f : 180f;
+        float end = isChecked ? 180f : 0f;
 
         ObjectAnimator spin = ObjectAnimator.ofFloat(coinImage, "rotationY",
                 start, end);
@@ -238,7 +238,5 @@ public class AddSourceActivity extends AppCompatActivity {
             AnimatedVectorDrawableCompat avdc = (AnimatedVectorDrawableCompat) drawable;
             avdc.start();
         }
-
-        turn_side = !turn_side;
     }
 }

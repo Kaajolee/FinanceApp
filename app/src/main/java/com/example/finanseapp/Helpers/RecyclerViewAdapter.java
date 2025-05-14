@@ -78,7 +78,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewNumber.setText(displayAmount + currency);
         holder.textViewNumber.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), colorRes));
 
-        animateViewHolder(holder.rowItemView, 1900, 700);
+        animateViewHolder(holder.rowItemView, 700, 550);
 
         Log.i("FRONTEND", "Object added to recycler: " + entry.getName() + ", " + displayAmount);
     }
