@@ -30,9 +30,14 @@ android {
 
 dependencies {
     implementation libs.room.common
+    implementation libs.legacy.support.v4
     def room_version = "2.6.1"
 
     implementation "androidx.room:room-runtime:$room_version"
+    implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
+    implementation 'com.squareup:seismic:1.0.3'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
 
     // If this project only uses Java source, use the Java annotationProcessor
     // No additional plugins are necessary

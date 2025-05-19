@@ -1,201 +1,446 @@
 package com.example.finanseapp;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
-
-import com.example.finanseapp.Entities.Category;
-import com.example.finanseapp.helpers.RecyclerViewAdapter;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.example.finanseapp.Entities.Account;
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.DialogHelper;
+import com.example.finanseapp.Helpers.DollarSignAnimation;
+import com.example.finanseapp.Helpers.RecyclerViewAdapter;
+import com.example.finanseapp.Helpers.ShakingDetector;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public class MainActivity extends AppCompatActivity {
-    AppDatabase db;
-    Button buttonIncome, buttonExpenses, buttonAddAccount, buttonAddCategory;
-    TextView textViewBalance;
-    RecyclerView recyclerView;
-    ActionBar actionBar;
+
+    private AppDatabase db;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private List<Entry> entries;
+
+    private ShakingDetector shakeDetector;
+    private ImageButton buttonCharts;
+    private Paint paint;
+    private ImageButton imgButtonIncome, imgbuttonAddCategory;
+    private TextView textViewBalance;
+    private RecyclerView recyclerView;
+    private RecyclerViewAdapter adapter;
+
+    private ActionBar actionBar;
+    private DollarSignAnimation dollarAnimator;
+    private RelativeLayout relativeLayout;
+
+    private ActivityResultLauncher<Intent> resultLauncher;
+
+    private int dollarGreenID, dollarRedID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });*/
 
         db = AppDatabase.getInstance(getApplicationContext());
 
-        generateData(db);
-        //printData(db);
+        initializeUI();
+        initializeHardware();
+        initializeData();
+        setUpRecyclerView();
+        setUpDollarSignAnimation();
+        setUpBalanceWiggle();
+        setUpActivityResults();
 
 
-        //-----TOP ACTION BAR
-        actionBar = getSupportActionBar();
-        if (actionBar != null) {
 
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.topbar_box));
-
-        }
-
-        // --------INCOME BUTTON
-        buttonIncome = findViewById(R.id.incomeButton);
-        SetButtonOnClickToActivity(buttonIncome, IncomeActivity.class);
-
-        // --------EXPENSES BUTTON
-        buttonExpenses = findViewById(R.id.expensesButton);
-        SetButtonOnClickToActivity(buttonExpenses, ExpensesActivity.class);
-
-        // --------ADD ACCOUNT BUTTON
-        //buttonAddAccount = findViewById(R.id.button2); //pakeist button2 i kita kai idesiu
-        //SetButtonOnClickToActivity(buttonAddAccount, AddAccountActivity.class);
-
-        // --------ADD CATEGORY BUTTON
-        buttonAddCategory = findViewById(R.id.addCategoryButton);
-        SetButtonOnClickToActivity(buttonAddCategory, AddCategoryActivity.class);
-
-        //---------ACCOUNT BALANCE TEXT
-        textViewBalance = findViewById(R.id.textViewBalance);
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
-        });
-
-
-        //--------RECYCLER VIEW
-        recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
-            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
-        });
-
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        printData(db);
+        updateBalanceText();
+        setUpRecyclerView();
+    }
 
-        //---------ACCOUNT BALANCE TEXT
-        textViewBalance = findViewById(R.id.textViewBalance);
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            textViewBalance.setText(Float.toString(db.entryDao().getTotalAmountByAccount((Integer.toString(db.currentAccount)))));
+    private void setUpActivityResults() {
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null && data.getBooleanExtra("entry_added", false)) {
+                            entryAddedDialog();
+
+                            //Toast.makeText(this, "na!", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                }
+        );
+    }
+
+    private void initializeUI() {
+
+        relativeLayout = findViewById(R.id.splashOverlay);
+        actionBar = getSupportActionBar();
+        actionBar.hide();
+        new Handler().postDelayed(() -> {
+
+            AlphaAnimation alphaAnim = new AlphaAnimation(1, 0);
+            alphaAnim.setDuration(500);
+            alphaAnim.setFillAfter(true);
+            relativeLayout.startAnimation(alphaAnim);
+            relativeLayout.setVisibility(View.GONE);
+            actionBar.show();
+        }, 2000);
+
+
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
+        }
+
+
+        imgButtonIncome = findViewById(R.id.imageButton);
+        imgButtonIncome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animateDollar(v);
+            }
         });
+        //setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
 
+        imgbuttonAddCategory = findViewById(R.id.imageButton3);
+        setButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
 
-        //--------RECYCLER VIEW
+        buttonCharts = findViewById(R.id.button);
+        setButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
+
+        textViewBalance = findViewById(R.id.textViewBalance);
+    }
+
+    private void initializeData() {
+        executor.execute(() -> {
+            generateData(db);
+            updateBalanceText();
+        });
+    }
+    private void initializeHardware(){
+        shakeDetector = new ShakingDetector();
+        shakeDetector.hearShake();
+    }
+
+    private void setUpRecyclerView() {
         recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setBackgroundResource(R.drawable.rounded_top_corners);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            recyclerView.setAdapter(new RecyclerViewAdapter(db.entryDao().getEntriesByAccountId("1")));
-            Log.i("NUM", "TEST LOGGGGGGGGGGGGGGGGGGGGGGGGGG");
+        executor.execute(() -> {
+            entries = db.entryDao().getEntriesByAccountId("1");
+
+            runOnUiThread(() -> {
+                DialogHelper editSourceDialogHelper = new DialogHelper(this);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper);
+                recyclerView.setAdapter(adapter);
+            });
+        });
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0, ItemTouchHelper.END);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                if (direction == ItemTouchHelper.END) {
+                    int pos = viewHolder.getAdapterPosition();
+                    RecyclerViewAdapter.ViewHolder newHolder = (RecyclerViewAdapter.ViewHolder) viewHolder;
+
+                    newHolder.delete();
+
+
+                    runOnUiThread(() -> adapter.removeItem(newHolder.getLayoutPosition()));
+                    updateBalanceText();
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+
+                View itemView = viewHolder.itemView;
+
+                // load
+                Drawable icon = ContextCompat.getDrawable(recyclerView.getContext(),
+                        R.drawable.baseline_restore_from_trash_24);
+
+
+                Paint paint = new Paint();
+                paint.setColor(Color.RED);
+
+
+                c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(),
+                        itemView.getLeft() + dX, (float) itemView.getBottom(), paint);
+
+
+                if (icon != null) {
+
+                    icon.setTint(Color.WHITE);
+
+                    // bounds
+                    int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                    int iconTop = itemView.getTop() + iconMargin;
+                    int iconLeft = itemView.getLeft() + iconMargin;
+
+                    // alpha
+                    float alpha = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.0f);
+                    icon.setAlpha((int) (alpha * 255));
+
+                    // scale
+                    float scale = Math.min(Math.abs(dX) / (float) itemView.getWidth(), 1.5f) + 0.5f;
+                    int scaledWidth = (int) (icon.getIntrinsicWidth() * scale);
+                    int scaledHeight = (int) (icon.getIntrinsicHeight() * scale);
+
+                    // bounds
+                    int scaledIconLeft = iconLeft;
+                    int scaledIconTop = iconTop;
+                    int scaledIconRight = scaledIconLeft + scaledWidth;
+                    int scaledIconBottom = scaledIconTop + scaledHeight;
+
+                    icon.setBounds(scaledIconLeft, scaledIconTop, scaledIconRight, scaledIconBottom);
+                    icon.draw(c);
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }});
+
+        helper.attachToRecyclerView(recyclerView);
+    }
+
+    private void setUpDollarSignAnimation() {
+        dollarGreenID = R.drawable.dollarsigngreen;
+        dollarRedID = R.drawable.dollarsignred;
+        dollarAnimator = findViewById(R.id.dollaranimator);
+
+        executor.execute(() -> {
+            float moneyAmount = db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount));
+
+            int spriteAmount = 1;
+            int dollarImageID = (moneyAmount >= 0) ? dollarGreenID : dollarRedID;
+            dollarAnimator.setDollarImageId(dollarImageID, spriteAmount);
+
+            dollarAnimator.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dollarAnimator.addDollar();
+                }
+            });
         });
     }
 
-    private void SetButtonOnClickToActivity(Button button, Class<? extends AppCompatActivity> destination){
+    private boolean wiggleDirection = true;
 
-        if(button != null){
+    private void setUpBalanceWiggle() {
+        textViewBalance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float start = wiggleDirection ? -5f : 5f;
+                float end = wiggleDirection ? 5f : -5f;
 
+                ObjectAnimator wiggle = ObjectAnimator.ofFloat(textViewBalance, "rotation", start, end, 0f);
+                wiggle.setInterpolator(new AccelerateDecelerateInterpolator());
+                wiggle.setDuration(500);
+                wiggle.start();
+
+                wiggleDirection = !wiggleDirection;
+            }
+        });
+    }
+
+    private void setButtonOnClickToActivity(View view, Class<? extends AppCompatActivity> destination) {
+        if (view != null) {
             Intent intent = new Intent(getApplicationContext(), destination);
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(intent);
-                }
-            });
-
-        }
-        else{
-            Log.e("BUTTON", "Button reference is null");
+            view.setOnClickListener(v -> startActivity(intent));
+        } else {
+            Log.e("BUTTON", "View reference is null");
         }
     }
 
-    void generateData(AppDatabase db) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            //db.entryDao().deleteAll();
-           //  db.accountDao().deleteAll();
-            //db.userDao().deleteAll();
+    private void setButtonOnClickToActivityResult(View view, Class<? extends AppCompatActivity> destination) {
+        if (view != null) {
+            view.setOnClickListener(v ->  {
+                Intent intent = new Intent(getApplicationContext(), destination);
+                resultLauncher.launch(intent);
+            });
+        } else {
+            Log.e("BUTTON", "View reference is null");
+        }
+    }
 
-            //db.clearAllTables();
-
-
-            if (db.userDao().getUserByUsername("admin") == null)
-            {
-                db.userDao().insert(new User("admin","root"));
+    private void generateData(AppDatabase db) {
+        executor.execute(() -> {
+            if (db.userDao().getUserByUsername("admin") == null) {
+                db.userDao().insert(new User("admin", "root"));
             }
 
-            if (db.accountDao().getAccountByName("saskaita1") == null)
-            {
+            if (db.accountDao().getAccountByName("saskaita1") == null) {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
-            if (db.categoryDao().getCategoryByName("Other") == null &&
-                    db.categoryDao().getCategoryByName("Other ") == null) {
-                db.categoryDao().insert(new Category("Other ", 0));
+            if (db.categoryDao().getCategoryByName("Other") == null) {
                 db.categoryDao().insert(new Category("Other", 1));
+                db.categoryDao().insert(new Category("Other ", 0));
             }
-
-
-           // Random random = new Random();
-           // db.entryDao().insert(new Entry("skauda", db.accountDao().getAccountByName("saskaita1").getId(), 0, random.nextInt(100), 2025));
-
-
         });
     }
 
-    void printData(AppDatabase db) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            // Print users
-            List<User> users = db.userDao().getAllUsers();
-            System.out.println("Users:");
-            for (User user : users) {
-                System.out.println("  ID: " + user.getId() + ", Username: " + user.getUsername());
+    private void updateBalanceText() {
+        executor.execute(() -> {
+            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + "€";
+            runOnUiThread(() -> textViewBalance.setText(balanceText));
+        });
+    }
+
+    private void updateRecyclerView() {
+        executor.execute(() -> {
+            entries = db.entryDao().getEntriesByAccountId("1");
+
+            runOnUiThread(() -> {
+                adapter.updateData(entries);
+                updateBalanceText();
+            });
+        });
+    }
+
+    void entryAddedDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.entry_added);
+        //dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
+        dialog.getWindow().setDimAmount(0);
+
+        ImageView newImageView = (ImageView) dialog.findViewById(R.id.imageView);
+
+        Drawable drawable = newImageView.getDrawable();
+        if (drawable instanceof AnimatedVectorDrawable) {
+            AnimatedVectorDrawable avd = (AnimatedVectorDrawable) drawable;
+            avd.start();
+        } else if (drawable instanceof AnimatedVectorDrawableCompat) {
+            AnimatedVectorDrawableCompat avdc = (AnimatedVectorDrawableCompat) drawable;
+            avdc.start();
+        }
+
+
+        dialog.setCancelable(false);
+
+        dialog.show();
+
+        new Handler().postDelayed(() -> {
+            if (dialog.isShowing()) {
+                dialog.dismiss(); // Dismiss the dialog
+            }
+        }, 2000);
+    }
+    void animateDollar(View view){
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+
+        ObjectAnimator rotate = new ObjectAnimator();
+        rotate = ObjectAnimator.ofFloat(view, "rotationY", 720f);
+        rotate.setInterpolator(new AccelerateDecelerateInterpolator());
+        rotate.setDuration(400);
+
+
+        ObjectAnimator translateX = new ObjectAnimator();
+        translateX = ObjectAnimator.ofFloat(view, "translationX", screenWidth + 500);
+        translateX.setInterpolator(new AccelerateDecelerateInterpolator());
+        translateX.setDuration(500);
+
+
+        AnimatorSet set = new AnimatorSet();
+
+        set.playSequentially(rotate, translateX);
+
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(@NonNull Animator animation) {
+
             }
 
-            // Print accounts
-            List<Account> accounts = db.accountDao().getAllAccounts();
-            System.out.println("\nAccounts:");
-            for (Account account : accounts) {
-                System.out.println("  ID: " + account.getId() + ", Name: " + account.getName() + ", User ID: " + account.getUserId() + ", Balance: " + account.getBalance());
+            @Override
+            public void onAnimationEnd(@NonNull Animator animation) {
+
+                Intent intent = new Intent(getApplicationContext(), AddSourceActivity.class);
+                startActivity(intent);
+
             }
 
-            // Print entries
-            List<Entry> entries = db.entryDao().getAllEntries();
-            System.out.println("\nEntries:");
-            for (Entry entry : entries) {
-                System.out.println("  Name: " + entry.getName() + "ID: " + entry.getId() + ", Account ID: " + entry.getAccountId() + ", Type: " + entry.getType() + ", Amount: " + entry.getAmount() + ", Year: " + entry.getDate());
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(@NonNull Animator animation) {
+
             }
         });
+
+        set.start();
     }
 }

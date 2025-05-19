@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/editSourceDialogLayout"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/ticketing"
+        android:text="Edit Source"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextNameDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/ticketing"
+        android:hint="@string/enter_source_name"
+        android:inputType="text"
+        android:padding="10dp"
+        android:textColor="@color/white_text"
+        android:textColorHint="@color/white_text"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/editTextAmountDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/ticketing"
+        android:hint="@string/enter_amount"
+        android:inputType="numberDecimal"
+        android:padding="10dp"
+        android:textColor="@color/white_text"
+        android:textColorHint="@color/white_text"
+        android:textSize="16sp" />
+
+    <Spinner
+        android:id="@+id/spinnerCategoryDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewIncomeDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ticketing"
+            android:paddingRight="10dp"
+            android:text="Income"
+            android:textColor="@color/white_text"
+            android:textSize="16sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/customSwitchDialog"
+            android:layout_width="61dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:minWidth="100dp"
+            android:showText="false"
+            android:textAlignment="center"
+            android:textOff=""
+            android:textOn=""
+            android:thumb="@drawable/custom_thumb"
+            android:track="@drawable/custom_track"
+            android:trackTint="@null"
+            android:trackTintMode="src_over"
+            app:trackTint="@color/black"
+            android:fontFamily="@font/ticketing"/>
+
+        <TextView
+            android:id="@+id/textViewExpenseDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/ticketing"
+            android:paddingLeft="10dp"
+            android:text="Expense"
+            android:textColor="@color/white_text"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonCancelDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent"
+            android:fontFamily="@font/ticketing"
+            android:text="@string/cancel"
+            android:textColor="@color/red"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/buttonUpdateDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent"
+            android:fontFamily="@font/ticketing"
+            android:text="save"
+            android:textColor="@color/green_006"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</LinearLayout>

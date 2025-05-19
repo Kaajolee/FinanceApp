@@ -33,9 +33,13 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract UserDao userDao();
+
     public abstract AccountDao accountDao();
+
     public abstract EntryDao entryDao();
+
     public abstract CategoryDao categoryDao();
+
     public int currentAccount = 1;
 }
 

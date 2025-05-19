@@ -32,10 +32,14 @@ public interface EntryDao {
     List<Entry> getAllEntries();
 
     @Query("SELECT * FROM entries WHERE id = :id LIMIT 1")
-    Entry getEntryById(String id);
+    Entry getEntryById(int id);
+
+    @Query("SELECT * FROM entries WHERE name = :name LIMIT 1")
+    Entry getEntryByName(String name);
 
     @Query("SELECT * FROM entries WHERE accountId = :accountId")
     List<Entry> getEntriesByAccountId(String accountId);
+
     @Query("SELECT SUM(CASE " +
             "WHEN type = 0 THEN amount " +
             "WHEN type = 1 THEN -amount " +
@@ -43,6 +47,7 @@ public interface EntryDao {
             "END) AS totalBalance " +
             "FROM entries WHERE accountId = :accountId")
     float getAccountBalance(String accountId);
+
     @Query("SELECT * FROM entries WHERE date BETWEEN :startDate AND :endDate")
     List<Entry> getEntriesByDateRange(long startDate, long endDate);
 
