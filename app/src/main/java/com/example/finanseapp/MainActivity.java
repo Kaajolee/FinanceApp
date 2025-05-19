@@ -1,9 +1,13 @@
 package com.example.finanseapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,8 +16,14 @@ import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +44,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,6 +61,7 @@ import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -75,6 +87,44 @@ public class MainActivity extends AppCompatActivity {
 
     private int dollarGreenID, dollarRedID;
 
+    private void getCountryFromLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        String countryCode = addresses.get(0).getCountryCode(); // Pvz., "LT"
+
+                        // Rasti TextView pagal ID ir atnaujinti tekstą
+                        TextView locationText = findViewById(R.id.locationText);
+                        locationText.setText("Detected country: " + countryCode);
+
+                        Log.d("COUNTRY", "GPS country ISO: " + countryCode);
+                        Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
+            @Override public void onProviderEnabled(String provider) {}
+            @Override public void onProviderDisabled(String provider) {}
+        }, null);
+    }
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(getApplicationContext());
 
         initializeUI();
-        initializeHardware();
+        //initializeHardware();
         initializeData();
         setUpRecyclerView();
         setUpDollarSignAnimation();
@@ -125,8 +175,10 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
-
+    
     private void initializeUI() {
+
+        getCountryFromLocation();
 
         relativeLayout = findViewById(R.id.splashOverlay);
         actionBar = getSupportActionBar();
@@ -173,8 +225,9 @@ public class MainActivity extends AppCompatActivity {
             updateBalanceText();
         });
     }
+
     private void initializeHardware(){
-        shakeDetector = new ShakingDetector();
+        shakeDetector = new ShakingDetector(this);
         shakeDetector.hearShake();
     }
 
