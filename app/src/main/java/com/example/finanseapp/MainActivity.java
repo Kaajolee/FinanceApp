@@ -47,6 +47,7 @@ import com.example.finanseapp.Entities.User;
 import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
+import com.example.finanseapp.Helpers.ShakingDetector;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private List<Entry> entries;
 
+    private ShakingDetector shakeDetector;
     private ImageButton buttonCharts;
     private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(getApplicationContext());
 
         initializeUI();
+        initializeHardware();
         initializeData();
         setUpRecyclerView();
         setUpDollarSignAnimation();
@@ -169,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
             generateData(db);
             updateBalanceText();
         });
+    }
+    private void initializeHardware(){
+        shakeDetector = new ShakingDetector();
+        shakeDetector.hearShake();
     }
 
     private void setUpRecyclerView() {
