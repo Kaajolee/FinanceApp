@@ -24,5 +24,6 @@ public class ShakingDetector implements ShakeDetector.Listener{
     @Override
     public void hearShake(){
         Toast.makeText(context, "asd", Toast.LENGTH_SHORT).show();
+        VibrationCaller.vibrate(context, 200);
     }
 }
