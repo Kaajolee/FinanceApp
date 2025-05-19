@@ -1,5 +1,6 @@
 package com.example.finanseapp.Helpers;
 import android.app.Activity;
+import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -7,24 +8,21 @@ import android.widget.Toast;
 
 import com.squareup.seismic.ShakeDetector;
 
-public class ShakingDetector extends Activity implements ShakeDetector.Listener{
-    @Override protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
+public class ShakingDetector implements ShakeDetector.Listener{
 
-        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+    Context context;
+    public ShakingDetector(Context context){
+
+        this.context = context;
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         ShakeDetector detector = new ShakeDetector(this);
 
         int sensorDelay = SensorManager.SENSOR_DELAY_NORMAL;
 
         detector.start(sensorManager);
-
-        TextView tv = new TextView(this);
-        tv.setGravity(0);
-        tv.setText("Shake me, bro!");
-        setContentView(tv);
-
     }
-    @Override public void hearShake(){
-        Toast.makeText(this, "Shake detected", Toast.LENGTH_SHORT).show();
+    @Override
+    public void hearShake(){
+        Toast.makeText(context, "asd", Toast.LENGTH_SHORT).show();
     }
 }
