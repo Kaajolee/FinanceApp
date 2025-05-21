@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeHardware(){
         shakeDetector = new ShakingDetector(this);
-        shakeDetector.hearShake();
+        shakeDetector.startShakeDetection();
     }
 
     private void setUpRecyclerView() {
