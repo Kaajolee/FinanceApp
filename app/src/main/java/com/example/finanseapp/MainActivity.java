@@ -57,6 +57,7 @@ import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
 import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
+import com.example.finanseapp.Helpers.LocationHelper;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Entry> entries;
 
     private ShakingDetector shakeDetector;
+    private LocationHelper locationHelper;
     private ImageButton buttonCharts;
     private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private int dollarGreenID, dollarRedID;
+    public static String COUNTRY_CODE = "US";
 
     private void getCountryFromLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -134,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(getApplicationContext());
 
         initializeUI();
-        //initializeHardware();
+        initializeHardware();
         initializeData();
+        initializeLocation();
         setUpRecyclerView();
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
@@ -178,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     
     private void initializeUI() {
 
-        getCountryFromLocation();
+        //getCountryFromLocation();
 
         relativeLayout = findViewById(R.id.splashOverlay);
         actionBar = getSupportActionBar();
@@ -229,6 +233,32 @@ public class MainActivity extends AppCompatActivity {
     private void initializeHardware(){
         shakeDetector = new ShakingDetector(this);
         shakeDetector.startShakeDetection();
+    }
+
+    private void initializeLocation(){
+        locationHelper = new LocationHelper(this);
+
+        locationHelper.detectCountry(this, new LocationHelper.OnCountryDetectedListener() {
+            @Override
+            public void onCountryDetected(String countryCode) {
+                //COUNTRY_CODE = countryCode;
+
+
+                TextView locationText = findViewById(R.id.locationText);
+                locationText.setText("Detected country: " + countryCode);
+                Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_SHORT).show();
+                Log.d("COUNTRY", "GPS country ISO: " + countryCode + " " + COUNTRY_CODE);
+
+
+                if (!COUNTRY_CODE.equals(countryCode)) {
+                    COUNTRY_CODE = countryCode;
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        });
+
     }
 
     private void setUpRecyclerView() {
@@ -403,7 +433,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBalanceText() {
         executor.execute(() -> {
-            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + "€";
+            String currency = "";
+
+            switch (COUNTRY_CODE) {
+                case "US":
+                    currency = getString(R.string.currency_symbol_dollar);
+                    break;
+                case "LT":
+                    currency = getString(R.string.currency_symbol_euro);
+                    break;
+                case "GB":
+                    currency = getString(R.string.currency_symbol_pounds);
+                    break;
+                case "PL":
+                    currency = getString(R.string.currency_symbol_zloty);
+            }
+
+            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + currency;
             runOnUiThread(() -> textViewBalance.setText(balanceText));
         });
     }

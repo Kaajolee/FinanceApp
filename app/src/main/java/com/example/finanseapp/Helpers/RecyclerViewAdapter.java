@@ -1,6 +1,7 @@
 package com.example.finanseapp.Helpers;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finanseapp.AppDatabase;
 import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.MainActivity;
 import com.example.finanseapp.R;
 
 import java.util.List;
@@ -58,6 +60,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewCategory.setText(Float.toString(entry.getDate()));
 
         String currency = holder.itemView.getContext().getString(R.string.currency_symbol);
+        String countryCode = "";
+        Context context = holder.itemView.getContext();
+        if (context instanceof MainActivity) {
+            countryCode = ((MainActivity) context).COUNTRY_CODE;
+            Log.d("COUNTRYS", "PIMPALAS KURVA: " + countryCode);
+        }
+
+        switch (countryCode) {
+            case "US":
+                currency = context.getString(R.string.currency_symbol_dollar);
+                break;
+            case "LT":
+                currency = context.getString(R.string.currency_symbol_euro);
+                break;
+            case "GB":
+                currency = context.getString(R.string.currency_symbol_pounds);
+                break;
+            case "PL":
+                currency = context.getString(R.string.currency_symbol_zloty);
+        }
+
+
         String displayAmount = Float.toString((int) entry.getAmount());
         int colorRes;
 
