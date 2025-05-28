@@ -63,7 +63,7 @@ public class AddSourceActivity extends AppCompatActivity {
 
         loadIncomeCategories();
 
-        selectedCountryCode = MainActivity.countryCodeGlobal;
+        selectedCountryCode = MainActivity.COUNTRY_CODE;
     }
 
     private void setupWindowInsets() {
@@ -146,7 +146,7 @@ public class AddSourceActivity extends AppCompatActivity {
     private void addSource() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
         int typeId = switchCompat.isChecked() ? 1 : 0;
-        selectedCountryCode = MainActivity.countryCodeGlobal;
+        selectedCountryCode = MainActivity.COUNTRY_CODE;
         if (!nameEditText.getText().toString().isEmpty() && isNumber(amountEditText.getText().toString())) {
             if (selectedCountryCode == null) selectedCountryCode = "US";
 

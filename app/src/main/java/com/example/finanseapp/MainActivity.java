@@ -90,38 +90,6 @@ public class MainActivity extends AppCompatActivity {
     private int dollarGreenID, dollarRedID;
     public static String COUNTRY_CODE = "US";
 
-    public static String countryCodeGlobal = "LT";
-
-    private void getCountryFromLocation() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
-        }
-
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        countryCodeGlobal = addresses.get(0).getCountryCode();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
-            @Override public void onProviderEnabled(String provider) {}
-            @Override public void onProviderDisabled(String provider) {}
-        }, null);
-    }
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = AppDatabase.getInstance(getApplicationContext());
-
-        getCountryFromLocation();
 
         initializeUI();
         initializeHardware();
@@ -241,8 +207,8 @@ public class MainActivity extends AppCompatActivity {
                 //COUNTRY_CODE = countryCode;
 
 
-                TextView locationText = findViewById(R.id.locationText);
-                locationText.setText("Detected country: " + countryCode);
+                //TextView locationText = findViewById(R.id.locationText);
+               // locationText.setText("Detected country: " + countryCode);
                 Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_SHORT).show();
                 Log.d("COUNTRY", "GPS country ISO: " + countryCode + " " + COUNTRY_CODE);
 
@@ -267,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
-                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.countryCodeGlobal);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.COUNTRY_CODE);
                 recyclerView.setAdapter(adapter);
             });
         });
