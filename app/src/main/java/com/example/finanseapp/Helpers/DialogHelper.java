@@ -14,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -104,7 +105,7 @@ public class DialogHelper {
     }
 
     private void animateDialogIn() {
-        LinearLayout layout = editSourceDialog.findViewById(R.id.editSourceDialogLayout);
+        FrameLayout layout = editSourceDialog.findViewById(R.id.dialogOuterContainer);
         if (layout == null) return;
 
         layout.setTranslationY(-1000f);
@@ -113,30 +114,14 @@ public class DialogHelper {
         ObjectAnimator slideDown = ObjectAnimator.ofFloat(layout, "translationY", -1000f, 0f);
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", 0f, 1f);
 
-        slideDown.setDuration(500);
+        slideDown.setDuration(1000);
         fadeIn.setDuration(500);
         slideDown.setInterpolator(new DecelerateInterpolator());
         fadeIn.setInterpolator(new DecelerateInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(slideDown, fadeIn);
-
-        animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {}
-            @Override
-            public void onAnimationRepeat(Animator animation) {}
-        });
-
-        layout.post(animatorSet::start);
+        animatorSet.playSequentially(slideDown, fadeIn);
+        animatorSet.start();
     }
 
 }
