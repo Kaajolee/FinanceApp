@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private int dollarGreenID, dollarRedID;
     public static String COUNTRY_CODE = "US";
 
+    public static String countryCodeGlobal = "LT";
+
     private void getCountryFromLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -106,25 +108,18 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     if (addresses != null && !addresses.isEmpty()) {
-                        String countryCode = addresses.get(0).getCountryCode(); // Pvz., "LT"
-
-                        // Rasti TextView pagal ID ir atnaujinti tekstą
-                        TextView locationText = findViewById(R.id.locationText);
-                        locationText.setText("Detected country: " + countryCode);
-
-                        Log.d("COUNTRY", "GPS country ISO: " + countryCode);
-                        Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_LONG).show();
+                        countryCodeGlobal = addresses.get(0).getCountryCode();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
             @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
             @Override public void onProviderEnabled(String provider) {}
             @Override public void onProviderDisabled(String provider) {}
         }, null);
     }
+
 
 
 
@@ -135,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = AppDatabase.getInstance(getApplicationContext());
+
+        getCountryFromLocation();
 
         initializeUI();
         initializeHardware();
@@ -181,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void initializeUI() {
-
+      
         //getCountryFromLocation();
 
         relativeLayout = findViewById(R.id.splashOverlay);
@@ -270,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
-                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.countryCodeGlobal);
                 recyclerView.setAdapter(adapter);
             });
         });

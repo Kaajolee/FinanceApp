@@ -2,6 +2,8 @@ package com.example.finanseapp.Helpers;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +23,10 @@ import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.MainActivity;
 import com.example.finanseapp.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -28,7 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private List<Entry> data;
     private final DialogHelper editDialogHelper;
 
-    public RecyclerViewAdapter(List<Entry> data, DialogHelper editDialogHelper) {
+    public RecyclerViewAdapter(List<Entry> data, DialogHelper editDialogHelper, String countryCode) {
         this.data = data;
         this.editDialogHelper = editDialogHelper;
 
@@ -37,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
             int type = editDialogHelper.ReturnSwitchStateInt();
             // TODO: prideti kategorija
-            Entry newEntry = new Entry(name, 1, type, amount, 2025);
+            Entry newEntry = new Entry(name, 1, type, amount, 2025, countryCode);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);
@@ -104,6 +111,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         animateViewHolder(holder.rowItemView, 700, 550);
 
+        loadFlagImage(entry.getCountryCode(), holder.imageViewFlag);
+
         Log.i("FRONTEND", "Object added to recycler: " + entry.getName() + ", " + displayAmount);
     }
 
@@ -149,6 +158,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyDataSetChanged();
     }
 
+    private void loadFlagImage(String code, ImageView imageView) {
+        String url = "https://flagsapi.com/" + code + "/flat/64.png";
+        new Thread(() -> {
+            try {
+                URL imageUrl = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+                conn.setDoInput(true);
+                conn.connect();
+                InputStream input = conn.getInputStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(input);
+
+                imageView.post(() -> imageView.setImageBitmap(bitmap));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final AppDatabase db;
@@ -157,6 +184,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         private final LinearLayout layout;
         public final View rowItemView;
         int id;
+        public final ImageView imageViewFlag;
 
         public ViewHolder(View view, DialogHelper editDialogHelper) {
             super(view);
@@ -167,6 +195,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewCategory = view.findViewById(R.id.textview1);
             textViewNumber = view.findViewById(R.id.textview2);
             layout = view.findViewById(R.id.linearlayoutlist);
+            imageViewFlag = view.findViewById(R.id.imageViewFlag);
             rowItemView = view;
             view.setOnClickListener(this);
         }

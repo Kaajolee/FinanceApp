@@ -34,12 +34,16 @@ public class Entry {
     @ColumnInfo(name = "date")
     private long date;
 
-    public Entry(String name, int accountId, int type, float amount, long date) {
+    @ColumnInfo(name = "countryCode")
+    public String countryCode;
+
+    public Entry(String name, int accountId, int type, float amount, long date, String countryCode) {
         this.name = name;
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
         this.date = date;
+        this.countryCode = countryCode;
     }
 
     public Entry() {}
@@ -91,4 +95,8 @@ public class Entry {
     public long getDate() {
         return date;
     }
+
+    public String getCountryCode() {return countryCode;}
+
+    public void setCountryCode(String countryCode) {this.countryCode = countryCode;}
 }
