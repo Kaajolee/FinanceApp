@@ -1,5 +1,8 @@
 package com.example.finanseapp.Helpers;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -7,9 +10,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -69,6 +74,7 @@ public class DialogHelper {
     public void toggleDialog(boolean state) {
         if (state) {
             editSourceDialog.show();
+            animateDialogIn();
         } else {
             editSourceDialog.hide();
         }
@@ -96,4 +102,41 @@ public class DialogHelper {
     private void configureButtons() {
         cancelButton.setOnClickListener(v -> toggleDialog(false));
     }
+
+    private void animateDialogIn() {
+        LinearLayout layout = editSourceDialog.findViewById(R.id.editSourceDialogLayout);
+        if (layout == null) return;
+
+        layout.setTranslationY(-1000f);
+        layout.setAlpha(0f);
+
+        ObjectAnimator slideDown = ObjectAnimator.ofFloat(layout, "translationY", -1000f, 0f);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", 0f, 1f);
+
+        slideDown.setDuration(500);
+        fadeIn.setDuration(500);
+        slideDown.setInterpolator(new DecelerateInterpolator());
+        fadeIn.setInterpolator(new DecelerateInterpolator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(slideDown, fadeIn);
+
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+
+        layout.post(animatorSet::start);
+    }
+
 }
