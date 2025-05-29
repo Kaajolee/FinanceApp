@@ -61,8 +61,11 @@ import com.example.finanseapp.Helpers.LocationHelper;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -396,22 +399,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBalanceText() {
         executor.execute(() -> {
-            String currency = "";
-
-            switch (COUNTRY_CODE) {
-                case "US":
-                    currency = getString(R.string.currency_symbol_dollar);
-                    break;
-                case "LT":
-                    currency = getString(R.string.currency_symbol_euro);
-                    break;
-                case "GB":
-                    currency = getString(R.string.currency_symbol_pounds);
-                    break;
-                case "PL":
-                    currency = getString(R.string.currency_symbol_zloty);
-            }
-
+            String currency = getCurrencySymbol(COUNTRY_CODE);
             String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + currency;
             runOnUiThread(() -> textViewBalance.setText(balanceText));
         });
@@ -504,5 +492,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         set.start();
+    }
+
+    public String getCurrencySymbol(String countryCode) {
+        Set<String> euroCountries = new HashSet<>(Arrays.asList(
+                "AT", "BE", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT",
+                "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"
+        ));
+
+        if (euroCountries.contains(countryCode)) {
+            return getString(R.string.currency_symbol_euro);
+        }
+
+        switch (countryCode) {
+            case "GB":
+                return getString(R.string.currency_symbol_pounds);
+            case "PL":
+                return getString(R.string.currency_symbol_zloty);
+            default:
+                return getString(R.string.currency_symbol_dollar);
+        }
     }
 }

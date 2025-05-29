@@ -67,27 +67,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewCategory.setText(Float.toString(entry.getDate()));
 
         String currency = holder.itemView.getContext().getString(R.string.currency_symbol);
-        String countryCode = "";
         Context context = holder.itemView.getContext();
         if (context instanceof MainActivity) {
-            countryCode = ((MainActivity) context).COUNTRY_CODE;
-            Log.d("COUNTRYS", "PIMPALAS KURVA: " + countryCode);
+            MainActivity main = (MainActivity) context;
+            currency = main.getCurrencySymbol(main.COUNTRY_CODE);
+            Log.d("COUNTRYS", "countris tipo: " + main.COUNTRY_CODE);
         }
-
-        switch (countryCode) {
-            case "US":
-                currency = context.getString(R.string.currency_symbol_dollar);
-                break;
-            case "LT":
-                currency = context.getString(R.string.currency_symbol_euro);
-                break;
-            case "GB":
-                currency = context.getString(R.string.currency_symbol_pounds);
-                break;
-            case "PL":
-                currency = context.getString(R.string.currency_symbol_zloty);
-        }
-
 
         String displayAmount = Float.toString((int) entry.getAmount());
         int colorRes;
