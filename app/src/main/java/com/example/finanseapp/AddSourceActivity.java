@@ -48,6 +48,7 @@ public class AddSourceActivity extends AppCompatActivity {
     private EditText nameEditText, amountEditText;
     private TextView incomeText, expenseText;
     private SwitchCompat switchCompat;
+    private String selectedCountryCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,8 @@ public class AddSourceActivity extends AppCompatActivity {
         initializeUI();
 
         loadIncomeCategories();
+
+        selectedCountryCode = MainActivity.COUNTRY_CODE;
     }
 
     private void setupWindowInsets() {
@@ -143,21 +146,23 @@ public class AddSourceActivity extends AppCompatActivity {
     private void addSource() {
         Category selectedCategory = (Category) spinner.getSelectedItem();
         int typeId = switchCompat.isChecked() ? 1 : 0;
-
+        selectedCountryCode = MainActivity.COUNTRY_CODE;
         if (!nameEditText.getText().toString().isEmpty() && isNumber(amountEditText.getText().toString())) {
+            if (selectedCountryCode == null) selectedCountryCode = "US";
+
             Entry newEntry = new Entry(
                     nameEditText.getText().toString(),
                     db.currentAccount,
                     typeId,
                     Float.parseFloat(amountEditText.getText().toString()),
-                    2025
+                    2025,
+                    selectedCountryCode
             );
 
             executor.execute(() -> {
                 try {
                     db.entryDao().insert(newEntry);
                     runOnUiThread(() -> {
-                        //Toast.makeText(AddSourceActivity.this, "Successfully Added!", Toast.LENGTH_SHORT).show();
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("entry_added", true);
                         setResult(RESULT_OK, resultIntent);

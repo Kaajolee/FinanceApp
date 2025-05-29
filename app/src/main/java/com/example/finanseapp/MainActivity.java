@@ -1,9 +1,13 @@
 package com.example.finanseapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,8 +16,14 @@ import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +44,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,10 +57,15 @@ import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
 import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
+import com.example.finanseapp.Helpers.LocationHelper;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Entry> entries;
 
     private ShakingDetector shakeDetector;
+    private LocationHelper locationHelper;
     private ImageButton buttonCharts;
     private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
@@ -74,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private int dollarGreenID, dollarRedID;
+    public static String COUNTRY_CODE = "US";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         initializeUI();
         initializeHardware();
         initializeData();
+        initializeLocation();
         setUpRecyclerView();
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
@@ -125,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
-
+    
     private void initializeUI() {
+      
+        //getCountryFromLocation();
 
         relativeLayout = findViewById(R.id.splashOverlay);
         actionBar = getSupportActionBar();
@@ -173,9 +195,36 @@ public class MainActivity extends AppCompatActivity {
             updateBalanceText();
         });
     }
+
     private void initializeHardware(){
         shakeDetector = new ShakingDetector(this);
         shakeDetector.startShakeDetection();
+    }
+
+    private void initializeLocation(){
+        locationHelper = new LocationHelper(this);
+
+        locationHelper.detectCountry(this, new LocationHelper.OnCountryDetectedListener() {
+            @Override
+            public void onCountryDetected(String countryCode) {
+                //COUNTRY_CODE = countryCode;
+
+
+                //TextView locationText = findViewById(R.id.locationText);
+               // locationText.setText("Detected country: " + countryCode);
+                Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_SHORT).show();
+                Log.d("COUNTRY", "GPS country ISO: " + countryCode + " " + COUNTRY_CODE);
+
+
+                if (!COUNTRY_CODE.equals(countryCode)) {
+                    COUNTRY_CODE = countryCode;
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        });
+
     }
 
     private void setUpRecyclerView() {
@@ -187,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
-                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper);
+                adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.COUNTRY_CODE);
                 recyclerView.setAdapter(adapter);
             });
         });
@@ -350,7 +399,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBalanceText() {
         executor.execute(() -> {
-            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + "€";
+            String currency = getCurrencySymbol(COUNTRY_CODE);
+            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + currency;
             runOnUiThread(() -> textViewBalance.setText(balanceText));
         });
     }
@@ -442,5 +492,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         set.start();
+    }
+
+    public String getCurrencySymbol(String countryCode) {
+        Set<String> euroCountries = new HashSet<>(Arrays.asList(
+                "AT", "BE", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT",
+                "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"
+        ));
+
+        if (euroCountries.contains(countryCode)) {
+            return getString(R.string.currency_symbol_euro);
+        }
+
+        switch (countryCode) {
+            case "GB":
+                return getString(R.string.currency_symbol_pounds);
+            case "PL":
+                return getString(R.string.currency_symbol_zloty);
+            default:
+                return getString(R.string.currency_symbol_dollar);
+        }
     }
 }
