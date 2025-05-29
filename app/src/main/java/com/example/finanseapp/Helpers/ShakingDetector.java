@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,13 +33,16 @@ public class ShakingDetector implements ShakeDetector.Listener {
         configureButtons();
         configureTabLayout();
 
-        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        //SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         detector = new ShakeDetector(this);
     }
 
     public void startShakeDetection() {
         SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        detector.start(sensorManager);
+        boolean isDetecting = detector.start(sensorManager);
+
+        if (!isDetecting)
+            Log.w("SHAKING DETECTOR", "Device does not support shaking");
     }
 
     @Override
