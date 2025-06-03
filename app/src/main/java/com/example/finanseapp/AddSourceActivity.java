@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ public class AddSourceActivity extends AppCompatActivity {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private Button buttonAdd, buttonCancel;
-    private ImageView coinImage;
+    private ImageButton cameraImageButton;
     private boolean canSpin = true;
     private Spinner spinner;
     private EditText nameEditText, amountEditText;
@@ -77,8 +78,7 @@ public class AddSourceActivity extends AppCompatActivity {
     private void initializeUI() {
         spinner = findViewById(R.id.spinner3);
 
-        coinImage = findViewById(R.id.imageView8);
-        setupCoinFlip();
+        cameraImageButton = findViewById(R.id.imageButton2);
 
         nameEditText = findViewById(R.id.editTextName);
         amountEditText = findViewById(R.id.editTextAmount);
@@ -106,7 +106,6 @@ public class AddSourceActivity extends AppCompatActivity {
             switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    rotateEuroCoin(isChecked);
                     updateTextColors(isChecked);
                 }
             });
@@ -127,20 +126,6 @@ public class AddSourceActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.topbar_box));
         }
-    }
-    private void setupCoinFlip(){
-
-        coinImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ObjectAnimator spin = ObjectAnimator.ofFloat(coinImage, "rotationY",
-                        0f, 1440f);
-                spin.setInterpolator(new AccelerateDecelerateInterpolator());
-                spin.setDuration(1500);
-                spin.start();
-            }
-        });
-
     }
 
     private void addSource() {
@@ -214,34 +199,5 @@ public class AddSourceActivity extends AppCompatActivity {
     boolean turn_side = true;
     final int RED_COLOR = Color.RED;
     final int GREEN_COLOR = Color.GREEN;
-    void rotateEuroCoin(boolean isChecked) {
 
-        int start_color = isChecked ? GREEN_COLOR : RED_COLOR;
-        int end_color = isChecked ? RED_COLOR : GREEN_COLOR;
-
-        float start = isChecked ? 0f : 180f;
-        float end = isChecked ? 180f : 0f;
-
-        ObjectAnimator spin = ObjectAnimator.ofFloat(coinImage, "rotationY",
-                start, end);
-        spin.setInterpolator(new AccelerateDecelerateInterpolator());
-        spin.setDuration(1000);
-        spin.start();
-
-        ArgbEvaluator colorEvaluator = new ArgbEvaluator();
-        ObjectAnimator changeColor = ObjectAnimator.ofObject(coinImage, "colorFilter", colorEvaluator, start_color, end_color);
-        changeColor.setInterpolator(new AccelerateDecelerateInterpolator());
-        changeColor.setDuration(1000);
-        changeColor.start();
-
-        //coinImage.getDrawable()
-        Drawable drawable = coinImage.getDrawable();
-        if (drawable instanceof AnimatedVectorDrawable) {
-            AnimatedVectorDrawable avd = (AnimatedVectorDrawable) drawable;
-            avd.start();
-        } else if (drawable instanceof AnimatedVectorDrawableCompat) {
-            AnimatedVectorDrawableCompat avdc = (AnimatedVectorDrawableCompat) drawable;
-            avdc.start();
-        }
-    }
 }

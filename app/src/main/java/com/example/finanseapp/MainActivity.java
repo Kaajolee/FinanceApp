@@ -172,14 +172,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         imgButtonIncome = findViewById(R.id.imageButton);
-        imgButtonIncome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateDollar(v);
-            }
-        });
-        //setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
-
+        setButtonOnClickToActivity(imgButtonIncome, AddSourceActivity.class);
+        
         imgbuttonAddCategory = findViewById(R.id.imageButton3);
         setButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
 
@@ -444,54 +438,6 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss(); // Dismiss the dialog
             }
         }, 2000);
-    }
-    void animateDollar(View view){
-
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        int screenWidth = dm.widthPixels;
-
-        ObjectAnimator rotate = new ObjectAnimator();
-        rotate = ObjectAnimator.ofFloat(view, "rotationY", 720f);
-        rotate.setInterpolator(new AccelerateDecelerateInterpolator());
-        rotate.setDuration(400);
-
-
-        ObjectAnimator translateX = new ObjectAnimator();
-        translateX = ObjectAnimator.ofFloat(view, "translationX", screenWidth + 500);
-        translateX.setInterpolator(new AccelerateDecelerateInterpolator());
-        translateX.setDuration(500);
-
-
-        AnimatorSet set = new AnimatorSet();
-
-        set.playSequentially(rotate, translateX);
-
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(@NonNull Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(@NonNull Animator animation) {
-
-                Intent intent = new Intent(getApplicationContext(), AddSourceActivity.class);
-                startActivity(intent);
-
-            }
-
-            @Override
-            public void onAnimationCancel(@NonNull Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(@NonNull Animator animation) {
-
-            }
-        });
-
-        set.start();
     }
 
     public String getCurrencySymbol(String countryCode) {
