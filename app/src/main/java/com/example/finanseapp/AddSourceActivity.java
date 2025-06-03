@@ -3,7 +3,10 @@ package com.example.finanseapp;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,13 +19,20 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -32,17 +42,20 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AddSourceActivity extends AppCompatActivity {
-
+    private static final int CAMERA_PERMISSION_REQUEST = 1001;
+    private PreviewView previewView;
+    private ProcessCameraProvider cameraProvider;
     private AppDatabase db;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private Button buttonAdd, buttonCancel;
+    private Button buttonAdd, buttonCancel, buttonCloseCamera, buttonCaptureImage;
     private ImageButton cameraImageButton;
     private boolean canSpin = true;
     private Spinner spinner;
@@ -79,6 +92,11 @@ public class AddSourceActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner3);
 
         cameraImageButton = findViewById(R.id.imageButton2);
+        previewView = findViewById(R.id.previewView);
+        buttonCloseCamera = findViewById(R.id.buttonCloseCamera);
+        buttonCaptureImage = findViewById(R.id.buttonCaptureImage);
+
+        setUpCameraButtons();
 
         nameEditText = findViewById(R.id.editTextName);
         amountEditText = findViewById(R.id.editTextAmount);
@@ -111,7 +129,92 @@ public class AddSourceActivity extends AppCompatActivity {
             });
         }
     }
+    private void setUpCameraButtons(){
+        cameraImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(AddSourceActivity.this, Manifest.permission.CAMERA)
+                   == PackageManager.PERMISSION_GRANTED)
+                    startCamera();
+                else
+                    ActivityCompat.requestPermissions(AddSourceActivity.this,
+                            new String[]{Manifest.permission.CAMERA},
+                            CAMERA_PERMISSION_REQUEST);
+            }
+        });
 
+        buttonCloseCamera.setVisibility(View.GONE);
+        buttonCaptureImage.setVisibility(View.GONE);
+
+        buttonCloseCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: sustabdyti preview
+
+
+                findViewById(R.id.cameraOverlay).setVisibility(View.GONE);
+                buttonCloseCamera.setVisibility(View.GONE);
+                buttonCaptureImage.setVisibility(View.GONE);
+                Toast.makeText(AddSourceActivity.this, "Cam closed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        buttonCaptureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: nufotkint ir perdirbt duomenis
+
+                Toast.makeText(AddSourceActivity.this, "Image captured", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void startCamera(){
+
+        findViewById(R.id.cameraOverlay).setVisibility(View.VISIBLE);
+        buttonCloseCamera.setVisibility(View.VISIBLE);
+        buttonCaptureImage.setVisibility(View.VISIBLE);
+
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
+                ProcessCameraProvider.getInstance(this);
+
+        cameraProviderFuture.addListener(() -> {
+            try {
+                cameraProvider = cameraProviderFuture.get();
+                Preview preview = new Preview.Builder().build();
+                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+                cameraProvider.unbindAll();
+                preview.setSurfaceProvider(previewView.getSurfaceProvider());
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview);
+
+            }
+            catch (Exception e){
+                Toast.makeText(this, "Failed to start the camera", Toast.LENGTH_SHORT).show();
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults){
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == CAMERA_PERMISSION_REQUEST){
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                startCamera();
+            }
+            else
+                Toast.makeText(this, "Cam permission is req.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+        super.onDestroy();
+    }
     private void updateTextColors(boolean isExpense) {
         int incomeColor = isExpense ? R.color.black : R.color.green_005;
         int expenseColor = isExpense ? R.color.red : R.color.black;

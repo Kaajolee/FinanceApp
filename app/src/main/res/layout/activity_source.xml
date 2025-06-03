@@ -268,4 +268,44 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/cameraOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|center"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/buttonCaptureImage"
+                android:layout_width="110dp"
+                android:layout_height="61dp"
+                android:text="Capture"
+                android:layout_margin="15dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/buttonCloseCamera"
+                android:layout_width="110dp"
+                android:layout_height="61dp"
+                android:text="Close"
+                android:layout_margin="15dp"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
