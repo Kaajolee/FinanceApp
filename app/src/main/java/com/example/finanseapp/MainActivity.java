@@ -31,10 +31,13 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +64,7 @@ import com.example.finanseapp.Helpers.LocationHelper;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -88,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private DollarSignAnimation dollarAnimator;
     private RelativeLayout relativeLayout;
 
+    private Spinner spinnerCategory;
+
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private int dollarGreenID, dollarRedID;
@@ -110,17 +116,84 @@ public class MainActivity extends AppCompatActivity {
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
         setUpActivityResults();
-
-
+        setCategoriesFilter();
 
     }
 
+    private void setCategoriesFilter(){
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Category> categoryList = db.categoryDao().getAllCategories();
+            List<String> categories = new ArrayList<>();
+            categories.add("All");
+            for (Category category : categoryList) {
+                categories.add(category.getName());
+            }
+            runOnUiThread(() -> {
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
+                        android.R.layout.simple_spinner_item, categories);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCategory.setAdapter(spinnerAdapter);
+
+                spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String selectedCategory = parent.getItemAtPosition(position).toString();
+
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            if (selectedCategory.equals("All")) {
+                                List<Entry> allEntries = db.entryDao().getAllEntries();
+                                runOnUiThread(() -> adapter.updateData(allEntries));
+                            } else {
+                                Category selectedCat = db.categoryDao().getCategoryByName(selectedCategory);
+                                if (selectedCat == null) {
+                                    return;
+                                }
+
+                                List<Entry> filtered = new ArrayList<>();
+                                for (Entry e : db.entryDao().getAllEntries()) {
+                                    if (e.getCategory().equals(selectedCat.getName())) {
+                                        filtered.add(e);
+                                    }
+                                }
+
+                                runOnUiThread(() -> {
+                                    adapter.updateData(filtered);
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+            });
+        });
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
         updateBalanceText();
         setUpRecyclerView();
+        updateCategoriesSpinner();
+    }
+
+    private void updateCategoriesSpinner(){
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Category> categoryList = db.categoryDao().getAllCategories();
+            List<String> categories = new ArrayList<>();
+            categories.add("All");
+            for (Category category : categoryList) {
+                categories.add(category.getName());
+            }
+            runOnUiThread(() -> {
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
+                        android.R.layout.simple_spinner_item, categories);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCategory.setAdapter(spinnerAdapter);
+
+            });
+        });
     }
 
     @Override
@@ -187,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
         setButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
 
         textViewBalance = findViewById(R.id.textViewBalance);
+
+        spinnerCategory = findViewById(R.id.spinnerCategory);
     }
 
     private void initializeData() {
@@ -388,11 +463,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (db.accountDao().getAccountByName("saskaita1") == null) {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
-            }
-
-            if (db.categoryDao().getCategoryByName("Other") == null) {
-                db.categoryDao().insert(new Category("Other", 1));
-                db.categoryDao().insert(new Category("Other ", 0));
             }
         });
     }

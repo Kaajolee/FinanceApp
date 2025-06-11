@@ -28,6 +28,9 @@ public class Entry {
     @ColumnInfo(name = "type")
     private int type;
 
+    @ColumnInfo(name = "category")
+    private String category;
+
     @ColumnInfo(name = "amount")
     private float amount;
 
@@ -37,10 +40,11 @@ public class Entry {
     @ColumnInfo(name = "countryCode")
     public String countryCode;
 
-    public Entry(String name, int accountId, int type, float amount, long date, String countryCode) {
+    public Entry(String name, int accountId, int type, String category, float amount, long date, String countryCode) {
         this.name = name;
         this.accountId = accountId;
         this.type = type;
+        this.category = category;
         this.amount = amount;
         this.date = date;
         this.countryCode = countryCode;
@@ -99,4 +103,8 @@ public class Entry {
     public String getCountryCode() {return countryCode;}
 
     public void setCountryCode(String countryCode) {this.countryCode = countryCode;}
+
+    public String getCategory() {return category;}
+
+    public void setCategory(String category) {this.category = category;}
 }
