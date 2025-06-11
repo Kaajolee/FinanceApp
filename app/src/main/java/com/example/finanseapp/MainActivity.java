@@ -69,6 +69,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppDatabase db;
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
     private TextView textViewBalance;
+    private TextView textViewBalanceConverted;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
 
@@ -91,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private int dollarGreenID, dollarRedID;
-    public static String COUNTRY_CODE = "US";
+    public static String COUNTRY_CODE = "LT";
 
 
     @Override
@@ -105,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         initializeUI();
         initializeHardware();
         initializeData();
-        initializeLocation();
         setUpRecyclerView();
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
@@ -119,7 +124,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        initializeLocation();
         updateBalanceText();
+        updateBalanceConvertText();
         setUpRecyclerView();
     }
 
@@ -187,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         setButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
 
         textViewBalance = findViewById(R.id.textViewBalance);
+        textViewBalanceConverted = findViewById(R.id.textViewBalanceConverted);
     }
 
     private void initializeData() {
@@ -215,16 +223,54 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_SHORT).show();
                 Log.d("COUNTRY", "GPS country ISO: " + countryCode + " " + COUNTRY_CODE);
 
-
                 if (!COUNTRY_CODE.equals(countryCode)) {
                     COUNTRY_CODE = countryCode;
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
+
+
+
+                    //Intent intent = getIntent();
+                    //finish();
+                    //startActivity(intent);
+                    updateBalanceConvertText();
+
+
+
                 }
             }
         });
 
+    }
+
+    double convertBalance(double balance) {
+        MonetaryAmount balanceE = Monetary.getDefaultAmountFactory().setCurrency("EUR").setNumber(balance).create();
+
+        CurrencyConversion conversion;
+
+        Set<String> euroCountries = new HashSet<>(Arrays.asList(
+                "AT", "BE", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT",
+                "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"
+        ));
+
+        if (euroCountries.contains(COUNTRY_CODE)) {
+            conversion = MonetaryConversions.getConversion("EUR");
+            return balanceE.getNumber().doubleValue();
+        }
+
+        switch (COUNTRY_CODE) {
+            case "GB":
+                conversion = MonetaryConversions.getConversion("GBP");
+                break;
+            case "PL":
+                conversion = MonetaryConversions.getConversion("PLN");
+                break;
+            default:
+                conversion = MonetaryConversions.getConversion("USD");
+                break;
+        }
+
+        MonetaryAmount convertedAmountEURtoUSD = balanceE.with(conversion);
+
+        return convertedAmountEURtoUSD.getNumber().doubleValue();
     }
 
     private void setUpRecyclerView() {
@@ -399,9 +445,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBalanceText() {
         executor.execute(() -> {
-            String currency = getCurrencySymbol(COUNTRY_CODE);
+            //String currency = getCurrencySymbol(COUNTRY_CODE);
+            String currency = getString(R.string.currency_symbol_euro);
             String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + currency;
             runOnUiThread(() -> textViewBalance.setText(balanceText));
+        });
+    }
+
+    private void updateBalanceConvertText() {
+        executor.execute(() -> {
+            String currency = getCurrencySymbol(COUNTRY_CODE);
+            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount)));
+            if (COUNTRY_CODE != "LT") {
+                //String tekstas = String.valueOf(Math.round(, 2)) + currency;
+                String tekstas = String.format("%.1f", convertBalance(Double.parseDouble(balanceText))) + currency;
+                runOnUiThread(() -> textViewBalanceConverted.setText(tekstas));
+            }
         });
     }
 
@@ -412,6 +471,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 adapter.updateData(entries);
                 updateBalanceText();
+                updateBalanceConvertText();
             });
         });
     }

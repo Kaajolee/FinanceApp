@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.squareup:seismic:1.0.3'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android.gms:play-services-location:21.3.0'
-
+    implementation 'org.javamoney:moneta:1.0'
 
     // If this project only uses Java source, use the Java annotationProcessor
     // No additional plugins are necessary
