@@ -282,6 +282,12 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
+
+                editSourceDialogHelper.onBalanceUpdate = () -> {
+                    updateBalanceText();
+                    updateBalanceConvertText();
+                };
+
                 adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.COUNTRY_CODE);
                 recyclerView.setAdapter(adapter);
             });
@@ -309,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
                     runOnUiThread(() -> adapter.removeItem(newHolder.getLayoutPosition()));
                     updateBalanceText();
+                    updateBalanceConvertText();
                 }
             }
 
