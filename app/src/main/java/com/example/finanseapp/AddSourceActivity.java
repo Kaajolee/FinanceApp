@@ -149,13 +149,16 @@ public class AddSourceActivity extends AppCompatActivity {
         selectedCountryCode = MainActivity.COUNTRY_CODE;
         if (!nameEditText.getText().toString().isEmpty() && isNumber(amountEditText.getText().toString())) {
             if (selectedCountryCode == null) selectedCountryCode = "US";
-
+            float amount = Float.parseFloat(amountEditText.getText().toString());
+                if(typeId == 1){
+                    amount *= -1;
+                }
             Entry newEntry = new Entry(
                     nameEditText.getText().toString(),
                     db.currentAccount,
                     typeId,
                     selectedCategory.getName(),
-                    Float.parseFloat(amountEditText.getText().toString()),
+                    amount,
                     2025,
                     selectedCountryCode
             );
