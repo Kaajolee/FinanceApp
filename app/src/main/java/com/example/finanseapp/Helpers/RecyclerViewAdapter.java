@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finanseapp.AppDatabase;
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.MainActivity;
 import com.example.finanseapp.R;
@@ -45,8 +46,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             String name = editDialogHelper.sourceName.getText().toString();
             float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
             int type = editDialogHelper.ReturnSwitchStateInt();
+            String category = editDialogHelper.categorySpinner.toString();
             // TODO: prideti kategorija
-            Entry newEntry = new Entry(name, 1, type, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode);
+          
+            Entry newEntry = new Entry(name, 1, type, category, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);

@@ -154,6 +154,7 @@ public class AddSourceActivity extends AppCompatActivity {
                     nameEditText.getText().toString(),
                     db.currentAccount,
                     typeId,
+                    selectedCategory.getName(),
                     Float.parseFloat(amountEditText.getText().toString()),
                     2025,
                     selectedCountryCode
