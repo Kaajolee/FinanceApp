@@ -5,11 +5,14 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -29,10 +32,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -43,16 +49,29 @@ import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddSourceActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 1001;
     private PreviewView previewView;
     private ProcessCameraProvider cameraProvider;
+
     private AppDatabase db;
+
+    private ImageCapture imageCapture;
+    private Bitmap photoBitMap;
+    private TextRecognizer recognizer;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private Button buttonAdd, buttonCancel, buttonCloseCamera, buttonCaptureImage;
@@ -78,6 +97,7 @@ public class AddSourceActivity extends AppCompatActivity {
         loadIncomeCategories();
 
         selectedCountryCode = MainActivity.COUNTRY_CODE;
+        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
     private void setupWindowInsets() {
@@ -159,40 +179,148 @@ public class AddSourceActivity extends AppCompatActivity {
             }
         });
 
-        buttonCaptureImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: nufotkint ir perdirbt duomenis
+        buttonCaptureImage.setOnClickListener(v -> {
+            if (imageCapture != null) {
+                imageCapture.takePicture(
+                        executor,
+                        new ImageCapture.OnImageCapturedCallback() {
+                            //jei pavyko nufotkint
+                            @Override
+                            public void onCaptureSuccess(@NonNull ImageProxy image) {
+                                // konvertuoja image i bitmap
+                                photoBitMap = imageProxyToBitmap(image);
+                                //?
+                                InputImage imageConverted = InputImage.fromBitmap(photoBitMap, 0);
+                                readAndProcessText(imageConverted);
 
-                Toast.makeText(AddSourceActivity.this, "Image captured", Toast.LENGTH_SHORT).show();
+                                image.close();
+
+                                runOnUiThread(() -> {
+                                    Toast.makeText(AddSourceActivity.this,
+                                            "Image captured and converted to bitmap",
+                                            Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                            // jei nepavyko
+                            @Override
+                            public void onError(@NonNull ImageCaptureException exception) {
+                                runOnUiThread(() -> Toast.makeText(AddSourceActivity.this,
+                                        "Capture failed: " + exception.getMessage(),
+                                        Toast.LENGTH_SHORT).show());
+                            }
+                        }
+                );
             }
         });
-    }
-    private void startCamera(){
 
+
+    }
+    private void readAndProcessText(InputImage image){
+
+        recognizer.process(image)
+                .addOnSuccessListener(visionText -> {
+                    String fullText = visionText.getText();
+                    extractValuesFromText(fullText);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Text recognition failed", Toast.LENGTH_SHORT).show();
+                });
+
+    }
+    private void extractValuesFromText(String text) {
+        String[] lines = text.split("\n");
+        String suma = null;
+        String shopName = null;
+
+        Pattern companyPattern = Pattern.compile("^(uab|ab)\\s+.*", Pattern.CASE_INSENSITIVE);
+        Pattern amountLinePattern = Pattern.compile("(suma|mok[eė]ti|mok[eė]ti eur)", Pattern.CASE_INSENSITIVE);
+        Pattern amountValuePattern = Pattern.compile("(\\d+[.,]\\d{2})");
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+
+            // Detect company name
+            if (shopName == null && companyPattern.matcher(line).find()) {
+                shopName = line;
+            }
+
+            // Detect payment line
+            if (amountLinePattern.matcher(line).find()) {
+                // Try to extract amount from the same line
+                Matcher amountMatcher = amountValuePattern.matcher(line);
+                if (amountMatcher.find()) {
+                    suma = amountMatcher.group(1);
+                } else if (i + 1 < lines.length) {
+                    // Try to extract amount from the next line
+                    String nextLine = lines[i + 1].trim();
+                    Matcher nextLineMatcher = amountValuePattern.matcher(nextLine);
+                    if (nextLineMatcher.find()) {
+                        suma = nextLineMatcher.group(1);
+                    }
+                }
+            }
+        }
+
+        Log.d("OCR", "Shop: " + shopName);
+        Log.d("OCR", "Suma: " + suma);
+
+        String finalShopName = shopName;
+        String finalSuma = suma;
+        runOnUiThread(() -> Toast.makeText(this, "Shop: " + finalShopName + "\nSUMA: "
+                + finalSuma, Toast.LENGTH_LONG).show());
+    }
+
+
+
+
+    private Bitmap imageProxyToBitmap(ImageProxy image) {
+        //gettina plane'us(jie sudaro visa ft)
+        ImageProxy.PlaneProxy[] planes = image.getPlanes();
+        ByteBuffer buffer = planes[0].getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        // dekoduoja i bitmap
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private void startCamera() {
+
+        //View matomumas
         findViewById(R.id.cameraOverlay).setVisibility(View.VISIBLE);
         buttonCloseCamera.setVisibility(View.VISIBLE);
         buttonCaptureImage.setVisibility(View.VISIBLE);
 
+        //pagettina kameros valdikli kuris atsakingas uz lifecycle kameros(async)
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
                 ProcessCameraProvider.getInstance(this);
 
+        //kai valdiklis ready prides eventa
         cameraProviderFuture.addListener(() -> {
             try {
+
                 cameraProvider = cameraProviderFuture.get();
+
+                //susetupina live preview vaizdo
                 Preview preview = new Preview.Builder().build();
+                //susetupina image capture kad galetum nufotkint
+                imageCapture = new ImageCapture.Builder().build();
+
+                //kuri kamera
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
 
+                //isclearina praeitus use case'us
                 cameraProvider.unbindAll();
+                //prideda kameros lifecycle prie activity lifecycle
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+                //prijungia kameros vaizda prie view kad matytum realiai
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview);
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Toast.makeText(this, "Failed to start the camera", Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(this));
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
