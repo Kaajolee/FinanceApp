@@ -35,7 +35,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
     Category getCategoryById(int id);
 
-    @Query("SELECT * FROM categories WHERE name = :name LIMIT 1")
+    @Query("SELECT * FROM categories WHERE name LIKE :name LIMIT 1")
     Category getCategoryByName(String name);
 
     // Query for income categories (type = 0)
