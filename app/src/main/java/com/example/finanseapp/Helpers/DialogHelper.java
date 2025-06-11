@@ -28,7 +28,9 @@ import com.example.finanseapp.R;
 import java.util.concurrent.Executors;
 
 public class DialogHelper {
-
+    private int entryId = -1;
+    public String entryCountryCode;
+    public long entryDate;
     private final Dialog editSourceDialog;
     public final EditText sourceName, sourceAmount;
     public final Button cancelButton, saveButton;
@@ -37,7 +39,14 @@ public class DialogHelper {
     private final TextView incomeLabel, expenseLabel;
     public int adapterPositionId;
 
+    public Runnable onBalanceUpdate;
+
+    AppDatabase db;
+
+
     public DialogHelper(Context context) {
+        db = AppDatabase.getInstance(context.getApplicationContext());
+
         editSourceDialog = new Dialog(context);
         editSourceDialog.setContentView(R.layout.dialog_edit_source);
         editSourceDialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
@@ -61,6 +70,10 @@ public class DialogHelper {
             Entry entry = db.entryDao().getEntryById(id);
             if(entry != null) {
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    entryId = id;
+                    entryCountryCode = entry.getCountryCode();
+                    entryDate = entryDate;
+                    Log.i("", "ID INDETAS BLET:" + entryId);
                     sourceName.setText(entry.getName());
                     sourceAmount.setText(Float.toString(entry.getAmount()));
                     switchCompat.setChecked(entry.getType() != 0);
@@ -102,6 +115,34 @@ public class DialogHelper {
 
     private void configureButtons() {
         cancelButton.setOnClickListener(v -> toggleDialog(false));
+        //saveButton.setOnClickListener(v -> updateEntry());
+    }
+
+    public void updateEntry() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Entry entry = db.entryDao().getEntryById(entryId);
+            if(entry != null) {
+
+                entry.setName(sourceName.getText().toString());
+                entry.setAccountId(entry.getAccountId());
+                entry.setType(ReturnSwitchStateInt());
+                entry.setAmount(Float.parseFloat(sourceAmount.getText().toString()));
+                entry.setDate(entry.getDate());
+                entry.setCountryCode(entry.getCountryCode());
+
+                db.entryDao().update(entry);
+
+                onBalanceUpdate.run();
+
+                Log.i("DUOMBAZ",  entry.getName() + " " + entry.getName() + " " + entry.getAmount());
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+            }
+            else
+                Log.i("DIALOG HELPER", "entry is null in setValue");
+        });
     }
 
     private void animateDialogIn() {

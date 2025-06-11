@@ -41,15 +41,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.editDialogHelper = editDialogHelper;
 
         editDialogHelper.saveButton.setOnClickListener(v -> {
+            editDialogHelper.updateEntry();
+
             String name = editDialogHelper.sourceName.getText().toString();
             float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
             int type = editDialogHelper.ReturnSwitchStateInt();
             String category = editDialogHelper.categorySpinner.toString();
             // TODO: prideti kategorija
-            Entry newEntry = new Entry(name, 1, type, category, amount, 2025, countryCode);
+          
+            Entry newEntry = new Entry(name, 1, type, category, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);
+
         });
     }
 
