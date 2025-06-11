@@ -89,7 +89,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 colorRes = R.color.green_005;
                 break;
             case 1: // Expense
-                displayAmount = "-" + displayAmount;
+                displayAmount = "" + displayAmount;
                 colorRes = R.color.red;
                 break;
             default:
