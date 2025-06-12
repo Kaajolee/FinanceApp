@@ -34,19 +34,23 @@ public class RecyclerViewImagesAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addImage(Bitmap bitmap) {
-            if(bitmap == null) {
-                Log.e("RecyclerViewImagesAdapter", "addImage received null bitmap");
-                return;
-            }
-            imageBitmaps.add(bitmap);
-            notifyItemInserted(imageBitmaps.size() - 1);
-
+        if(bitmap == null) {
+            Log.e("RECYCLERVIEWIMAGEADAPTER", "addImage received null bitmap");
+            return;
+        }
+        Bitmap resized = getResizedBitmap(bitmap, 400, 400);
+        imageBitmaps.add(resized);
+        notifyItemInserted(imageBitmaps.size() - 1);
     }
 
     public void clearImages() {
+        for (Bitmap b : imageBitmaps) {
+            b.recycle();
+        }
         imageBitmaps.clear();
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -67,6 +71,25 @@ public class RecyclerViewImagesAdapter extends RecyclerView.Adapter<RecyclerView
     public List<Bitmap> getAllImages (){
         return imageBitmaps;
     }
+    public Bitmap getResizedBitmap(Bitmap original, int maxWidth, int maxHeight) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        float ratioBitmap = (float) width / (float) height;
+        float ratioMax = (float) maxWidth / (float) maxHeight;
+
+        int finalWidth = maxWidth;
+        int finalHeight = maxHeight;
+
+        if (ratioMax > ratioBitmap) {
+            finalWidth = (int) ((float)maxHeight * ratioBitmap);
+        } else {
+            finalHeight = (int) ((float)maxWidth / ratioBitmap);
+        }
+
+        return Bitmap.createScaledBitmap(original, finalWidth, finalHeight, true);
+    }
+
     public static class PhotoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 

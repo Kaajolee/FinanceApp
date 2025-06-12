@@ -2,6 +2,7 @@ package com.example.finanseapp;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -287,11 +289,24 @@ public class AddSourceActivity extends AppCompatActivity {
     }
 
     private Bitmap imageProxyToBitmap(ImageProxy image) {
+        @SuppressLint("UnsafeOptInUsageError")
         ImageProxy.PlaneProxy[] planes = image.getPlanes();
         ByteBuffer buffer = planes[0].getBuffer();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+
+        int rotationDegrees = image.getImageInfo().getRotationDegrees();
+        if (rotationDegrees != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotationDegrees);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), matrix, true);
+        }
+
+        image.close();
+        return bitmap;
     }
 
     private void startCamera() {
@@ -337,7 +352,7 @@ public class AddSourceActivity extends AppCompatActivity {
         File folder = new File(baseDir, String.valueOf(folderId));
 
         if (!folder.exists()) folder.mkdir();
-        
+
         File[] oldFiles = folder.listFiles();
         if (oldFiles != null) {
             for (File f : oldFiles) f.delete();
