@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface EntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Entry entry);
+    long insert(Entry entry);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Entry> entries);

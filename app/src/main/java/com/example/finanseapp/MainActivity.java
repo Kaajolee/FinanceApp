@@ -12,17 +12,25 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,6 +66,7 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.BlurOnFlipManager;
 import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.LocationHelper;
@@ -78,7 +87,7 @@ import javax.money.MonetaryAmount;
 import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private AppDatabase db;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -102,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
+    private BlurOnFlipManager blurManager;
     private int dollarGreenID, dollarRedID;
     public static String COUNTRY_CODE = "LT";
 
@@ -123,6 +133,29 @@ public class MainActivity extends AppCompatActivity {
         setUpActivityResults();
         setCategoriesFilter();
 
+        blurManager = new BlurOnFlipManager(this, textViewBalance, textViewBalanceConverted);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        blurManager.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        blurManager.unregister();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initializeLocation();
+        updateBalanceText();
+        updateBalanceConvertText();
+        setUpRecyclerView();
+        updateCategoriesSpinner();
     }
 
     private void setCategoriesFilter(){
@@ -173,16 +206,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             });
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        initializeLocation();
-        updateBalanceText();
-        updateBalanceConvertText();
-        setUpRecyclerView();
-        updateCategoriesSpinner();
     }
 
     private void updateCategoriesSpinner(){
@@ -512,8 +535,8 @@ public class MainActivity extends AppCompatActivity {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
-            if (db.categoryDao().getCategoryByName("Other") == null) {
-                db.categoryDao().insert(new Category("Other", 0));
+            if (db.categoryDao().getCategoryByName("default") == null) {
+                db.categoryDao().insert(new Category("default", 0));
             }
         });
     }

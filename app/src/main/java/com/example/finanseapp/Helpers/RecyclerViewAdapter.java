@@ -49,7 +49,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             String category = editDialogHelper.categorySpinner.toString();
             // TODO: prideti kategorija
           
-            Entry newEntry = new Entry(name, 1, type, category, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode);
+            Entry newEntry = new Entry(name, 1, type, category, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode, -1);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);
