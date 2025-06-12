@@ -337,8 +337,7 @@ public class AddSourceActivity extends AppCompatActivity {
         File folder = new File(baseDir, String.valueOf(folderId));
 
         if (!folder.exists()) folder.mkdir();
-
-        // Clear previous images if any
+        
         File[] oldFiles = folder.listFiles();
         if (oldFiles != null) {
             for (File f : oldFiles) f.delete();
@@ -350,10 +349,16 @@ public class AddSourceActivity extends AppCompatActivity {
         for (Bitmap bitmap : images) {
             File imgFile = new File(folder, "img_" + idx + ".jpg");
             try (FileOutputStream out = new FileOutputStream(imgFile)) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 40, out);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // logint failo size mb
+            long fileSizeBytes = imgFile.length();
+            double fileSizeMB = fileSizeBytes / (1024.0 * 1024.0);
+            Log.i("ImageSave", "Saved img_" + idx + ".jpg (" + String.format("%.2f", fileSizeMB) + " MB)");
+
             idx++;
         }
     }

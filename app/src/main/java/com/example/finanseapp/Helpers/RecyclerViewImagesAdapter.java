@@ -1,12 +1,20 @@
 package com.example.finanseapp.Helpers;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,6 +73,31 @@ public class RecyclerViewImagesAdapter extends RecyclerView.Adapter<RecyclerView
         public PhotoViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewPhoto);
+
+            imageView.setOnClickListener(v -> {
+
+                Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof BitmapDrawable) {
+                    Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                    showImageDialog(v.getContext(), bitmap);
+                }
+            });
+
+        }
+        public void showImageDialog(Context context, Bitmap imageBitmap) {
+            Dialog dialog = new Dialog(context);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_show_image);
+
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
+
+            ImageView imageView = dialog.findViewById(R.id.dialogImageView);
+            imageView.setImageBitmap(imageBitmap);
+
+            Button closeBtn = dialog.findViewById(R.id.buttonCloseDialog);
+            closeBtn.setOnClickListener(v -> dialog.dismiss());
+
+            dialog.show();
         }
     }
 }
