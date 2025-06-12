@@ -34,13 +34,17 @@ public class Entry {
     @ColumnInfo(name = "amount")
     private float amount;
 
+    @ColumnInfo(name = "photoFolderId")
+    private int photoFolderId;
+
     @ColumnInfo(name = "date")
     private long date;
 
     @ColumnInfo(name = "countryCode")
     public String countryCode;
 
-    public Entry(String name, int accountId, int type, String category, float amount, long date, String countryCode) {
+    public Entry(String name, int accountId, int type, float amount, long date, String countryCode,
+                 int photoFolderId) {
         this.name = name;
         this.accountId = accountId;
         this.type = type;
@@ -48,6 +52,7 @@ public class Entry {
         this.amount = amount;
         this.date = date;
         this.countryCode = countryCode;
+        this.photoFolderId = photoFolderId;
     }
 
     public Entry() {}
@@ -66,6 +71,9 @@ public class Entry {
 
     public void setAmount(float amount) {
         this.amount = amount;
+    }
+    public void setPhotoFolderId(int photoFolderId) {
+        this.photoFolderId = photoFolderId;
     }
 
     public void setType(int type) {
@@ -98,6 +106,9 @@ public class Entry {
 
     public long getDate() {
         return date;
+    }
+    public int getPhotoFolderId() {
+        return photoFolderId;
     }
 
     public String getCountryCode() {return countryCode;}
