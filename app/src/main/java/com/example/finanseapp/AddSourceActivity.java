@@ -432,15 +432,11 @@ public class AddSourceActivity extends AppCompatActivity {
                     name,
                     db.currentAccount,
                     typeId,
-                    Float.parseFloat(amountStr),
-                    System.currentTimeMillis(),
-                    selectedCountryCode,
                     selectedCategory.getName(),
                     amount,
                     2025,
                     selectedCountryCode,
-                    -1
-            );
+                    -1);
 
             executor.execute(() -> {
                 try {

@@ -43,7 +43,7 @@ public class Entry {
     @ColumnInfo(name = "countryCode")
     public String countryCode;
 
-    public Entry(String name, int accountId, int type, float amount, long date, String countryCode,
+    public Entry(String name, int accountId, int type, String category, float amount, long date, String countryCode,
                  int photoFolderId) {
         this.name = name;
         this.accountId = accountId;
