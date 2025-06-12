@@ -149,11 +149,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="129dp"
+            android:layout_height="380dp"
             android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="15dp"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:layout_marginTop="30dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textViewIncome"
@@ -161,17 +161,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:layout_weight="1"
+                android:fontFamily="@font/ticketing"
                 android:text="Income"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/ticketing"/>
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/customSwitch"
                 android:layout_width="61dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
+                android:fontFamily="@font/ticketing"
                 android:minWidth="100dp"
                 android:showText="false"
                 android:textAlignment="center"
@@ -181,8 +182,7 @@
                 android:track="@drawable/custom_track"
                 android:trackTint="@null"
                 android:trackTintMode="src_over"
-                app:trackTint="@color/black"
-                android:fontFamily="@font/ticketing"/>
+                app:trackTint="@color/black" />
 
 
             <TextView
@@ -191,51 +191,67 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:layout_weight="1"
+                android:fontFamily="@font/ticketing"
                 android:text="Expense"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/ticketing"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearrecycler"
             android:layout_width="match_parent"
-            android:layout_height="285dp"
+            android:layout_height="650dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_weight="1"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:fontFamily="@font/ticketing"
+                android:text="Memories"
+                android:textAlignment="center"
+                android:textColor="@color/white_text"
+                android:textSize="25sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/photoRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:padding="8dp"
+                android:scrollbars="vertical" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal|center_vertical"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/buttonAddPhoto"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-35dp"
-                    android:fontFamily="@font/ticketing"
-                    android:gravity="center"
-                    android:text="Take a photo of your cheque"
-                    android:textAlignment="gravity"
-                    android:textColor="@color/white_text"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:text="Add Photo" />
 
-                <ImageButton
-                    android:id="@+id/imageButton2"
-                    android:layout_width="150dp"
-                    android:layout_height="110dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@null"
-                    android:scaleType="fitCenter"
-                    android:scaleX="1"
-                    android:scaleY="1"
-                    app:srcCompat="@drawable/camera_icon" />
+                <Button
+                    android:id="@+id/buttonClearPhotos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Clear All" />
 
             </LinearLayout>
+
         </LinearLayout>
+
 
         <LinearLayout
             style="?android:attr/buttonBarStyle"
@@ -285,27 +301,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom|center"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_gravity="bottom"
             android:padding="16dp">
 
             <Button
-                android:id="@+id/buttonCaptureImage"
-                android:layout_width="110dp"
+                android:id="@+id/buttonCloseCamera"
+                android:layout_width="82dp"
                 android:layout_height="61dp"
-                android:text="Capture"
-                android:layout_margin="15dp"
+                android:text="Close"
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/buttonCloseCamera"
-                android:layout_width="110dp"
-                android:layout_height="61dp"
-                android:text="Close"
-                android:layout_margin="15dp"
+                android:id="@+id/buttonCaptureImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="Capture"
                 android:visibility="gone" />
-
 
         </LinearLayout>
     </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

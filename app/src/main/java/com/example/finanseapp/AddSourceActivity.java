@@ -2,8 +2,11 @@ package com.example.finanseapp;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,11 +47,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.example.finanseapp.Daos.CategoryDao;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.Helpers.RecyclerViewImagesAdapter;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -55,8 +62,13 @@ import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -65,29 +77,35 @@ import java.util.regex.Pattern;
 public class AddSourceActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 1001;
     private PreviewView previewView;
+    private FrameLayout cameraOverlay;
     private ProcessCameraProvider cameraProvider;
 
     private AppDatabase db;
 
     private ImageCapture imageCapture;
     private Bitmap photoBitMap;
+    private Set<String> imagePaths = new HashSet<>();
+    private SharedPreferences prefs;
     private TextRecognizer recognizer;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private Button buttonAdd, buttonCancel, buttonCloseCamera, buttonCaptureImage;
-    private ImageButton cameraImageButton;
+    private Button buttonAdd, buttonCancel, buttonAddPhoto, buttonClearImages,
+            buttonCloseCamera, buttonCaptureImage;
     private boolean canSpin = true;
     private Spinner spinner;
     private EditText nameEditText, amountEditText;
+    private RecyclerView recyclerView;
+    private RecyclerViewImagesAdapter imagesAdapter;
     private TextView incomeText, expenseText;
     private SwitchCompat switchCompat;
+    private LinearLayout linearRecycler;
     private String selectedCountryCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
-        
+
         setupWindowInsets();
 
         db = AppDatabase.getInstance(getApplicationContext());
@@ -98,6 +116,14 @@ public class AddSourceActivity extends AppCompatActivity {
 
         selectedCountryCode = MainActivity.COUNTRY_CODE;
         recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+        prefs = getSharedPreferences("images", MODE_PRIVATE);
+
+        imagePaths.addAll(prefs.getStringSet("paths", new HashSet<>()));
+
+        previewView = findViewById(R.id.previewView);
+
+
     }
 
     private void setupWindowInsets() {
@@ -111,10 +137,7 @@ public class AddSourceActivity extends AppCompatActivity {
     private void initializeUI() {
         spinner = findViewById(R.id.spinner3);
 
-        cameraImageButton = findViewById(R.id.imageButton2);
-        previewView = findViewById(R.id.previewView);
-        buttonCloseCamera = findViewById(R.id.buttonCloseCamera);
-        buttonCaptureImage = findViewById(R.id.buttonCaptureImage);
+
 
         setUpCameraButtons();
 
@@ -133,8 +156,45 @@ public class AddSourceActivity extends AppCompatActivity {
         buttonCancel = findViewById(R.id.cancelButton);
         buttonAdd.setOnClickListener(v -> addSource());
         buttonCancel.setOnClickListener(v -> finish());
+
+        linearRecycler = findViewById(R.id.linearrecycler);
+        linearRecycler.setBackgroundResource(R.drawable.rounded_all_corners_small);
+
+        setupRecyclerView();
     }
 
+    private void setupRecyclerView(){
+
+        buttonAddPhoto = findViewById(R.id.buttonAddPhoto);
+
+        buttonAddPhoto.setOnClickListener(v -> {
+
+                if (ContextCompat.checkSelfPermission(AddSourceActivity.this, Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    startCamera();
+                } else {
+                    ActivityCompat.requestPermissions(AddSourceActivity.this,
+                            new String[]{Manifest.permission.CAMERA},
+                            CAMERA_PERMISSION_REQUEST);
+                }
+        });
+
+        buttonClearImages = findViewById(R.id.buttonClearPhotos);
+        buttonClearImages.setOnClickListener(v -> {
+            imagePaths.clear();
+            prefs.edit().remove("paths").apply();
+            imagesAdapter.clearImages();
+        });
+
+        recyclerView = findViewById(R.id.photoRecyclerView);
+
+        int numberOfColumns = 3; // or 2, depending on how many columns you want
+        GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns);
+        recyclerView.setLayoutManager(layoutManager);
+        imagesAdapter = new RecyclerViewImagesAdapter(this);
+        recyclerView.setAdapter(imagesAdapter);
+        loadImages();
+    }
     private void setupSwitchListener() {
         if (switchCompat != null) {
             boolean state = switchCompat.isChecked();
@@ -149,34 +209,16 @@ public class AddSourceActivity extends AppCompatActivity {
             });
         }
     }
-    private void setUpCameraButtons(){
-        cameraImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(AddSourceActivity.this, Manifest.permission.CAMERA)
-                   == PackageManager.PERMISSION_GRANTED)
-                    startCamera();
-                else
-                    ActivityCompat.requestPermissions(AddSourceActivity.this,
-                            new String[]{Manifest.permission.CAMERA},
-                            CAMERA_PERMISSION_REQUEST);
-            }
-        });
+    private void setUpCameraButtons() {
 
-        buttonCloseCamera.setVisibility(View.GONE);
-        buttonCaptureImage.setVisibility(View.GONE);
+        buttonCloseCamera = findViewById(R.id.buttonCloseCamera);
+        buttonCaptureImage = findViewById(R.id.buttonCaptureImage);
+        cameraOverlay = findViewById(R.id.cameraOverlay);
 
-        buttonCloseCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: sustabdyti preview
-
-
-                findViewById(R.id.cameraOverlay).setVisibility(View.GONE);
-                buttonCloseCamera.setVisibility(View.GONE);
-                buttonCaptureImage.setVisibility(View.GONE);
-                Toast.makeText(AddSourceActivity.this, "Cam closed", Toast.LENGTH_SHORT).show();
-            }
+        buttonCloseCamera.setOnClickListener(v -> {
+            buttonCloseCamera.setVisibility(View.GONE);
+            buttonCaptureImage.setVisibility(View.GONE);
+            Toast.makeText(AddSourceActivity.this, "Camera closed", Toast.LENGTH_SHORT).show();
         });
 
         buttonCaptureImage.setOnClickListener(v -> {
@@ -184,24 +226,27 @@ public class AddSourceActivity extends AppCompatActivity {
                 imageCapture.takePicture(
                         executor,
                         new ImageCapture.OnImageCapturedCallback() {
-                            //jei pavyko nufotkint
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                // konvertuoja image i bitmap
-                                photoBitMap = imageProxyToBitmap(image);
-                                //?
-                                InputImage imageConverted = InputImage.fromBitmap(photoBitMap, 0);
-                                readAndProcessText(imageConverted);
-
-                                image.close();
+                                Bitmap bitmap = imageProxyToBitmap(image);
+                                String path = saveImageToInternalStorage(bitmap);
+                                addImagePath(path);
 
                                 runOnUiThread(() -> {
-                                    Toast.makeText(AddSourceActivity.this,
-                                            "Image captured and converted to bitmap",
-                                            Toast.LENGTH_SHORT).show();
+                                    photoBitMap = bitmap;
+                                    imagesAdapter.addImage(photoBitMap);
+                                    Toast.makeText(AddSourceActivity.this, "Image captured", Toast.LENGTH_SHORT).show();
+
+                                    buttonCloseCamera.setVisibility(View.GONE);
+                                    buttonCaptureImage.setVisibility(View.GONE);
+                                    cameraOverlay.setVisibility(View.GONE);
+
+                                    if (cameraProvider != null) {
+                                        cameraProvider.unbindAll();
+                                    }
                                 });
                             }
-                            // jei nepavyko
+
                             @Override
                             public void onError(@NonNull ImageCaptureException exception) {
                                 runOnUiThread(() -> Toast.makeText(AddSourceActivity.this,
@@ -212,81 +257,47 @@ public class AddSourceActivity extends AppCompatActivity {
                 );
             }
         });
-
-
     }
-    private void readAndProcessText(InputImage image){
 
-        recognizer.process(image)
-                .addOnSuccessListener(visionText -> {
-                    String fullText = visionText.getText();
-                    extractValuesFromText(fullText);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Text recognition failed", Toast.LENGTH_SHORT).show();
-                });
 
-    }
-    private void extractValuesFromText(String text) {
-        String[] lines = text.split("\n");
-        String suma = null;
-        String shopName = null;
+    private String saveImageToInternalStorage(Bitmap bitmap) {
+        ContextWrapper wrapper = new ContextWrapper(getApplicationContext());
+        File directory = wrapper.getDir("images", Context.MODE_PRIVATE);
+        File file = new File(directory, System.currentTimeMillis() + ".jpg");
 
-        Pattern companyPattern = Pattern.compile("^(uab|ab)\\s+.*", Pattern.CASE_INSENSITIVE);
-        Pattern amountLinePattern = Pattern.compile("(suma|mok[eė]ti|mok[eė]ti eur)", Pattern.CASE_INSENSITIVE);
-        Pattern amountValuePattern = Pattern.compile("(\\d+[.,]\\d{2})");
-
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i].trim();
-
-            // Detect company name
-            if (shopName == null && companyPattern.matcher(line).find()) {
-                shopName = line;
-            }
-
-            // Detect payment line
-            if (amountLinePattern.matcher(line).find()) {
-                // Try to extract amount from the same line
-                Matcher amountMatcher = amountValuePattern.matcher(line);
-                if (amountMatcher.find()) {
-                    suma = amountMatcher.group(1);
-                } else if (i + 1 < lines.length) {
-                    // Try to extract amount from the next line
-                    String nextLine = lines[i + 1].trim();
-                    Matcher nextLineMatcher = amountValuePattern.matcher(nextLine);
-                    if (nextLineMatcher.find()) {
-                        suma = nextLineMatcher.group(1);
-                    }
-                }
-            }
+        try (FileOutputStream stream = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        Log.d("OCR", "Shop: " + shopName);
-        Log.d("OCR", "Suma: " + suma);
-
-        String finalShopName = shopName;
-        String finalSuma = suma;
-        runOnUiThread(() -> Toast.makeText(this, "Shop: " + finalShopName + "\nSUMA: "
-                + finalSuma, Toast.LENGTH_LONG).show());
+        return file.getAbsolutePath(); // Save this path for later
+    }
+    private void addImagePath(String path) {
+        imagePaths.add(path);
+        prefs.edit().putStringSet("paths", imagePaths).apply();
+    }
+    private void loadImages() {
+        for (String path : imagePaths) {
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            if (bitmap != null) {
+                imagesAdapter.addImage(bitmap);
+            }
+        }
     }
 
-
-
-
     private Bitmap imageProxyToBitmap(ImageProxy image) {
-        //gettina plane'us(jie sudaro visa ft)
         ImageProxy.PlaneProxy[] planes = image.getPlanes();
         ByteBuffer buffer = planes[0].getBuffer();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        // dekoduoja i bitmap
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
     private void startCamera() {
 
         //View matomumas
-        findViewById(R.id.cameraOverlay).setVisibility(View.VISIBLE);
+        cameraOverlay.setVisibility(View.VISIBLE);
         buttonCloseCamera.setVisibility(View.VISIBLE);
         buttonCaptureImage.setVisibility(View.VISIBLE);
 
@@ -320,7 +331,52 @@ public class AddSourceActivity extends AppCompatActivity {
             }
         }, ContextCompat.getMainExecutor(this));
     }
+    private void saveAllImagesToFolder(int folderId) {
+        ContextWrapper wrapper = new ContextWrapper(getApplicationContext());
+        File baseDir = wrapper.getDir("images", Context.MODE_PRIVATE);
+        File folder = new File(baseDir, String.valueOf(folderId));
 
+        if (!folder.exists()) folder.mkdir();
+
+        // Clear previous images if any
+        File[] oldFiles = folder.listFiles();
+        if (oldFiles != null) {
+            for (File f : oldFiles) f.delete();
+        }
+
+        List<Bitmap> images = imagesAdapter.getAllImages();
+
+        int idx = 0;
+        for (Bitmap bitmap : images) {
+            File imgFile = new File(folder, "img_" + idx + ".jpg");
+            try (FileOutputStream out = new FileOutputStream(imgFile)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            idx++;
+        }
+    }
+    public List<Bitmap> loadImagesFromFolder(long folderId) {
+        List<Bitmap> bitmaps = new ArrayList<>();
+        ContextWrapper wrapper = new ContextWrapper(getApplicationContext());
+        File baseDir = wrapper.getDir("images", Context.MODE_PRIVATE);
+        File folder = new File(baseDir, String.valueOf(folderId));
+
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    if (bitmap != null) {
+                        bitmaps.add(bitmap);
+                        Log.i("IMAGE", file.getName());
+                    }
+                }
+            }
+        }
+        return bitmaps;
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -360,37 +416,57 @@ public class AddSourceActivity extends AppCompatActivity {
     }
 
     private void addSource() {
+        // Prepare entry fields
         Category selectedCategory = (Category) spinner.getSelectedItem();
         int typeId = switchCompat.isChecked() ? 1 : 0;
-        selectedCountryCode = MainActivity.COUNTRY_CODE;
-        if (!nameEditText.getText().toString().isEmpty() && isNumber(amountEditText.getText().toString())) {
+        String name = nameEditText.getText().toString();
+        String amountStr = amountEditText.getText().toString();
+
+        if (!name.isEmpty() && isNumber(amountStr)) {
             if (selectedCountryCode == null) selectedCountryCode = "US";
 
             Entry newEntry = new Entry(
-                    nameEditText.getText().toString(),
+                    name,
                     db.currentAccount,
                     typeId,
-                    Float.parseFloat(amountEditText.getText().toString()),
-                    2025,
-                    selectedCountryCode
+                    Float.parseFloat(amountStr),
+                    System.currentTimeMillis(),
+                    selectedCountryCode,
+                    -1
             );
 
             executor.execute(() -> {
                 try {
-                    db.entryDao().insert(newEntry);
+                    // Insert entry - get generated id
+                    long insertedId = db.entryDao().insert(newEntry);
+
+                    // Save images to folder named by insertedId
+                    int folderId = (int) insertedId;
+                    saveAllImagesToFolder(folderId);
+
+                    // Update photoFolderId in Entry and save
+                    newEntry.setId(folderId);
+                    newEntry.setPhotoFolderId(folderId);
+                    db.entryDao().update(newEntry);
+
                     runOnUiThread(() -> {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("entry_added", true);
                         setResult(RESULT_OK, resultIntent);
+
+                        loadImagesFromFolder(insertedId);
+
+
                         finish();
                     });
+
                 } catch (Exception e) {
-                    runOnUiThread(() -> Toast.makeText(AddSourceActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(AddSourceActivity.this, "Error saving entry: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                 }
             });
+
         } else {
-            setResult(RESULT_CANCELED);
-            Toast.makeText(AddSourceActivity.this, "Name and Amount cannot be empty or invalid", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Name and Amount cannot be empty or invalid", Toast.LENGTH_SHORT).show();
         }
     }
 

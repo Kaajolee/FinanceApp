@@ -44,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
             int type = editDialogHelper.ReturnSwitchStateInt();
             // TODO: prideti kategorija
-            Entry newEntry = new Entry(name, 1, type, amount, 2025, countryCode);
+            Entry newEntry = new Entry(name, 1, type, amount, 2025, countryCode, -1);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);

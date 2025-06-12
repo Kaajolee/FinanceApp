@@ -5,6 +5,10 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,11 +24,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finanseapp.AppDatabase;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.R;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 public class DialogHelper {
@@ -34,23 +45,40 @@ public class DialogHelper {
     public final Button cancelButton, saveButton;
     public final Spinner categorySpinner;
     public final SwitchCompat switchCompat;
+    public RecyclerView recyclerView;
     private final TextView incomeLabel, expenseLabel;
     public int adapterPositionId;
+    private final SharedPreferences prefs;
+    private final Set<String> imagePaths = new HashSet<>();
+    private RecyclerViewImagesAdapter imagesAdapter;
+    private final Context context;
 
     public DialogHelper(Context context) {
+
+        this.context = context;
+        prefs = context.getSharedPreferences("images", Context.MODE_PRIVATE);
+
         editSourceDialog = new Dialog(context);
         editSourceDialog.setContentView(R.layout.dialog_edit_source);
         editSourceDialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_all_corners_small_nontrans);
  
         sourceName = editSourceDialog.findViewById(R.id.editTextNameDialog);
         sourceAmount = editSourceDialog.findViewById(R.id.editTextAmountDialog);
+
         categorySpinner = editSourceDialog.findViewById(R.id.spinnerCategoryDialog);
         switchCompat = editSourceDialog.findViewById(R.id.customSwitchDialog);
+
         incomeLabel = editSourceDialog.findViewById(R.id.textViewIncomeDialog);
         expenseLabel = editSourceDialog.findViewById(R.id.textViewExpenseDialog);
+
         cancelButton = editSourceDialog.findViewById(R.id.buttonCancelDialog);
         saveButton = editSourceDialog.findViewById(R.id.buttonUpdateDialog);
 
+        recyclerView = editSourceDialog.findViewById(R.id.photoRecyclerView);
+        LinearLayout linearRecycler = editSourceDialog.findViewById(R.id.linearrecycler);
+        linearRecycler.setBackgroundResource(R.drawable.rounded_all_corners_small);
+
+        setupRecyclerView(context);
         configureButtons();
     }
 
@@ -60,12 +88,18 @@ public class DialogHelper {
         Executors.newSingleThreadExecutor().execute(() -> {
             Entry entry = db.entryDao().getEntryById(id);
             if(entry != null) {
+                long folderId = entry.getPhotoFolderId();
+
                 new Handler(Looper.getMainLooper()).post(() -> {
                     sourceName.setText(entry.getName());
                     sourceAmount.setText(Float.toString(entry.getAmount()));
                     switchCompat.setChecked(entry.getType() != 0);
                     configureSwitch();
+
+                    loadImagesFromFolder(folderId);
                 });
+
+                Log.i("IMAGE", "PHOTO FOLDER ID: " + Integer.toString(entry.getPhotoFolderId()));
             }
             else
                 Log.i("DIALOG HELPER", "entry is null in setValue");
@@ -80,7 +114,13 @@ public class DialogHelper {
             editSourceDialog.hide();
         }
     }
+    private void setupRecyclerView(Context context){
 
+        int numberOfColumns = 3;
+        recyclerView.setLayoutManager(new GridLayoutManager(context, numberOfColumns));
+        imagesAdapter = new RecyclerViewImagesAdapter(context);
+        recyclerView.setAdapter(imagesAdapter);
+    }
     private void configureSwitch() {
         updateLabelColors(switchCompat.isChecked());
 
@@ -88,7 +128,33 @@ public class DialogHelper {
             updateLabelColors(isChecked);
         });
     }
+    public void loadImagesFromFolder(long folderId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Bitmap> bitmaps = new ArrayList<>();
+            ContextWrapper wrapper = new ContextWrapper(context);
+            File baseDir = wrapper.getDir("images", Context.MODE_PRIVATE);
+            File folder = new File(baseDir, String.valueOf(folderId));
 
+            if (folder.exists() && folder.isDirectory()) {
+                File[] files = folder.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                        if (bitmap != null) {
+                            bitmaps.add(bitmap);
+                        }
+                    }
+                }
+            }
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                imagesAdapter.clearImages();
+                for (Bitmap bitmap : bitmaps) {
+                    imagesAdapter.addImage(bitmap);
+                }
+            });
+        });
+    }
     private void updateLabelColors(boolean isExpense) {
         int incomeColor = isExpense ? Color.BLACK : Color.GREEN;
         int expenseColor = isExpense ? Color.RED : Color.BLACK;
