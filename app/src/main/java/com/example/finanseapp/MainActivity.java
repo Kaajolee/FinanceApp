@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity{
             }
             runOnUiThread(() -> {
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
-                        android.R.layout.simple_spinner_item, categories);
-                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        R.layout.spinner_dropdown_main, categories);
+                spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
                 spinnerCategory.setAdapter(spinnerAdapter);
 
                 spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -218,8 +218,8 @@ public class MainActivity extends AppCompatActivity{
             }
             runOnUiThread(() -> {
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
-                        android.R.layout.simple_spinner_item, categories);
-                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        R.layout.spinner_dropdown_main, categories);
+                spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
                 spinnerCategory.setAdapter(spinnerAdapter);
 
             });
