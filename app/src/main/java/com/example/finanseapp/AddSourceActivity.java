@@ -424,13 +424,20 @@ public class AddSourceActivity extends AppCompatActivity {
 
         if (!name.isEmpty() && isNumber(amountStr)) {
             if (selectedCountryCode == null) selectedCountryCode = "US";
-
+            float amount = Float.parseFloat(amountEditText.getText().toString());
+                if(typeId == 1){
+                    amount *= -1;
+                }
             Entry newEntry = new Entry(
                     name,
                     db.currentAccount,
                     typeId,
                     Float.parseFloat(amountStr),
                     System.currentTimeMillis(),
+                    selectedCountryCode,
+                    selectedCategory.getName(),
+                    amount,
+                    2025,
                     selectedCountryCode,
                     -1
             );

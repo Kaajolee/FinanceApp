@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finanseapp.AppDatabase;
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.MainActivity;
 import com.example.finanseapp.R;
@@ -40,14 +41,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.editDialogHelper = editDialogHelper;
 
         editDialogHelper.saveButton.setOnClickListener(v -> {
+            editDialogHelper.updateEntry();
+
             String name = editDialogHelper.sourceName.getText().toString();
             float amount = Float.parseFloat(editDialogHelper.sourceAmount.getText().toString());
             int type = editDialogHelper.ReturnSwitchStateInt();
+            String category = editDialogHelper.categorySpinner.toString();
             // TODO: prideti kategorija
-            Entry newEntry = new Entry(name, 1, type, amount, 2025, countryCode, -1);
+          
+            Entry newEntry = new Entry(name, 1, type, category, amount, editDialogHelper.entryDate, editDialogHelper.entryCountryCode, -1);
 
             updateDataEntry(newEntry, editDialogHelper.adapterPositionId);
             editDialogHelper.toggleDialog(false);
+
         });
     }
 
@@ -83,7 +89,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 colorRes = R.color.green_005;
                 break;
             case 1: // Expense
-                displayAmount = "-" + displayAmount;
+                displayAmount = "" + displayAmount;
                 colorRes = R.color.red;
                 break;
             default:

@@ -12,17 +12,25 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,10 +39,13 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,12 +66,14 @@ import com.example.finanseapp.Entities.Account;
 import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.Entities.User;
+import com.example.finanseapp.Helpers.BlurOnFlipManager;
 import com.example.finanseapp.Helpers.DialogHelper;
 import com.example.finanseapp.Helpers.DollarSignAnimation;
 import com.example.finanseapp.Helpers.LocationHelper;
 import com.example.finanseapp.Helpers.RecyclerViewAdapter;
 import com.example.finanseapp.Helpers.ShakingDetector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +82,12 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
+
+public class MainActivity extends AppCompatActivity{
 
     private AppDatabase db;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -81,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private Paint paint;
     private ImageButton imgButtonIncome, imgbuttonAddCategory;
     private TextView textViewBalance;
+    private TextView textViewBalanceConverted;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
 
@@ -88,10 +107,13 @@ public class MainActivity extends AppCompatActivity {
     private DollarSignAnimation dollarAnimator;
     private RelativeLayout relativeLayout;
 
+    private Spinner spinnerCategory;
+
     private ActivityResultLauncher<Intent> resultLauncher;
 
+    private BlurOnFlipManager blurManager;
     private int dollarGreenID, dollarRedID;
-    public static String COUNTRY_CODE = "US";
+    public static String COUNTRY_CODE = "LT";
 
 
     @Override
@@ -105,22 +127,103 @@ public class MainActivity extends AppCompatActivity {
         initializeUI();
         initializeHardware();
         initializeData();
-        initializeLocation();
         setUpRecyclerView();
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
         setUpActivityResults();
+        setCategoriesFilter();
 
-
-
+        blurManager = new BlurOnFlipManager(this, textViewBalance, textViewBalanceConverted);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        blurManager.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        blurManager.unregister();
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
+        initializeLocation();
         updateBalanceText();
+        updateBalanceConvertText();
         setUpRecyclerView();
+        updateCategoriesSpinner();
+    }
+
+    private void setCategoriesFilter(){
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Category> categoryList = db.categoryDao().getAllCategories();
+            List<String> categories = new ArrayList<>();
+            categories.add("All");
+            for (Category category : categoryList) {
+                categories.add(category.getName());
+            }
+            runOnUiThread(() -> {
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
+                        android.R.layout.simple_spinner_item, categories);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCategory.setAdapter(spinnerAdapter);
+
+                spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String selectedCategory = parent.getItemAtPosition(position).toString();
+
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            if (selectedCategory.equals("All")) {
+                                List<Entry> allEntries = db.entryDao().getAllEntries();
+                                runOnUiThread(() -> adapter.updateData(allEntries));
+                            } else {
+                                Category selectedCat = db.categoryDao().getCategoryByName(selectedCategory);
+                                if (selectedCat == null) {
+                                    return;
+                                }
+
+                                List<Entry> filtered = new ArrayList<>();
+                                for (Entry e : db.entryDao().getAllEntries()) {
+                                    if (e.getCategory().equals(selectedCat.getName())) {
+                                        filtered.add(e);
+                                    }
+                                }
+
+                                runOnUiThread(() -> {
+                                    adapter.updateData(filtered);
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+            });
+        });
+    }
+
+    private void updateCategoriesSpinner(){
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Category> categoryList = db.categoryDao().getAllCategories();
+            List<String> categories = new ArrayList<>();
+            categories.add("All");
+            for (Category category : categoryList) {
+                categories.add(category.getName());
+            }
+            runOnUiThread(() -> {
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
+                        android.R.layout.simple_spinner_item, categories);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCategory.setAdapter(spinnerAdapter);
+
+            });
+        });
     }
 
     @Override
@@ -172,8 +275,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         imgButtonIncome = findViewById(R.id.imageButton);
-        setButtonOnClickToActivity(imgButtonIncome, AddSourceActivity.class);
-        
+        setButtonOnClickToActivityResult(imgButtonIncome, AddSourceActivity.class);
+
         imgbuttonAddCategory = findViewById(R.id.imageButton3);
         setButtonOnClickToActivity(imgbuttonAddCategory, AddCategoryActivity.class);
 
@@ -181,6 +284,9 @@ public class MainActivity extends AppCompatActivity {
         setButtonOnClickToActivity(buttonCharts, GraphsActivity.class);
 
         textViewBalance = findViewById(R.id.textViewBalance);
+        textViewBalanceConverted = findViewById(R.id.textViewBalanceConverted);
+
+        spinnerCategory = findViewById(R.id.spinnerCategory);
     }
 
     private void initializeData() {
@@ -209,16 +315,54 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Detected country: " + countryCode, Toast.LENGTH_SHORT).show();
                 Log.d("COUNTRY", "GPS country ISO: " + countryCode + " " + COUNTRY_CODE);
 
-
                 if (!COUNTRY_CODE.equals(countryCode)) {
                     COUNTRY_CODE = countryCode;
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
+
+
+
+                    //Intent intent = getIntent();
+                    //finish();
+                    //startActivity(intent);
+                    updateBalanceConvertText();
+
+
+
                 }
             }
         });
 
+    }
+
+    double convertBalance(double balance) {
+        MonetaryAmount balanceE = Monetary.getDefaultAmountFactory().setCurrency("EUR").setNumber(balance).create();
+
+        CurrencyConversion conversion;
+
+        Set<String> euroCountries = new HashSet<>(Arrays.asList(
+                "AT", "BE", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT",
+                "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"
+        ));
+
+        if (euroCountries.contains(COUNTRY_CODE)) {
+            conversion = MonetaryConversions.getConversion("EUR");
+            return balanceE.getNumber().doubleValue();
+        }
+
+        switch (COUNTRY_CODE) {
+            case "GB":
+                conversion = MonetaryConversions.getConversion("GBP");
+                break;
+            case "PL":
+                conversion = MonetaryConversions.getConversion("PLN");
+                break;
+            default:
+                conversion = MonetaryConversions.getConversion("USD");
+                break;
+        }
+
+        MonetaryAmount convertedAmountEURtoUSD = balanceE.with(conversion);
+
+        return convertedAmountEURtoUSD.getNumber().doubleValue();
     }
 
     private void setUpRecyclerView() {
@@ -230,6 +374,12 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
+
+                editSourceDialogHelper.onBalanceUpdate = () -> {
+                    updateBalanceText();
+                    updateBalanceConvertText();
+                };
+
                 adapter = new RecyclerViewAdapter(entries, editSourceDialogHelper, MainActivity.COUNTRY_CODE);
                 recyclerView.setAdapter(adapter);
             });
@@ -257,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
 
                     runOnUiThread(() -> adapter.removeItem(newHolder.getLayoutPosition()));
                     updateBalanceText();
+                    updateBalanceConvertText();
                 }
             }
 
@@ -384,18 +535,30 @@ public class MainActivity extends AppCompatActivity {
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
-            if (db.categoryDao().getCategoryByName("Other") == null) {
-                db.categoryDao().insert(new Category("Other", 1));
-                db.categoryDao().insert(new Category("Other ", 0));
+            if (db.categoryDao().getCategoryByName("default") == null) {
+                db.categoryDao().insert(new Category("default", 0));
             }
         });
     }
 
     private void updateBalanceText() {
         executor.execute(() -> {
-            String currency = getCurrencySymbol(COUNTRY_CODE);
+            //String currency = getCurrencySymbol(COUNTRY_CODE);
+            String currency = getString(R.string.currency_symbol_euro);
             String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount))) + currency;
             runOnUiThread(() -> textViewBalance.setText(balanceText));
+        });
+    }
+
+    private void updateBalanceConvertText() {
+        executor.execute(() -> {
+            String currency = getCurrencySymbol(COUNTRY_CODE);
+            String balanceText = Float.toString(db.entryDao().getTotalAmountByAccount(Integer.toString(db.currentAccount)));
+            if (COUNTRY_CODE != "LT") {
+                //String tekstas = String.valueOf(Math.round(, 2)) + currency;
+                String tekstas = String.format("%.1f", convertBalance(Double.parseDouble(balanceText))) + currency;
+                runOnUiThread(() -> textViewBalanceConverted.setText(tekstas));
+            }
         });
     }
 
@@ -406,6 +569,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 adapter.updateData(entries);
                 updateBalanceText();
+                updateBalanceConvertText();
             });
         });
     }

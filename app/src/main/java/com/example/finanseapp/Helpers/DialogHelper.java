@@ -39,7 +39,9 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 public class DialogHelper {
-
+    private int entryId = -1;
+    public String entryCountryCode;
+    public long entryDate;
     private final Dialog editSourceDialog;
     public final EditText sourceName, sourceAmount;
     public final Button cancelButton, saveButton;
@@ -53,10 +55,15 @@ public class DialogHelper {
     private RecyclerViewImagesAdapter imagesAdapter;
     private final Context context;
 
-    public DialogHelper(Context context) {
+    public Runnable onBalanceUpdate;
 
+    AppDatabase db;
+
+
+    public DialogHelper(Context context) {
         this.context = context;
         prefs = context.getSharedPreferences("images", Context.MODE_PRIVATE);
+        db = AppDatabase.getInstance(context.getApplicationContext());
 
         editSourceDialog = new Dialog(context);
         editSourceDialog.setContentView(R.layout.dialog_edit_source);
@@ -91,6 +98,10 @@ public class DialogHelper {
                 long folderId = entry.getPhotoFolderId();
 
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    entryId = id;
+                    entryCountryCode = entry.getCountryCode();
+                    entryDate = entryDate;
+                    Log.i("", "ID INDETAS BLET:" + entryId);
                     sourceName.setText(entry.getName());
                     sourceAmount.setText(Float.toString(entry.getAmount()));
                     switchCompat.setChecked(entry.getType() != 0);
@@ -168,6 +179,34 @@ public class DialogHelper {
 
     private void configureButtons() {
         cancelButton.setOnClickListener(v -> toggleDialog(false));
+        //saveButton.setOnClickListener(v -> updateEntry());
+    }
+
+    public void updateEntry() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Entry entry = db.entryDao().getEntryById(entryId);
+            if(entry != null) {
+
+                entry.setName(sourceName.getText().toString());
+                entry.setAccountId(entry.getAccountId());
+                entry.setType(ReturnSwitchStateInt());
+                entry.setAmount(Float.parseFloat(sourceAmount.getText().toString()));
+                entry.setDate(entry.getDate());
+                entry.setCountryCode(entry.getCountryCode());
+
+                db.entryDao().update(entry);
+
+                onBalanceUpdate.run();
+
+                Log.i("DUOMBAZ",  entry.getName() + " " + entry.getName() + " " + entry.getAmount());
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+                Log.i("DUOMBAZ", "SUVEIKE");
+            }
+            else
+                Log.i("DIALOG HELPER", "entry is null in setValue");
+        });
     }
 
     private void animateDialogIn() {
