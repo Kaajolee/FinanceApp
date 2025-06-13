@@ -38,12 +38,12 @@ public class Entry {
     private int photoFolderId;
 
     @ColumnInfo(name = "date")
-    private long date;
+    private String date;
 
     @ColumnInfo(name = "countryCode")
     public String countryCode;
 
-    public Entry(String name, int accountId, int type, String category, float amount, long date, String countryCode,
+    public Entry(String name, int accountId, int type, String category, float amount, String date, String countryCode,
                  int photoFolderId) {
         this.name = name;
         this.accountId = accountId;
@@ -80,7 +80,7 @@ public class Entry {
         this.type = type;
     }
 
-    public void setDate(long date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -104,7 +104,7 @@ public class Entry {
         return amount;
     }
 
-    public long getDate() {
+    public String getDate() {
         return date;
     }
     public int getPhotoFolderId() {

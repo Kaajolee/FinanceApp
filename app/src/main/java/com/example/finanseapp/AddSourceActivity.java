@@ -65,7 +65,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -421,6 +425,9 @@ public class AddSourceActivity extends AppCompatActivity {
         int typeId = switchCompat.isChecked() ? 1 : 0;
         String name = nameEditText.getText().toString();
         String amountStr = amountEditText.getText().toString();
+        LocalDateTime time = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = time.format(formatter);
 
         if (!name.isEmpty() && isNumber(amountStr)) {
             if (selectedCountryCode == null) selectedCountryCode = "US";
@@ -434,7 +441,7 @@ public class AddSourceActivity extends AppCompatActivity {
                     typeId,
                     selectedCategory.getName(),
                     amount,
-                    2025,
+                    formattedDateTime,
                     selectedCountryCode,
                     -1);
 
