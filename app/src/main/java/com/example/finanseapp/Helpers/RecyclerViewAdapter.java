@@ -70,7 +70,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.id = entry.getId();
 
         holder.textViewName.setText(entry.getName());
-        holder.textViewCategory.setText(Float.toString(entry.getDate()));
+        holder.textViewCategory.setText(entry.getDate());
 
         String currency = holder.itemView.getContext().getString(R.string.currency_symbol);
         Context context = holder.itemView.getContext();
