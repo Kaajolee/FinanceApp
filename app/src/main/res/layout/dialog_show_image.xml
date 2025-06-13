@@ -4,16 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    >
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/dialogImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="8"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"/>
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true" />
 
     <Space
         android:layout_width="match_parent"
@@ -25,11 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@android:color/transparent"
-        android:backgroundTint="@android:color/transparent"
         android:fontFamily="@font/ticketing"
         android:text="Close"
         android:textColor="@color/red"
         android:textSize="17sp" />
-
 
 </LinearLayout>

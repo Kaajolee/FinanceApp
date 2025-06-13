@@ -194,7 +194,7 @@ public class AddSourceActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.photoRecyclerView);
 
-        int numberOfColumns = 3; // or 2, depending on how many columns you want
+        int numberOfColumns = 2; // or 2, depending on how many columns you want
         GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns);
         recyclerView.setLayoutManager(layoutManager);
         imagesAdapter = new RecyclerViewImagesAdapter(this);
