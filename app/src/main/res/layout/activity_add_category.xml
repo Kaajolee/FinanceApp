@@ -9,22 +9,29 @@
     tools:context=".AddCategoryActivity">
 
     <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        android:dividerPadding="16dp"
+        android:id="@+id/linearlayouta"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:dividerPadding="16dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Name Section -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="87dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="30dp">
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/ticketing"
                 android:text="@string/name"
                 android:textColor="@color/white_text"
                 android:textSize="20sp"
@@ -37,20 +44,24 @@
                 android:ems="10"
                 android:hint="@string/enter_category_name"
                 android:inputType="text"
+                android:fontFamily="@font/ticketing"
                 android:textColor="@color/white_text"
                 android:textColorHint="@color/white_text"
                 android:textSize="15sp" />
         </LinearLayout>
 
+        <!-- Type Spinner Section -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="93dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="30dp">
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/ticketing"
                 android:text="@string/type"
                 android:textColor="@color/white_text"
                 android:textSize="20sp"
@@ -59,14 +70,15 @@
             <Spinner
                 android:id="@+id/spinner4"
                 android:layout_width="match_parent"
-                android:layout_height="57dp" />
-
+                android:layout_height="57dp"
+                android:fontFamily="@font/ticketing" />
         </LinearLayout>
 
+        <!-- Buttons -->
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
@@ -75,8 +87,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/ticketing"
                 android:text="@string/cancel"
-                android:textColor="@color/red" />
+                android:textColor="@color/red"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/addButton"
@@ -84,9 +98,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/ticketing"
                 android:text="@string/add_category"
-                android:textColor="@color/green_006" />
+                android:textColor="@color/green_006"
+                android:textSize="18sp" />
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

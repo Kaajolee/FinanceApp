@@ -239,14 +239,21 @@
                     android:id="@+id/buttonAddPhoto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add Photo" />
+                    android:text="Add Photo"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/green_006"
+                    android:fontFamily="@font/ticketing" />
 
                 <Button
                     android:id="@+id/buttonClearPhotos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Clear All" />
+                    android:text="Clear All"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/red"
+                    android:fontFamily="@font/ticketing" />
+
 
             </LinearLayout>
 
