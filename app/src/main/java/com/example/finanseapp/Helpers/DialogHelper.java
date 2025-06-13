@@ -15,6 +15,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -28,9 +30,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finanseapp.AppDatabase;
+import com.example.finanseapp.Entities.Category;
 import com.example.finanseapp.Entities.Entry;
+import com.example.finanseapp.MainActivity;
 import com.example.finanseapp.R;
 
+import java.util.List;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +48,7 @@ public class DialogHelper {
     private int entryId = -1;
     public String entryCountryCode;
     public String entryDate;
+    public String entryCategory;
     private final Dialog editSourceDialog;
     public final EditText sourceName, sourceAmount;
     public final Button cancelButton, saveButton;
@@ -88,6 +94,28 @@ public class DialogHelper {
 
         setupRecyclerView(context);
         configureButtons();
+        configureSpinner(context);
+    }
+
+    private void configureSpinner(Context context) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Category> categories = db.categoryDao().getAllCategories();
+            ArrayAdapter<Category> spinnerAdapter = new ArrayAdapter<>(context,
+                    R.layout.spinner_dropdown_main, categories);
+            spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown);
+            categorySpinner.setAdapter(spinnerAdapter);
+
+            categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    entryCategory = parent.getItemAtPosition(position).toString();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        });
     }
 
     public void setValues(AppDatabase db, int id, int adapterId) {
@@ -95,6 +123,7 @@ public class DialogHelper {
         
         Executors.newSingleThreadExecutor().execute(() -> {
             Entry entry = db.entryDao().getEntryById(id);
+            List<Category> categories = db.categoryDao().getAllCategories();
             if(entry != null) {
                 long folderId = entry.getPhotoFolderId();
 
@@ -107,6 +136,13 @@ public class DialogHelper {
                     sourceAmount.setText(Float.toString(entry.getAmount()));
                     switchCompat.setChecked(entry.getType() != 0);
                     configureSwitch();
+
+                    for (int i = 0; i < categories.size(); i++) {
+                        if (categories.get(i).getName().equals(entry.getCategory())) {
+                            categorySpinner.setSelection(i);
+                            break;
+                        }
+                    }
 
                     loadImagesFromFolder(folderId);
                 });
@@ -194,6 +230,7 @@ public class DialogHelper {
                 entry.setAmount(Float.parseFloat(sourceAmount.getText().toString()));
                 entry.setDate(entry.getDate());
                 entry.setCountryCode(entry.getCountryCode());
+                entry.setCategory(entryCategory);
 
                 db.entryDao().update(entry);
 
