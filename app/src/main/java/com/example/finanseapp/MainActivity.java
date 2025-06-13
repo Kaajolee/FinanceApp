@@ -535,8 +535,8 @@ public class MainActivity extends AppCompatActivity{
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
-            if (db.categoryDao().getCategoryByName("default") == null) {
-                db.categoryDao().insert(new Category("default", 0));
+            if (db.categoryDao().getCategoryByName("Default") == null) {
+                db.categoryDao().insert(new Category("Default", 0));
             }
         });
     }
