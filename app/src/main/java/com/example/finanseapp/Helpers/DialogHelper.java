@@ -32,6 +32,7 @@ import com.example.finanseapp.Entities.Entry;
 import com.example.finanseapp.R;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.concurrent.Executors;
 public class DialogHelper {
     private int entryId = -1;
     public String entryCountryCode;
-    public long entryDate;
+    public String entryDate;
     private final Dialog editSourceDialog;
     public final EditText sourceName, sourceAmount;
     public final Button cancelButton, saveButton;
