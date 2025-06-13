@@ -1,6 +1,8 @@
 package com.example.finanseapp;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import android.animation.Animator;
@@ -32,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +45,7 @@ import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -81,6 +85,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
@@ -89,7 +96,7 @@ import javax.money.convert.MonetaryConversions;
 
 public class MainActivity extends AppCompatActivity{
 
-    private AppDatabase db;
+    public AppDatabase db;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private List<Entry> entries;
 
@@ -108,6 +115,8 @@ public class MainActivity extends AppCompatActivity{
     private RelativeLayout relativeLayout;
 
     private Spinner spinnerCategory;
+    private Spinner spinnerAccount;
+    private TextView textAccount;
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
@@ -127,11 +136,13 @@ public class MainActivity extends AppCompatActivity{
         initializeUI();
         initializeHardware();
         initializeData();
+        setUpDropDown();
         setUpRecyclerView();
         setUpDollarSignAnimation();
         setUpBalanceWiggle();
         setUpActivityResults();
         setCategoriesFilter();
+
 
         blurManager = new BlurOnFlipManager(this, textViewBalance, textViewBalanceConverted);
     }
@@ -158,7 +169,164 @@ public class MainActivity extends AppCompatActivity{
         updateCategoriesSpinner();
     }
 
-    private void setCategoriesFilter(){
+    private void setUpDropDown() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            int checkedItem = -1;
+
+            List<Account> accounts = db.accountDao().getAllAccounts();
+
+            // Use LinkedHashMap to preserve insertion order
+            Map<Integer, String> accountMap = new LinkedHashMap<>();
+            for (Account account : accounts) {
+                accountMap.put(account.getId(), account.getName());
+            }
+
+            if (!accounts.isEmpty()) {
+                db.currentAccount = accounts.get(0).getId();
+                updateTextAccountFromDb();
+            }
+
+            String[] accountNames = accountMap.values().toArray(new String[0]);
+            Integer[] accountIds = accountMap.keySet().toArray(new Integer[0]); // This maps UI index to real DB ID
+
+            runOnUiThread(() -> {
+                textAccount.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                        builder.setTitle("Select Account");
+                        builder.setCancelable(true);
+
+                        AtomicInteger selectedIndex = new AtomicInteger(checkedItem);
+
+                        builder.setSingleChoiceItems(accountNames, checkedItem, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String selectedAccount = accountNames[which];
+                                //textAccount.setText(selectedAccount);
+                                selectedIndex.set(which);
+                            }
+                        });
+
+                        builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int idx = selectedIndex.get();
+                                if (idx >= 0 && idx < accountIds.length) {
+                                    db.currentAccount = accountIds[idx];
+                                    Log.i("SELECTED_ACCOUNT_ID", "Selected account ID: " + db.currentAccount);
+
+                                    // Update RecyclerView or any other UI using selectedAccountId
+                                    setUpRecyclerView();
+                                    updateTextAccountFromDb();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "No account selected", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int idx = selectedIndex.get();
+                                if (idx >= 0 && idx < accountIds.length) {
+                                    if (accountIds.length <= 1) {
+                                        Toast.makeText(MainActivity.this, "Can't delete the last remaining account", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    int accountId = accountIds[idx];
+                                    Executors.newSingleThreadExecutor().execute(() -> {
+                                        Account accountToDelete = db.accountDao().getAccountById(accountId);
+                                        if (accountToDelete != null) {
+                                            db.accountDao().delete(accountToDelete);
+                                            List<Account> updatedAccounts = db.accountDao().getAllAccounts();
+                                            if (!updatedAccounts.isEmpty()) {
+                                                db.currentAccount = updatedAccounts.get(0).getId(); // fallback to first account
+                                            } else {
+                                                db.currentAccount = -1; // no accounts left
+                                            }
+
+                                            runOnUiThread(() -> {
+                                                Toast.makeText(MainActivity.this, "Deleted account", Toast.LENGTH_SHORT).show();
+                                                setUpDropDown(); // Refresh list
+                                                setUpRecyclerView();
+                                                updateTextAccountFromDb();
+                                            });
+                                        } else {
+                                            runOnUiThread(() ->
+                                                    Toast.makeText(MainActivity.this, "Account not found", Toast.LENGTH_SHORT).show()
+                                            );
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(MainActivity.this, "No account selected", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+
+                        builder.setNeutralButton("Add New", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AlertDialog.Builder inputDialog = new AlertDialog.Builder(MainActivity.this);
+                                inputDialog.setTitle("New Account");
+
+                                final EditText input = new EditText(MainActivity.this);
+                                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                                input.setHint("Enter account name");
+
+                                inputDialog.setView(input);
+
+                                inputDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String newAccountName = input.getText().toString().trim();
+                                        if (!newAccountName.isEmpty()) {
+                                            Executors.newSingleThreadExecutor().execute(() -> {
+                                                Account newAccount = new Account();
+                                                newAccount.setName(newAccountName);
+                                                newAccount.setUserId(db.userDao().getUserByUsername("admin").getId());
+                                                newAccount.setBalance(0);
+                                                db.accountDao().insert(newAccount);
+
+                                                runOnUiThread(() -> {
+                                                    Toast.makeText(MainActivity.this, "Account added", Toast.LENGTH_SHORT).show();
+                                                    setUpDropDown(); // Refresh list
+                                                    updateTextAccountFromDb();
+                                                });
+                                            });
+                                        } else {
+                                            Toast.makeText(MainActivity.this, "Account name cannot be empty", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                                inputDialog.setNegativeButton("Cancel", null);
+                                inputDialog.show();
+                            }
+                        });
+
+                        builder.show();
+                    }
+                });
+            });
+
+        });
+    }
+
+    private void updateTextAccountFromDb() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Account current = db.accountDao().getAccountById(db.currentAccount);
+            if (current != null) {
+                runOnUiThread(() -> textAccount.setText(current.getName()));
+            }
+        });
+    }
+
+
+    private void setCategoriesFilter() {
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Category> categoryList = db.categoryDao().getAllCategories();
             List<String> categories = new ArrayList<>();
@@ -166,6 +334,7 @@ public class MainActivity extends AppCompatActivity{
             for (Category category : categoryList) {
                 categories.add(category.getName());
             }
+
             runOnUiThread(() -> {
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this,
                         R.layout.spinner_dropdown_main, categories);
@@ -178,35 +347,32 @@ public class MainActivity extends AppCompatActivity{
                         String selectedCategory = parent.getItemAtPosition(position).toString();
 
                         Executors.newSingleThreadExecutor().execute(() -> {
-                            if (selectedCategory.equals("All")) {
-                                List<Entry> allEntries = db.entryDao().getAllEntries();
-                                runOnUiThread(() -> adapter.updateData(allEntries));
-                            } else {
-                                Category selectedCat = db.categoryDao().getCategoryByName(selectedCategory);
-                                if (selectedCat == null) {
-                                    return;
-                                }
+                            List<Entry> allEntries = db.entryDao().getAllEntries();
+                            List<Entry> filtered = new ArrayList<>();
 
-                                List<Entry> filtered = new ArrayList<>();
-                                for (Entry e : db.entryDao().getAllEntries()) {
-                                    if (e.getCategory().equals(selectedCat.getName())) {
-                                        filtered.add(e);
-                                    }
-                                }
+                            for (Entry e : allEntries) {
+                                boolean matchesAccount = e.getAccountId() == db.currentAccount;
+                                boolean matchesCategory = selectedCategory.equals("All") ||
+                                        e.getCategory().equals(selectedCategory);
 
-                                runOnUiThread(() -> {
-                                    adapter.updateData(filtered);
-                                });
+                                if (matchesAccount && matchesCategory) {
+                                    filtered.add(e);
+                                }
                             }
+
+                            runOnUiThread(() -> adapter.updateData(filtered));
                         });
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> parent) {}
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // Do nothing
+                    }
                 });
             });
         });
     }
+
 
     private void updateCategoriesSpinner(){
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -224,6 +390,10 @@ public class MainActivity extends AppCompatActivity{
 
             });
         });
+    }
+
+    private void setSpinnerAccount() {
+
     }
 
     @Override
@@ -287,6 +457,7 @@ public class MainActivity extends AppCompatActivity{
         textViewBalanceConverted = findViewById(R.id.textViewBalanceConverted);
 
         spinnerCategory = findViewById(R.id.spinnerCategory);
+        textAccount = findViewById(R.id.textAccount);
     }
 
     private void initializeData() {
@@ -370,7 +541,9 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         executor.execute(() -> {
-            entries = db.entryDao().getEntriesByAccountId("1");
+            //Log.i("", "TAI KAS CIA: " + db.accountDao().getAccountById(selectedAccountId).toString());
+            String accountas = Integer.toString(db.currentAccount);
+            entries = db.entryDao().getEntriesByAccountId(accountas);
 
             runOnUiThread(() -> {
                 DialogHelper editSourceDialogHelper = new DialogHelper(this);
@@ -535,6 +708,10 @@ public class MainActivity extends AppCompatActivity{
                 db.accountDao().insert(new Account("saskaita1", db.userDao().getUserByUsername("admin").getId(), 20));
             }
 
+            if (db.accountDao().getAccountByName("saskaita2") == null) {
+                db.accountDao().insert(new Account("saskaita2", db.userDao().getUserByUsername("admin").getId(), 20));
+            }
+
             if (db.categoryDao().getCategoryByName("default") == null) {
                 db.categoryDao().insert(new Category("default", 0));
             }
@@ -564,7 +741,8 @@ public class MainActivity extends AppCompatActivity{
 
     private void updateRecyclerView() {
         executor.execute(() -> {
-            entries = db.entryDao().getEntriesByAccountId("1");
+            String accountas = Integer.toString(db.currentAccount);
+            entries = db.entryDao().getEntriesByAccountId(accountas);
 
             runOnUiThread(() -> {
                 adapter.updateData(entries);

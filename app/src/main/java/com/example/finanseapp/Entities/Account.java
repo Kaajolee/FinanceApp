@@ -32,6 +32,8 @@ public class Account {
         this.balance = balance;
     }
 
+    public Account() {}
+
     public void setId(int id) {
         this.id = id;
     }

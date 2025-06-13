@@ -63,7 +63,7 @@ public class DialogHelper {
 
     public Runnable onBalanceUpdate;
 
-    AppDatabase db;
+    public AppDatabase db;
 
 
     public DialogHelper(Context context) {

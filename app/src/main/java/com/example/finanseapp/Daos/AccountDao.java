@@ -29,11 +29,14 @@ public interface AccountDao {
     @Query("DELETE FROM accounts")
     void deleteAll();
 
+    @Query("DELETE FROM accounts WHERE id = :accountId")
+    void deleteById(int accountId);
+
     @Query("SELECT * FROM accounts")
     List<Account> getAllAccounts();
 
     @Query("SELECT * FROM accounts WHERE id = :id LIMIT 1")
-    Account getAccountById(String id);
+    Account getAccountById(int id);
 
     @Query("SELECT * FROM accounts WHERE name = :name LIMIT 1")
     User getAccountByName(String name);
