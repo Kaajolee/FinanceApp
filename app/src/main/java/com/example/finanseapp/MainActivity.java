@@ -321,6 +321,8 @@ public class MainActivity extends AppCompatActivity{
             Account current = db.accountDao().getAccountById(db.currentAccount);
             if (current != null) {
                 runOnUiThread(() -> textAccount.setText(current.getName()));
+                updateBalanceText();
+                updateBalanceConvertText();
             }
         });
     }
